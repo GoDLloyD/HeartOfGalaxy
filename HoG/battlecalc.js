@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			shipStats.HP = friend.hpSingleShip(ship.id);
 			shipStats.Shield *= bonus.shield;
 			shipStats["Piercing Power"] = shipStats.Power * Math.min((friend.piercingSingleShip(ship.id) || 0) / 100, 1);
-			shipStats.Toughness = ship.hp / (1 - dmgred(shipStats.Armor));
+			shipStats.Toughness = shipStats.HP / (1 - dmgred(shipStats.Armor));
 			shipStats.Speed *= bonus.speed;
 			shipStats.Duration = (1 + fleetWeight / ship.combatWeight);
 		}

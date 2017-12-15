@@ -552,8 +552,7 @@ function Fleet(b,e){
 		var b=this.powerSingleShipWithoutExtras(d);
 		ammoBonus=1+(10*Math.log(1+this.storage[resourcesName.ammunition.id]/1E7)/Math.log(2)+20*Math.log(1+this.storage[resourcesName["u-ammunition"].id]/1E7)/Math.log(2)+60*Math.log(1+this.storage[resourcesName["t-ammunition"].id]/2E7)/Math.log(2));
 		b*=ammoBonus;
-		var u=this.ships[d]*ships[d].combatWeight/this.combatWeight();
-		var alkantaraBonus=u*(1+.1*Math.log(1+this.ships[14])/Math.log(2));
+		var alkantaraBonus=(1+.1*Math.log(1+this.ships[14])/Math.log(2));
 		b*=alkantaraBonus;
 		return b;
 	};
