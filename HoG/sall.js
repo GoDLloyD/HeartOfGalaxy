@@ -726,7 +726,7 @@ function Fleet(b,e){
 						Z=2*Z/(1+Math.abs(2*Z));
 						Y+=.5*N[y]*(1.1-.9*Z)*Math.min(ea+v+this.piercingSingleShip(y)/100,1)*U;
 						var M=N[y]+this.ships[y]*Math.max(this.powerSingleShipWithoutExtras(y)-b.shield(n),0)*ammoBonus*ia*U;
-						N[y]+=this.ships[y]*this.powerSingleShip(y)*U;
+						N[y]+=this.ships[y]*this.powerSingleShip(y)*u*U;
 						W+=.5*M*(1.1-.9*Z)*Math.min(ea+v+this.piercingSingleShip(y)/100,1)*U
 					}
 					J[n]-=W;
@@ -762,7 +762,7 @@ function Fleet(b,e){
 						Z=2*Z/(1+Math.abs(2*Z)),
 						Y+=.5*V[y]*(1.1-.9*Z)*Math.min(ea+v+b.piercingSingleShip(y)/100,1)*U,
 						M=V[y]+b.ships[y]*Math.max(b.powerSingleShipWithoutExtras(y)-this.shield(n),0)*ammoBonus*ia*U,
-						V[y]+=b.ships[y]*b.powerSingleShip(y)*U,
+						V[y]+=b.ships[y]*b.powerSingleShip(y)*u*U,
 						W+=.5*M*(1.1-.9*Z)*Math.min(ea+v+b.piercingSingleShip(y)/100,1)*U;
 					G[n]-=W;
 					for(y=0;y<ships.length;y++)
