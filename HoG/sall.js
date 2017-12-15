@@ -719,8 +719,8 @@ function Fleet(b,e){
 						var Z=ships[n].speed*(1+b.storage[resourcesName.engine.id]/(5*mi))/(ships[y].speed*(1+this.storage[resourcesName.engine.id]/(5*mi)))*4.6/Math.log(ships[n].combatWeight)-2;
 						Z=2*Z/(1+Math.abs(2*Z));
 						Y+=.5*N[y]*(1.1-.9*Z)*Math.min(ea+v+this.piercingSingleShip(y)/100,1)*U;
-						var M=N[y]+this.ships[y]*Math.max(this.powerSingleShip(y)/(AmmoBonus)-b.shield(n),0)*(AmmoBonus)*ia*U;
-						N[y]+=this.ships[y]*this.powerSingleShip(y)*(AmmoBonus)*ia*U;
+						var M=N[y]+this.ships[y]*Math.max(this.powerSingleShip(y)/AmmoBonus-b.shield(n),0)*AmmoBonus*ia*U;
+						N[y]+=this.ships[y]*this.powerSingleShip(y)*ia*U;
 						W+=.5*M*(1.1-.9*Z)*Math.min(ea+v+this.piercingSingleShip(y)/100,1)*U
 					}
 					J[n]-=W;
@@ -756,7 +756,7 @@ function Fleet(b,e){
 						Z=2*Z/(1+Math.abs(2*Z)),
 						Y+=.5*V[y]*(1.1-.9*Z)*Math.min(ea+v+b.piercingSingleShip(y)/100,1)*U,
 						M=V[y]+b.ships[y]*Math.max(b.powerSingleShip(y)/AmmoBonus-this.shield(n),0)*AmmoBonus*ia*U,
-						V[y]+=b.ships[y]*b.powerSingleShip(y)*AmmoBonus*ia*U,
+						V[y]+=b.ships[y]*b.powerSingleShip(y)*ia*U,
 						W+=.5*M*(1.1-.9*Z)*Math.min(ea+v+b.piercingSingleShip(y)/100,1)*U;
 					G[n]-=W;
 					for(y=0;y<ships.length;y++)
