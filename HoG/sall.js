@@ -549,6 +549,15 @@ function Fleet(b,e){
 		return b
 	};
 	this.powerSingleShip=function(d){
+		var b=this.powerSingleShipWithoutExtras(d);
+		ammoBonus=1+(10*Math.log(1+this.storage[resourcesName.ammunition.id]/1E7)/Math.log(2)+20*Math.log(1+this.storage[resourcesName["u-ammunition"].id]/1E7)/Math.log(2)+60*Math.log(1+this.storage[resourcesName["t-ammunition"].id]/2E7)/Math.log(2));
+		b*=ammoBonus;
+		var u=this.ships[d]*ships[d].combatWeight/this.combatWeight();
+		var alkantaraBonus=u*(1+.1*Math.log(1+this.ships[14])/Math.log(2));
+		b*=alkantaraBonus;
+		return b;
+	};
+	this.powerSingleShipWithoutExtras=function(d){
 		var b=ships[d].power;
 		var e=ships[d].id;
 		if(5==e||6==e)
@@ -561,8 +570,6 @@ function Fleet(b,e){
 			for(var anzahlUpgrades=0;anzahlUpgrades<this.thoroidActivated;anzahlUpgrades++)
 				b*=1.1;
 		b*=this.expBonus("power");
-		AmmoBonus=1+(10*Math.log(1+this.storage[resourcesName.ammunition.id]/1E7)/Math.log(2)+20*Math.log(1+this.storage[resourcesName["u-ammunition"].id]/1E7)/Math.log(2)+60*Math.log(1+this.storage[resourcesName["t-ammunition"].id]/2E7)/Math.log(2));
-		b*=AmmoBonus
 		return b;
 	};
 	this.piercingSingleShip=function(d){
@@ -628,7 +635,7 @@ function Fleet(b,e){
 			for(e=0;e<ships.length;e++)
 				d=1/(ships[e].speed*(1+this.storage[resourcesName.engine.id]/(5*mi)))*4.6/Math.log(1500)-2,
 				d=.5*(1.1-2*d/(1+Math.abs(2*d))*.9),
-				0<this.ships[e]&&(b+=d*this.ships[e]*ships[e].power*this.expBonus("power")*this.ships[e]*ships[e].hp*this.expBonus("hp")/(1.001-ships[e].armorReduction(this.storage[resourcesName.armor.id]))*ships[e].valueMult);
+				0<this.ships[e]&&(b+=d*this.ships[e]*this.powerSingleShip(e)*this.ships[e]*this.hpSingleShip(e)/(1.001-ships[e].armorReduction(this.storage[resourcesName.armor.id]))*ships[e].valueMult);
 		return b
 	};
 	this.value=function(){
@@ -710,7 +717,7 @@ function Fleet(b,e){
 					var W=0,
 						Y=0,
 						ia=u*(1+.1*Math.log(1+this.ships[14])/Math.log(2)),
-						AmmoBonus=1+(10*Math.log(1+this.storage[resourcesName.ammunition.id]/1E7)/Math.log(2)+20*Math.log(1+this.storage[resourcesName["u-ammunition"].id]/1E7)/Math.log(2)+60*Math.log(1+this.storage[resourcesName["t-ammunition"].id]/2E7)/Math.log(2)),
+						ammoBonus=1+(10*Math.log(1+this.storage[resourcesName.ammunition.id]/1E7)/Math.log(2)+20*Math.log(1+this.storage[resourcesName["u-ammunition"].id]/1E7)/Math.log(2)+60*Math.log(1+this.storage[resourcesName["t-ammunition"].id]/2E7)/Math.log(2)),
 						ea=1/(1+Math.log(1+b.armorSingleShip(n)*(1+b.storage[resourcesName.armor.id]/(2*mi))/1E4)/Math.log(2)),
 						v=0,
 						U=1;
@@ -719,8 +726,8 @@ function Fleet(b,e){
 						var Z=ships[n].speed*(1+b.storage[resourcesName.engine.id]/(5*mi))/(ships[y].speed*(1+this.storage[resourcesName.engine.id]/(5*mi)))*4.6/Math.log(ships[n].combatWeight)-2;
 						Z=2*Z/(1+Math.abs(2*Z));
 						Y+=.5*N[y]*(1.1-.9*Z)*Math.min(ea+v+this.piercingSingleShip(y)/100,1)*U;
-						var M=N[y]+this.ships[y]*Math.max(this.powerSingleShip(y)/AmmoBonus-b.shield(n),0)*AmmoBonus*ia*U;
-						N[y]+=this.ships[y]*this.powerSingleShip(y)*ia*U;
+						var M=N[y]+this.ships[y]*Math.max(this.powerSingleShipWithoutExtras(y)-b.shield(n),0)*ammoBonus*ia*U;
+						N[y]+=this.ships[y]*this.powerSingleShip(y)*U;
 						W+=.5*M*(1.1-.9*Z)*Math.min(ea+v+this.piercingSingleShip(y)/100,1)*U
 					}
 					J[n]-=W;
@@ -746,7 +753,7 @@ function Fleet(b,e){
 					u=this.ships[n]*ships[n].combatWeight/this.combatWeight();
 					Y=W=0;
 					ia=u*(1+.1*Math.log(1+b.ships[14])/Math.log(2));
-					AmmoBonus=1+(10*Math.log(1+b.storage[resourcesName.ammunition.id]/1E7)/Math.log(2)+20*Math.log(1+b.storage[resourcesName["u-ammunition"].id]/1E7)/Math.log(2)+60*Math.log(1+b.storage[resourcesName["t-ammunition"].id]/2E7)/Math.log(2));
+					ammoBonus=1+(10*Math.log(1+b.storage[resourcesName.ammunition.id]/1E7)/Math.log(2)+20*Math.log(1+b.storage[resourcesName["u-ammunition"].id]/1E7)/Math.log(2)+60*Math.log(1+b.storage[resourcesName["t-ammunition"].id]/2E7)/Math.log(2));
 					ea=1/(1+Math.log(1+this.armorSingleShip(n)*(1+this.storage[resourcesName.armor.id]/(2*mi))/1E4)/Math.log(2));
 					v=0;
 					U=1;
@@ -755,8 +762,8 @@ function Fleet(b,e){
 						Z=ships[n].speed*(1+this.storage[resourcesName.engine.id]/(5*mi))/(ships[y].speed*(1+b.storage[resourcesName.engine.id]/(5*mi)))*4.6/Math.log(ships[n].combatWeight)-2,
 						Z=2*Z/(1+Math.abs(2*Z)),
 						Y+=.5*V[y]*(1.1-.9*Z)*Math.min(ea+v+b.piercingSingleShip(y)/100,1)*U,
-						M=V[y]+b.ships[y]*Math.max(b.powerSingleShip(y)/AmmoBonus-this.shield(n),0)*AmmoBonus*ia*U,
-						V[y]+=b.ships[y]*b.powerSingleShip(y)*ia*U,
+						M=V[y]+b.ships[y]*Math.max(b.powerSingleShipWithoutExtras(y)-this.shield(n),0)*ammoBonus*ia*U,
+						V[y]+=b.ships[y]*b.powerSingleShip(y)*U,
 						W+=.5*M*(1.1-.9*Z)*Math.min(ea+v+b.piercingSingleShip(y)/100,1)*U;
 					G[n]-=W;
 					for(y=0;y<ships.length;y++)
@@ -909,7 +916,7 @@ function Fleet(b,e){
 for(i=0;i<planets.length;i++)planets[i].fleets[0]=new Fleet(planets[i].civis,"shp"),planets[i].fleets.hub=new Fleet(planets[i].civis,"hub");var mf=new Fleet(1,"The Keeper");mf.ships[3]=100;mf.ships[4]=50;mf.ships[5]=35;mf.ships[8]=10;mf.ships[15]=3;mf.ships[16]=1;mf.exp=6;planets[planetsName.mexager].fleetPush(mf);mf=new Fleet(2,"Phantids Defence Fleet");
 mf.ships[25]=1;mf.exp=12;planets[planetsName.traumland].fleetPush(mf);mf=new Fleet(3,"Thlipsi Fleet");mf.ships[47]=8E3;mf.ships[51]=1;planets[planetsName.tsartasis].fleetPush(mf);mf=new Fleet(3,"Monaxia Fleet");mf.ships[47]=8E4;mf.ships[51]=1;mf.exp=80;planets[planetsName.mermorra].fleetPush(mf);mf=new Fleet(3,"Erimosi Fleet");mf.ships[47]=8E4;mf.ships[48]=1E3;mf.ships[51]=1;planets[planetsName.echoes].fleetPush(mf);mf=new Fleet(3,"Katastrofis Fleet");mf.ships[47]=8E4;mf.ships[48]=2E3;
 mf.ships[51]=1;planets[planetsName.kitrino].fleetPush(mf);mf=new Fleet(3,"Loimos Fleet");mf.ships[47]=3E5;mf.ships[48]=2E3;mf.ships[51]=10;planets[planetsName.kandi].fleetPush(mf);mf=new Fleet(3,"Polemos Fleet");mf.ships[47]=8E5;mf.ships[48]=5E3;mf.ships[49]=1E3;mf.ships[51]=10;mf.exp=80;planets[planetsName.ares].fleetPush(mf);mf=new Fleet(3,"Thanatos Fleet");mf.ships[47]=8E6;mf.ships[48]=8E3;mf.ships[49]=5E3;mf.ships[50]=1E3;mf.ships[51]=25;mf.exp=100;planets[planetsName.xora2].fleetPush(mf);
-mf=new Fleet(3,"Anastasi Fleet");mf.ships[47]=3E7;mf.ships[48]=15E3;mf.ships[49]=1E3;mf.ships[50]=2E3;mf.ships[51]=50;mf.ships[52]=1;mf.exp=150;planets[planetsName.xora].fleetPush(mf);mf=new Fleet(4,"Posirion Defence Fleet");mf.ships[41]=750;mf.ships[46]=15;planets[planetsName.posirion].fleetPush(mf);mf=new Fleet(4,"Traurig Defence Fleet");mf.ships[41]=3E3;mf.ships[46]=60;planets[planetsName.traurig].fleetPush(mf);mf=new Fleet(4,"Diplomatic Fleet");mf.ships[41]=5E3;mf.ships[42]=400;mf.ships[46]=150;
+mf=new Fleet(3,"Anastasi Fleet");mf.ships[47]=1E7;mf.ships[48]=15E3;mf.ships[49]=8E3;mf.ships[50]=2E3;mf.ships[51]=50;mf.ships[52]=1;mf.exp=150;planets[planetsName.xora].fleetPush(mf);mf=new Fleet(4,"Posirion Defence Fleet");mf.ships[41]=750;mf.ships[46]=15;planets[planetsName.posirion].fleetPush(mf);mf=new Fleet(4,"Traurig Defence Fleet");mf.ships[41]=3E3;mf.ships[46]=60;planets[planetsName.traurig].fleetPush(mf);mf=new Fleet(4,"Diplomatic Fleet");mf.ships[41]=5E3;mf.ships[42]=400;mf.ships[46]=150;
 planets[planetsName.epsilon].fleetPush(mf);mf=new Fleet(4,"Zhura Defence Fleet");mf.ships[41]=1E4;mf.ships[42]=1E3;mf.ships[46]=250;mf.ships[43]=10;planets[planetsName.zhura].fleetPush(mf);mf=new Fleet(4,"Juini Shadow");mf.ships[41]=2E4;mf.ships[42]=2E3;mf.ships[46]=500;mf.ships[45]=10;mf.exp=50;planets[planetsName.bhara].fleetPush(mf);mf=new Fleet(4,"Azure Fleet");mf.ships[41]=5E4;mf.ships[42]=5E3;mf.ships[46]=2E3;mf.ships[44]=5;mf.exp=80;planets[planetsName.caerul].fleetPush(mf);
 mf=new Fleet(5,"Purification Fleet");mf.ships[33]=1E3;mf.ships[34]=1;planets[planetsName.miselquris].fleetPush(mf);mf=new Fleet(5,"Konquista");mf.ships[33]=3E3;mf.ships[35]=1;planets[planetsName.kurol].fleetPush(mf);mf=new Fleet(5,"The Last Stand");mf.ships[33]=5E3;mf.ships[36]=1;planets[planetsName.antaris].fleetPush(mf);mf=new Fleet(5,"Styx Legion");mf.ships[33]=1E4;mf.ships[37]=1;mf.ships[38]=1;mf.exp=50;planets[planetsName.teleras].fleetPush(mf);mf=new Fleet(5,"Hell Warden");mf.ships[33]=3E3;
 mf.ships[40]=100;mf.ships[39]=1;mf.exp=50;planets[planetsName.jabir].fleetPush(mf);mf=new Fleet(6,"I.R.C. S.E.A.S. F.L.E.E.T.");mf.ships[29]=1;mf.ships[30]=1;mf.ships[31]=1;mf.ships[32]=1;mf.exp=22;planets[planetsName.zelera].fleetPush(mf);mf=new Fleet(7,"The Ugly");mf.ships[20]=30;mf.ships[23]=1;planets[planetsName.uanass].fleetPush(mf);mf=new Fleet(7,"The Bad");mf.ships[19]=150;mf.ships[22]=1;planets[planetsName.uanass].fleetPush(mf);mf=new Fleet(7,"The Good");mf.ships[20]=50;mf.ships[21]=1;planets[planetsName.uanass].fleetPush(mf);
