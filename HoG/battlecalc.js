@@ -88,12 +88,11 @@ document.addEventListener("DOMContentLoaded", function() {
 		if(friend) {
 			var bonus = fleetBonus(friend);
 			var fleetWeight = friend.combatWeight();
-			shipStats.Power *= bonus.power;
-			shipStats.Armor *= bonus.armor;
-			/*edits start*/
+			shipStats.Power = friend.powerSingleShip(ship.id);
+			shipStats.Armor = friend.armorSingleShip(ship.id);
+			shipStats.HP = friend.hpSingleShip(ship.id);
 			shipStats.Shield *= bonus.shield;
-			/*edits end*/
-			shipStats["Piercing Power"] *= bonus.power;
+			shipStats["Piercing Power"] = shipStats.Power * Math.min((friend.piercingSingleShip(ship.id) || 0) / 100, 1);
 			shipStats.Toughness = ship.hp / (1 - dmgred(shipStats.Armor));
 			shipStats.Speed *= bonus.speed;
 			shipStats.Duration = (1 + fleetWeight / ship.combatWeight);
@@ -105,12 +104,12 @@ document.addEventListener("DOMContentLoaded", function() {
 				if(n == 0) return {};
 				var enemyShip = ships[k];
 				var result = {};
-				var shipDR = Math.min(shipStats.HP / shipStats.Toughness + (enemyShip.piercing || 0) / 100, 1);
-				var enemyDR = Math.min(1 - dmgred(enemyShip.armor * bonus.armor) + (shipStats.Piercing) / 100, 1);
-				result.power = n * enemyShip.power * bonus.power;
+				var shipDR = Math.min(shipStats.HP / shipStats.Toughness + (foe.piercingSingleShip(k) || 0) / 100, 1);
+				var enemyDR = Math.min(1 - dmgred(foe.armorSingleShip(k)) + (foe.piercingSingleShip(k)) / 100, 1);
+				result.power = n * foe.powerSingleShip(k);
 				result.harm = speedred(shipStats.Speed, enemyShip.speed * bonus.speed, shipStats.Weight) * result.power * shipDR / shipStats.HP;
-				result.toughness = n * enemyShip.hp / (1 - dmgred(enemyShip.armor * bonus.armor));
-				var piercingBonus = result.toughness * enemyDR / (n * enemyShip.hp);
+				result.toughness = n * foe.hpSingleShip(k) / (1 - dmgred(foe.armorSingleShip(k)));
+				var piercingBonus = result.toughness * enemyDR / (n * foe.hpSingleShip(k));
 				var modifiedPower = speedred(enemyShip.speed * bonus.speed, shipStats.Speed, enemyShip.combatWeight) * piercingBonus * shipStats.Power;
 				result.effect = result.toughness / modifiedPower;
 				if(isNaN(result.harm)) result.harm = Infinity;
@@ -201,32 +200,48 @@ document.addEventListener("DOMContentLoaded", function() {
 		var bonus = {
 			power: 1,
 			armor: 1,
+			hp: 1,
 			speed: 1,
 			shield: 1,
 		};
-		["ammunition", "u-ammunition", "t-ammunition"].map(function(name) {
-			var resource = resourcesName[name];
-			bonus.power += calcBonus[name](fleet.storage[resource.id]);
-		});
-		bonus.power *= (1 + .1 * Math.log(1 + fleet.ships[14]) / Math.log(2));
-		["armor"].map(function(name) {
-			var resource = resourcesName[name];
-			bonus.armor += calcBonus[name](fleet.storage[resource.id]);
-		});
-		["engine"].map(function(name) {
-			var resource = resourcesName[name];
-			bonus.speed += calcBonus[name](fleet.storage[resource.id]);
-		});
-		
-		/*edits start*/
-		["exp"].map(function(name) {
-			var resource = resourcesName[name];
-			var exp = parseInt(document.getElementsByName("exp")[0].value);
-			if(isNaN(exp)) exp = 0;
-			else if(exp>MAX_FLEET_EXPERIENCE) exp = 5000;
-			bonus.shield += calcBonus[name](exp);
-		});
-		/*edits end*/
+		if(fleet.civis==0) {
+			["ammunition", "u-ammunition", "t-ammunition"].map(function(name) {
+				var resource = resourcesName[name];
+				bonus.power += calcBonus[name](fleet.storage[resource.id]);
+			});
+			bonus.power *= (1 + .1 * Math.log(1 + fleet.ships[14]) / Math.log(2));
+			["armor"].map(function(name) {
+				var resource = resourcesName[name];
+				bonus.armor += calcBonus[name](fleet.storage[resource.id]);
+			});
+			["engine"].map(function(name) {
+				var resource = resourcesName[name];
+				bonus.speed += calcBonus[name](fleet.storage[resource.id]);
+			});
+			
+			/*edits start*/
+			["exp"].map(function(name) {
+				var exp = parseInt(document.getElementsByName("exp")[0].value);
+				if(isNaN(exp)) exp = 0;
+				else if(exp>MAX_FLEET_EXPERIENCE) exp = MAX_FLEET_EXPERIENCE;
+				bonus.power += calcBonus[name](exp);
+				bonus.armor += calcBonus[name](exp);
+				bonus.hp += calcBonus[name](exp);
+				bonus.shield += calcBonus[name](exp);
+			});
+			/*edits end*/
+		}
+		if(fleet.civis==1) {
+			["Enemy Exp"].map(function(name) {
+				var enemyExp = parseInt(document.getElementsByName("Enemy Exp")[0].value);
+				if(isNaN(enemyExp)) enemyExp = 0;
+				else if(enemyExp>MAX_FLEET_EXPERIENCE) enemyExp = MAX_FLEET_EXPERIENCE;
+				bonus.power += calcBonus[name](enemyExp);
+				bonus.armor += calcBonus[name](enemyExp);
+				bonus.hp += calcBonus[name](enemyExp);
+				bonus.shield += calcBonus[name](enemyExp);
+			});
+		}
 		
 		return bonus;
 	}
@@ -248,7 +263,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			power += n * ship.power * bonus.power;
 			piercepower += power * (ship.piercing || 0) / 100,
 			armor += n * ship.armor * bonus.armor;
-			hp += n * ship.hp;
+			hp += n * ship.hp * bonus.hp;
 			var shiptough = ship.hp / (1 - dmgred(ship.armor * bonus.armor));
 			var piercingbonus = Math.min(1 + 10 * (ship.piercing || 0) / 100, 10);
 			threat += (n+1) * ship.power * bonus.power;
@@ -345,7 +360,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			
 		return parseInt(value) || 0;
 	}
-
+	
 	var saveData;
 	try {
 		saveData = history.state || deserialize(window.location.hash.substring(1)) || JSON.parse(localStorage.getItem("battlecalc-persist")) || {};
@@ -435,16 +450,8 @@ document.addEventListener("DOMContentLoaded", function() {
 		"t-ammunition": function(v) { return 60 * Math.log(1 + v / 2E7)/Math.log(2); },
 		"armor": function(v) { return v / 2e6; },
 		"engine": function(v) { return v / 5e6; },
-		"exp": function(v) { return v/1000;},
-	};
-	
-	var calcBonus = {
-		"ammunition": function(v) { return 10 * Math.log(1 + v / 1E7)/Math.log(2); },
-		"u-ammunition": function(v) { return 20 * Math.log(1 + v / 1E7)/Math.log(2); },
-		"t-ammunition": function(v) { return 60 * Math.log(1 + v / 2E7)/Math.log(2); },
-		"armor": function(v) { return v / 2e6; },
-		"engine": function(v) { return v / 5e6; },
-		"exp": function(v) { return v/1000;},
+		"exp": function(v) { return v/2000;},
+		"Enemy Exp": function(v) { return v/2000;},
 	};
 
 	stufflist.statBlock = span();
@@ -593,16 +600,20 @@ document.addEventListener("DOMContentLoaded", function() {
 				input.showValue.innerText = "+"+beauty(calcBonus[input.resource.name](warfleet.storage[input.resource.id])) + "x";
 			} else if(input.research) {
 				var newLevel = val;
-				while(input.research.level > newLevel) { input.research.level--; input.research.unbonus(); }
-				while(input.research.level < newLevel) { input.research.level++; input.research.bonus(); }
+				var researchId = input.research.id;
+				if(researchId=="artofwar")
+					warfleet.qurisArtOfWar = newLevel;
+				if(researchId=="karan_artofwar")
+					warfleet.karanArtOfWar = newLevel;
 			} else if(input.artifact) {
 				var newPossession = val;
-				while(input.artifact.activated > newPossession) { input.artifact.activated--; input.artifact.unaction(); }
-				while(input.artifact.activated < newPossession) { input.artifact.activated++; input.artifact.action(); }
-				/*
-				if(input.artifact.activated == true && newPossession == false) { input.artifact.activated = false; input.artifact.unaction(); }
-				if(input.artifact.activated == false && newPossession == true) { input.artifact.activated = true; input.artifact.action(); }
-				*/
+				var artifactId = input.artifact.id;
+				if(artifactId=="thoroid")
+					warfleet.thoroidActivated=newPossession;
+				if(artifactId=="quris_value")
+					warfleet.qurisValueActivated=newPossession;
+				if(artifactId=="quris_honor")
+					warfleet.qurisHonorActivated=newPossession;
 			}
 			if(val > 0) saveData.bonuses[input.name] = val;
 		});

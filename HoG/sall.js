@@ -57,7 +57,7 @@ artifacts.push(new Artifact({id:"thoroid",name:"Mysterious Thoroid",description:
 artifacts.push(new Artifact({id:"magnet",name:"Self Levitating Magnet",description:"This powerful magnet boosts production of <span style='blue_text'>Silicon</span> by +25%"}));artifacts.push(new Artifact({id:"necklace",name:"Utoma's Necklace",description:"This powerful magnet boosting production of <span style='blue_text'>Silicon</span> by +25%"}));artifacts.push(new Artifact({id:"ancient",name:"Idol of Ancient Haleans",description:"The following inscription is carved in this relic: Mihra min mi lura krasusia ruthen, Muhra mun mu lura silinusia serul, pachra pan pa lura cininusia pharun"}));
 artifacts.push(new Artifact({id:"shard",name:"Emerald Shard",description:"This powerful magnet boosting production of <span style='blue_text'>Silicon</span> by +25%"}));artifacts.push(new Artifact({id:"book_of_life",name:"Juini's Book of Life",description:"This powerful magnet boosting production of <span style='blue_text'>Silicon</span> by +25%"}));artifacts.push(new Artifact({id:"stone",name:"Ling-Wa Stone",description:"The rosetta stone of galactic era. Some inscription are still visible: us - iron - ?,  krasnus - ? - rodj, cinii - blue - ?,  mi - ? - un, ma - ? - dva, mu - three - ?, lura - million - ?"}));
 artifacts.push(new Artifact({id:"shard",name:"Shard ",description:"This powerful magnet boosting production of <span style='blue_text'>Silicon</span> by +25%"}));
-artifacts.push(new Artifact({id:"quris_value",name:"Quris Medal of Value",description:"A reward for your military value, a great honor for Quris. <span style='blue_text'>+50%</span> to all ships armor",action:function(){for(var b=0;b<game.ships.length;b++)game.ships[b].armor*=1.5},unaction:function(){for(var b=0;b<game.ships.length;b++)game.ships[b].armor/=1.5}}));
+artifacts.push(new Artifact({id:"quris_value",name:"Quris Medal of Value",description:"A reward for your military value, a great honor for Quris. <span style='blue_text'>+50%</span> to all ships HP",action:function(){for(var b=0;b<game.ships.length;b++)game.ships[b].hp*=1.5},unaction:function(){for(var b=0;b<game.ships.length;b++)game.ships[b].hp/=1.5}}));
 artifacts.push(new Artifact({id:"quris_honor",name:"Quris Medal of Honor",description:"A reward for your military honor that earns you the respect of Quris people. <span style='blue_text'>+50%</span> to all ships shields",action:function(){for(var b=0;b<game.ships.length;b++)game.ships[b].shield*=1.5},unaction:function(){for(var b=0;b<game.ships.length;b++)game.ships[b].shield/=1.5}}));for(var artifactsName=[],a=0;a<artifacts.length;a++)artifactsName[artifacts[a].id]=a;
 var alphanumeric="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789012345678901234567890123456789",numeric="0123456789";function randomString(b){b=b||8;for(var e="",d=0;d<b;d++)e+=alphanumeric.charAt(Math.floor(Math.random()*alphanumeric.length));return e}function randomNumericString(b){b=b||6;for(var e="",d=0;d<b;d++)e+=numeric.charAt(Math.floor(Math.random()*numeric.length));return e}
 function Article(b,e,d,h){this.name=b;this.type=e;this.cost=[];for(b=0;b<resNum;b++)this.cost[b]=0;for(b=0;b<h.length;b++)this.cost[h[b][0]]=h[b][1];this.prob=function(){};this.effect=function(){};this.desc=d}var questNames=[];
@@ -438,36 +438,478 @@ sss=new Ship({weapon:"ballistic",name:"Nabonidus",type:"Destroyer",req:4,power:1
 sss=new Ship({weapon:"antimatter",name:"Koroleva",type:"Capital Ship",resReq:{quantum:3},req:99,shields:mi,power:300*mi,armor:50*mi,speed:.035,storage:100*mi,fuel:"hydrogen",weight:5*mi,hp:5*bi,cost:{iron:200*bi,steel:2*tri,titanium:50*bi,nanotubes:500*mi,ammunition:bi,"full battery":350*mi,"u-ammunition":100*mi,armor:10*mi,robots:mi,engine:3E5,antimatter:1E4},special:{desc:"<span style='float:left;margin-left:16px;' class='red_text'>The Anger of Perseus will enter a</span><span></span><br><span style='float:left;margin-left:16px;' class='red_text'>'berserk mode' when the player's OR</span><span></span><br><span style='float:left;margin-left:16px;' class='red_text'>the enemy fleet's HP drop below 15%.</span><span></span><br><span style='float:left;margin-left:16px;' class='red_text'>In this mode, your fleet will get +50%</span><span></span><br><span style='float:left;margin-left:16px;' class='red_text'>piercing power and will do 50% more</span><span></span><br><span style='float:left;margin-left:16px;' class='red_text'>damage for each Anger of Perseus</span><br>"}});
 civis[0].ships.push(sss);ships.push(sss);for(s=0;s<ships.length;s++)for(r=0;r<resNum;r++)0<ships[s].cost[r]&&(resources[r].ship=!0);for(i=0;i<256-ships[i].length;i++)ships.push(new Ship("placeholder","starship",0,0,0,0,1E4,!0));var shipTypes={};for(i=0;i<ships.length;i++)ships[i].id=i;var typeCount=0;for(i=0;i<ships.length;i++)shipTypes[ships[i].type]?shipTypes[ships[i].type].push(ships[i].id):(shipTypes[ships[i].type]=[],shipTypes[ships[i].type].push(ships[i].id),typeCount++);
 function ramp(b){return 0<b?b:0}function printShips(){for(var b=0;b<ships.length;b++)console.log(b+" - "+ships[b].name)}
-function Fleet(b,e){this.type="normal";this.name=e||"";this.civis=b;this.ships=[];for(var d=0;d<ships.length;d++)this.ships[d]=0;this.storage=[];for(d=0;d<resNum;d++)this.storage[d]=0;this.autoMap=[];this.autoRes=[];this.autoPct=[];for(var h=0;2>h;h++)for(this.autoRes[h]=[],d=0;d<resNum;d++)this.autoRes[h][d]=0,this.autoPct[d]=!1;this.bestCluster=function(){for(var b=0,d=new Fleet(this.civis,""),e=0,h=0;h<ships.length;h++)this.ships[h]&&(this.ships[h]*ships[h].maxStorage*ships[h].speed>this.ships[e]*
-ships[e].maxStorage*ships[e].speed&&(e=h),b++);if(0==b)return null;d.ships[e]=this.ships[e];this.ships[e]=0;d.onlyS=e;return d};this.originalStrength=1;this.totalTime=this.source=this.route=this.origin=this.nextPlanet=this.lastPlanet=this.hop=this.destination=this.departureTime=this.arrivalTime=0;this.type="orbit";this.exp=0;this.speed=function(){for(var b=1E7,d=0;d<this.ships.length;d++)0<this.ships[d]&&ships[d].speed<b&&(b=ships[d].speed);b*=1+this.storage[resourcesName.engine.id]/1E3*2E-4;b=Math.min(b,
-100);0==this.shipNum()&&(b=0);return b};this.travelSpeed=function(){for(var b=1E7,d=0;d<this.ships.length;d++)0<this.ships[d]&&ships[d].travelSpeed<b&&(b=ships[d].travelSpeed);b*=1+this.storage[resourcesName.engine.id]/1E3*2E-4;b=Math.min(b,100);0==this.shipNum()&&(b=0);return b};this.fusion=function(b){for(var d=0;d<ships.length;d++)this.ships[d]+=b.ships[d],b.ships[d]=0;for(d=0;d<resNum;d++)this.storage[d]+=b.storage[d],b.storage[d]=0;this.addExp(b.exp)};this.addExp=function(b){this.exp=Math.min(this.exp+
-b,MAX_FLEET_EXPERIENCE)};this.fleetType=function(){for(var b=0,d=0;d<ships.length;d++)0<this.ships[d]&&ships[d].weight*this.ships[d]>ships[b].weight*this.ships[b]&&(b=d);return"Colonial Ship"==ships[b].type?"Colonial Fleet":"Miner Ship"==ships[b].type?"Miner Fleet":"Cargoship"==ships[b].type?"Cargo Fleet":1==this.shipNum()&&2<=this.speed()?"Scout Fleet":"War Fleet"};this.usedStorage=function(){for(var b=0,d=0;d<resNum;d++)b+=this.storage[d];return b};this.availableStorage=function(){return this.maxStorage()-
-this.usedStorage()};this.load=function(b,d){return!(0>d)&&d<=this.availableStorage()?(this.storage[b]+=d,!0):!1};this.unloadDelivery=function(b){for(var d=0;d<resNum;d++)planets[b].resources[d]+=this.storage[d],this.storage[d]=0};this.unload=function(b){for(var d=0;d<resNum;d++)planets[b].resourcesAdd(d,this.storage[d]),this.storage[d]=0};this.unloadAuto=function(b,d,e){for(var g=0;g<resNum;g++)planets[d].resources[g]+=this.storage[g]*e,planets[b].resourcesAdd(g,-this.storage[g]*(e-1)),this.storage[g]=
-0};this.unloadSingle=function(b,d){return!(0>d)&&d<=this.storage[b]?(this.storage[b]-=d,!0):!1};this.maxStorage=function(){for(var b=0,d=0;d<ships.length;d++)b+=ships[d].maxStorage*this.ships[d];return b};this.shipNum=function(){for(var b=0,d=0;d<ships.length;d++)b+=this.ships[d];return b};this.expBonus=function(b){return{power:1+5E-4*this.exp,hp:1+5E-4*this.exp,armor:1+5E-4*this.exp,shield:1+5E-4*this.exp}[b]};this.power=function(){for(var b=0,d=0;d<ships.length;d++)b+=ships[d].power*this.ships[d];
-b*=(1+10*Math.log(1+this.storage[resourcesName.ammunition.id]/(10*mi))/Math.log(2)+20*Math.log(1+this.storage[resourcesName["u-ammunition"].id]/(10*mi))/Math.log(2)+60*Math.log(1+this.storage[resourcesName["t-ammunition"].id]/(20*mi))/Math.log(2))*(1+.1*Math.log(1+this.ships[14])/Math.log(2));return b*this.expBonus("power")};this.armor=function(){for(var b=0,d=0;d<ships.length;d++)b+=ships[d].armor*this.ships[d];b*=1+this.storage[resourcesName.armor.id]/1E3*5E-4;return b*this.expBonus("armor")};this.hp=
-function(){for(var b=0,d=0;d<ships.length;d++)b+=ships[d].hp*this.ships[d];return b*this.expBonus("hp")};this.rawValue=function(){for(var b=0,d=0,e=0;e<ships.length;e++)0<this.ships[e]&&d++;if(0<d)for(e=0;e<ships.length;e++)d=1/(ships[e].speed*(1+this.storage[resourcesName.engine.id]/(5*mi)))*4.6/Math.log(1500)-2,d=.5*(1.1-2*d/(1+Math.abs(2*d))*.9),0<this.ships[e]&&(b+=d*this.ships[e]*ships[e].power*this.expBonus("power")*this.ships[e]*ships[e].hp*this.expBonus("hp")/(1.001-ships[e].armorReduction(this.storage[resourcesName.armor.id]))*
-ships[e].valueMult);return b};this.value=function(){var b=this.rawValue();b=100*(Math.log(1+b/1)+Math.log(1+(10*Math.log(1+this.storage[resourcesName.ammunition.id]/1E7)/Math.log(2)+20*Math.log(1+this.storage[resourcesName["u-ammunition"].id]/1E7)/Math.log(2)+60*Math.log(1+this.storage[resourcesName["t-ammunition"].id]/2E7)/Math.log(2))/1)+Math.log(1+.1*Math.log(1+this.ships[14])/Math.log(2)/1))/Math.log(1.1);return 0==b?1:b};this.weight=function(){for(var b=0,d=0;d<ships.length;d++)b+=ships[d].weight*
-this.ships[d];return b};this.combatWeight=function(){for(var b=0,d=0;d<ships.length;d++)b+=ships[d].combatWeight*this.ships[d];return b};this.totalWeight=function(){return this.weight()+this.usedStorage()};this.battleProb=function(b){var d=ramp(b.hp()/(this.power()-b.armor()-.01));b=ramp(this.hp()/(1.1*b.power()-this.armor()-.01));d/=b+.01;return Math.random()<d*d/4?1:0};this.battle=function(b,d){var e="<span style='font-size:90%;'>",h=this,g=b;this.civis==game.id&&(h=b,g=this);var l=g.value(),E=
-h.value(),F=!1;d&&(F=!0);var z=0,u=b.hp(),y=this.hp(),I=b.hp(),A=this.hp();var J=[];for(var B=[],n=0;n<ships.length;n++)B[n]=b.ships[n],J[n]=0<ships[n].hp?b.ships[n]*ships[n].hp*b.expBonus("hp"):0;var G=[],ca=[];for(n=0;n<ships.length;n++)ca[n]=this.ships[n],G[n]=0<ships[n].hp?this.ships[n]*ships[n].hp*this.expBonus("hp"):0;for(var T=Array(this.ships.length),aa=0;aa<this.ships.length;aa++)T[n]=0;var N=Array(ships.length);for(n=0;n<ships.length;n++)N[n]=0;var V=Array(ships.length);for(n=0;n<ships.length;n++)V[n]=
-0;b.maxStorage();this.maxStorage();aa=b.usedStorage();var ma=this.usedStorage(),ha=[],na=[],oa=[],ja=[];for(n=0;n<ships.length;n++)oa[n]=this.ships[n],ja[n]=b.ships[n],ha[n]=this.ships[n],na[n]=b.ships[n];for(var D=!1,la=!1;0<u&&0<y&&256>z;){var ba="",X=20;for(n=u=0;n<ships.length;n++)0<J[n]&&u++;for(n=0;n<ships.length;n++);for(n=0;n<ships.length;n++)if(0<J[n]){u=b.ships[n]*ships[n].combatWeight/b.combatWeight();var W=0,Y=0,ia=u*(1+.1*Math.log(1+this.ships[14])/Math.log(2)),Q=10*Math.log(1+this.storage[resourcesName.ammunition.id]/
-1E7)/Math.log(2)+20*Math.log(1+this.storage[resourcesName["u-ammunition"].id]/1E7)/Math.log(2)+60*Math.log(1+this.storage[resourcesName["t-ammunition"].id]/2E7)/Math.log(2),S={power:b.expBonus("power"),armor:b.expBonus("armor"),hp:b.expBonus("hp"),shield:b.expBonus("shield")},O={power:this.expBonus("power"),armor:this.expBonus("armor"),hp:this.expBonus("hp"),shield:this.expBonus("shield")},ea=1/(1+Math.log(1+ships[n].armor*S.armor*(1+b.storage[resourcesName.armor.id]/(2*mi))/1E4)/Math.log(2)),v=0,
-U=1;la&&(v=.5,U=1+.5*this.ships[72]);for(y=0;y<ships.length;y++){var Z=ships[n].speed*(1+b.storage[resourcesName.engine.id]/(5*mi))/(ships[y].speed*(1+this.storage[resourcesName.engine.id]/(5*mi)))*4.6/Math.log(ships[n].combatWeight)-2;Z=2*Z/(1+Math.abs(2*Z));Y+=.5*N[y]*(1.1-.9*Z)*Math.min(ea+v+ships[y].piercing/100,1)*U;var M=N[y]+this.ships[y]*Math.max(ships[y].power*O.power-ships[n].shield*S.shield,0)*(1+Q)*ia*U;N[y]+=this.ships[y]*ships[y].power*O.power*(1+Q)*ia*U;W+=.5*M*(1.1-.9*Z)*Math.min(ea+
-v+ships[y].piercing/100,1)*U}J[n]-=W;for(y=0;y<ships.length;y++)N[y]=0>J[n]?-J[n]/(1+W)*N[y]:0;ba+="Attacker <span class='blue_text' style='font-size:100%'>"+ships[n].name+"</span> suffer <span class='blue_text' style='font-size:100%'>"+beauty(W)+"</span> damage, "+beauty(Y)+" from previous cluster, <span class='blue_text' style='font-size:100%'>"+Math.floor(1E4*u)/100+"%</span> weight<br>";X+=24}ba+="<br>";X+=24;for(n=u=0;n<ships.length;n++)0<G[n]&&u++;for(n=0;n<ships.length;n++);for(n=0;n<ships.length;n++)if(0<
-G[n]){u=this.ships[n]*ships[n].combatWeight/this.combatWeight();Y=W=0;ia=u*(1+.1*Math.log(1+b.ships[14])/Math.log(2));Q=10*Math.log(1+b.storage[resourcesName.ammunition.id]/1E7)/Math.log(2)+20*Math.log(1+b.storage[resourcesName["u-ammunition"].id]/1E7)/Math.log(2)+60*Math.log(1+b.storage[resourcesName["t-ammunition"].id]/2E7)/Math.log(2);O={power:b.expBonus("power"),armor:b.expBonus("armor"),hp:b.expBonus("hp"),shield:b.expBonus("shield")};S={power:this.expBonus("power"),armor:this.expBonus("armor"),
-hp:this.expBonus("hp"),shield:this.expBonus("shield")};ea=1/(1+Math.log(1+ships[n].armor*S.armor*(1+this.storage[resourcesName.armor.id]/(2*mi))/1E4)/Math.log(2));v=0;U=1;D&&(v=.5,U=1+.5*b.ships[72]);for(y=0;y<ships.length;y++)Z=ships[n].speed*(1+this.storage[resourcesName.engine.id]/(5*mi))/(ships[y].speed*(1+b.storage[resourcesName.engine.id]/(5*mi)))*4.6/Math.log(ships[n].combatWeight)-2,Z=2*Z/(1+Math.abs(2*Z)),Y+=.5*V[y]*(1.1-.9*Z)*Math.min(ea+v+ships[y].piercing/100,1)*U,M=V[y]+b.ships[y]*Math.max(ships[y].power*
-O.power-ships[n].shield*S.shield,0)*(1+Q)*ia*U,V[y]+=b.ships[y]*ships[y].power*O.power*(1+Q)*ia*U,W+=.5*M*(1.1-.9*Z)*Math.min(ea+v+ships[y].piercing/100,1)*U;G[n]-=W;for(y=0;y<ships.length;y++)V[y]=0>G[n]?-G[n]/(1+W)*V[y]:0;ba+="Defender <span class='blue_text' style='font-size:100%'>"+ships[n].name+"</span> suffer <span class='blue_text' style='font-size:100%'>"+beauty(W)+"</span> damage, "+beauty(Y)+" from previous cluster, <span class='blue_text' style='font-size:100%'>"+Math.floor(1E4*u)/100+
-"%</span> weight<br>";X+=24}ba+="<br>";ba+="<br>";X+=24;X+=24;Y="";for(n=0;n<ships.length;n++)b.ships[n]=0<J[n]?parseInt(Math.ceil(J[n]/(ships[n].hp*b.expBonus("hp")))):0,0<b.ships[n]&&(Y+="Attacker <span class='blue_text' style='font-size:100%'>"+ships[n].name+"</span> remains <span class='blue_text' style='font-size:100%'>"+b.ships[n]+" </span>(-"+Math.floor(1E4*(1-b.ships[n]/na[n]))/100+"% of previous round, -"+Math.floor(1E4*(1-b.ships[n]/ja[n]))/100+"% of total)<br>",X+=24),na[n]=b.ships[n];
-X+=24;W="";for(n=0;n<ships.length;n++)this.ships[n]=0<G[n]?parseInt(Math.ceil(G[n]/(ships[n].hp*this.expBonus("hp")))):0,0<this.ships[n]&&(W+="Defender <span class='blue_text' style='font-size:100%'>"+ships[n].name+"</span> remains <span class='blue_text' style='font-size:100%'>"+this.ships[n]+"</span> (-"+Math.floor(1E4*(1-this.ships[n]/ha[n]))/100+"% of previous round, -"+Math.floor(1E4*(1-this.ships[n]/oa[n]))/100+"% of total)<br>",X+=24),ha[n]=this.ships[n];u=b.hp();y=this.hp();gameSettings.hpreport&&
-(Y="<span class='blue_text' style='font-size:100%'>HP left (%): "+Math.floor(u/I*1E4)/100+"</span><br>"+Y,W="<span class='blue_text' style='font-size:100%'>HP left (%): "+Math.floor(y/A*1E4)/100+"</span><br>"+W);(.15>=u/I||.15>=y/A)&&0<b.ships[72]&&(D=!0,Y="<span class='red_text' style='font-size:100%'>Attacker is in berserk!</span><br>"+Y);(.15>=y/A||.15>=u/I)&&0<this.ships[72]&&(la=!0,W="<span class='red_text' style='font-size:100%'>Defender is in berserk!</span><br>"+W);ba+=Y+"<br>"+W;z++;F||b.addExp(1);
-e+="<li id='turn"+z+"' name='"+z+"' class='button' style='height:"+X+"px;'><span class='blue_text' style='font-size:120%;'>BATTLE TURN "+z+"</span><br><br><span class='white_text'>"+ba+"</span></li>"}J=0;n=civis[h.civis].influence()/game.influence();if(1>n&&g.power()>2*h.power()&&g.armor()>2*h.armor()&&g.hp()>2*h.hp()&&(n=Math.min(1-n,.3),Math.random()<n)){J=n/3;G=!1;for(n=0;n<ships.length;n++)T[n]=Math.floor(J*h.ships[n]),0<T[n]&&(G=!0);G?console.log("captured something"):J=0}X=20;ba="";if(0<J)for(n=
-0;n<ships.length;n++)T[n]=Math.floor(J*h.ships[n]),0<T[n]&&(ba+="<span class='blue_text' style='font-size:100%'>"+ships[n].name+"</span> captured: <span class='blue_text' style='font-size:100%'>"+T[n]+"</span><br>",X+=20);20<X&&(e+="<li id='turnCAPTURE' name='capture' class='button' style='height:120px;'><span class='blue_text' style='font-size:120%;'>Your Fleet captured "+Math.floor(100*J)/100+"% of enemy ships: </span><br><br><span class='white_text'>"+ba+"</span></li>");G=!1;0<b.shipNum()&&0<this.shipNum()&&
-(G=!0);if(F)for(n=0;n<ships.length;n++)b.ships[n]=B[n],this.ships[n]=ca[n];else{this.storage[resourcesName.ammunition.id]=0;this.storage[resourcesName["u-ammunition"].id]=0;this.storage[resourcesName["t-ammunition"].id]=0;this.storage[resourcesName.armor.id]*=.5;b.storage[resourcesName.ammunition.id]=0;b.storage[resourcesName["u-ammunition"].id]=0;b.storage[resourcesName["t-ammunition"].id]=0;b.storage[resourcesName.armor.id]*=.5;B=this.maxStorage()/ma;ca=b.maxStorage()/aa;for(aa=0;aa<resNum;aa++)1>
-B&&(this.storage[aa]=Math.floor(this.storage[aa]*B)),1>ca&&(b.storage[aa]=Math.floor(b.storage[aa]*ca));if(0<J)for(n=0;n<ships.length;n++)h.ships[n]-=T[n],g.ships[n]+=T[n]}h=0;I=1==z&&0>=u&&0>=y?b.speed()>=this.speed()?"atk":"def":u/I>=y/A?"atk":"def";F||G||("def"==I?b.exp=Math.floor(b.exp/2):.9<l/(E+1)&&(h=Math.ceil(this.exp/2),b.addExp(h),this.exp=Math.floor(this.exp/2)));l="def"==I?this:b;G?(e+="<li id='turnEND' name='battle_end' class='button' style='height:120px;'><span class='white_text'>The battle resulted in a draw!</span><br><span class='white_text'>Awarded </span><span class='blue_text' style=''>"+
-beauty(h)+"</span><span class='white_text'> experience points</span></li>",I="draw"):e+="<li id='turnEND' name='battle_end' class='button' style='height:120px;'><span class='white_text'>The fleet </span><span class='blue_text' style=''>"+l.name+"</span><span class='white_text'> won the battle.</span><br><span class='white_text'>Awarded </span><span class='blue_text' style=''>"+beauty(z+h)+"</span><span class='white_text'> experience points</span></li>";return{winner:I,r:e+"</span>"}};this.move=function(b,
-d){return fleetSchedule.push(this,b,b,d,this.type)};this.shipNum=function(){for(var b=0,d=0;d<ships.length;d++)b+=this.ships[d];return b}}for(i=0;i<planets.length;i++)planets[i].fleets[0]=new Fleet(planets[i].civis,"shp"),planets[i].fleets.hub=new Fleet(planets[i].civis,"hub");var mf=new Fleet(1,"The Keeper");mf.ships[3]=100;mf.ships[4]=50;mf.ships[5]=35;mf.ships[8]=10;mf.ships[15]=3;mf.ships[16]=1;mf.exp=6;planets[planetsName.mexager].fleetPush(mf);mf=new Fleet(2,"Phantids Defence Fleet");
+function Fleet(b,e){
+	this.type="normal";
+	this.name=e||"";
+	this.civis=b;
+	this.ships=[];
+	for(var d=0;d<ships.length;d++)
+		this.ships[d]=0;
+	this.storage=[];
+	for(d=0;d<resNum;d++)
+		this.storage[d]=0;
+	this.autoMap=[];
+	this.autoRes=[];
+	this.autoPct=[];
+	for(var h=0;2>h;h++)
+		for(this.autoRes[h]=[],d=0;d<resNum;d++)
+			this.autoRes[h][d]=0,
+			this.autoPct[d]=!1;
+	this.bestCluster=function(){
+		for(var b=0,d=new Fleet(this.civis,""),e=0,h=0;h<ships.length;h++)
+			this.ships[h]&&(this.ships[h]*ships[h].maxStorage*ships[h].speed>this.ships[e]*ships[e].maxStorage*ships[e].speed&&(e=h),b++);
+		if(0==b)
+			return null;
+		d.ships[e]=this.ships[e];
+		this.ships[e]=0;
+		d.onlyS=e;
+		return d
+	};
+	this.originalStrength=1;
+	this.totalTime=this.source=this.route=this.origin=this.nextPlanet=this.lastPlanet=this.hop=this.destination=this.departureTime=this.arrivalTime=0;
+	this.type="orbit";
+	this.exp=0;
+	this.speed=function(){
+		for(var b=1E7,d=0;d<this.ships.length;d++)
+			0<this.ships[d]&&ships[d].speed<b&&(b=ships[d].speed);
+		b*=1+this.storage[resourcesName.engine.id]/1E3*2E-4;
+		b=Math.min(b,100);
+		0==this.shipNum()&&(b=0);
+		return b
+	};
+	this.travelSpeed=function(){
+		for(var b=1E7,d=0;d<this.ships.length;d++)
+			0<this.ships[d]&&ships[d].travelSpeed<b&&(b=ships[d].travelSpeed);
+		b*=1+this.storage[resourcesName.engine.id]/1E3*2E-4;b=Math.min(b,100);
+		0==this.shipNum()&&(b=0);
+		return b
+	};
+	this.fusion=function(b){
+		for(var d=0;d<ships.length;d++)
+			this.ships[d]+=b.ships[d],
+			b.ships[d]=0;
+		for(d=0;d<resNum;d++)
+			this.storage[d]+=b.storage[d],b.storage[d]=0;
+		this.addExp(b.exp)
+	};
+	this.addExp=function(b){
+		this.exp=Math.min(this.exp+b,MAX_FLEET_EXPERIENCE)
+	};
+	this.fleetType=function(){
+		for(var b=0,d=0;d<ships.length;d++)
+			0<this.ships[d]&&ships[d].weight*this.ships[d]>ships[b].weight*this.ships[b]&&(b=d);
+		return"Colonial Ship"==ships[b].type?"Colonial Fleet":"Miner Ship"==ships[b].type?"Miner Fleet":"Cargoship"==ships[b].type?"Cargo Fleet":1==this.shipNum()&&2<=this.speed()?"Scout Fleet":"War Fleet"
+	};
+	this.usedStorage=function(){for(var b=0,d=0;d<resNum;d++)b+=this.storage[d];return b};this.availableStorage=function(){return this.maxStorage()-this.usedStorage()};
+	this.load=function(b,d){
+		return!(0>d)&&d<=this.availableStorage()?(this.storage[b]+=d,!0):!1
+	};
+	this.unloadDelivery=function(b){
+		for(var d=0;d<resNum;d++)planets[b].resources[d]+=this.storage[d],this.storage[d]=0
+	};
+	this.unload=function(b){
+		for(var d=0;d<resNum;d++)planets[b].resourcesAdd(d,this.storage[d]),this.storage[d]=0
+	};
+	this.unloadAuto=function(b,d,e){
+		for(var g=0;g<resNum;g++)planets[d].resources[g]+=this.storage[g]*e,planets[b].resourcesAdd(g,-this.storage[g]*(e-1)),this.storage[g]=0
+	};
+	this.unloadSingle=function(b,d){
+		return!(0>d)&&d<=this.storage[b]?(this.storage[b]-=d,!0):!1
+	};
+	this.maxStorage=function(){
+		for(var b=0,d=0;d<ships.length;d++)b+=ships[d].maxStorage*this.ships[d];
+		return b
+	};
+	this.shipNum=function(){
+		for(var b=0,d=0;d<ships.length;d++)b+=this.ships[d];
+		return b
+	};
+	this.expBonus=function(b){
+		return{
+			power:1+5E-4*this.exp,
+			hp:1+5E-4*this.exp,
+			armor:1+5E-4*this.exp,
+			shield:1+5E-4*this.exp
+		}[b]
+	};
+	this.qurisArtOfWar=0;
+	this.karanArtOfWar=0;
+	this.thoroidActivated=0;
+	this.qurisValueActivated=0;
+	this.qurisHonorActivated=0;
+	this.costSingleShip=function(d){
+		var b=ships[d].cost;
+		for(var d=0;d<resNum;d++)
+				b*=.92;
+		return b
+	};
+	this.power=function(){
+		for(var b=0,d=0;d<ships.length;d++)
+			b+=this.powerSingleShip(d)*this.ships[d];
+		return b
+	};
+	this.powerSingleShip=function(d){
+		var b=ships[d].power;
+		var e=ships[d].id;
+		if(5==e||6==e)
+			for (var anzahlUpgrades=0;anzahlUpgrades<this.qurisArtOfWar;anzahlUpgrades++)
+				b*=1.12;
+		else 
+			for (var anzahlUpgrades=0;anzahlUpgrades<this.qurisArtOfWar;anzahlUpgrades++)
+				b*=1.05;
+		if("ballistic"==ships[d].weapon)
+			for(var anzahlUpgrades=0;anzahlUpgrades<this.thoroidActivated;anzahlUpgrades++)
+				b*=1.1;
+		b*=this.expBonus("power");
+		AmmoBonus=1+(10*Math.log(1+this.storage[resourcesName.ammunition.id]/1E7)/Math.log(2)+20*Math.log(1+this.storage[resourcesName["u-ammunition"].id]/1E7)/Math.log(2)+60*Math.log(1+this.storage[resourcesName["t-ammunition"].id]/2E7)/Math.log(2));
+		b*=AmmoBonus
+		return b;
+	};
+	this.piercingSingleShip=function(d){
+		var b=ships[d].piercing;
+		for(var anzahlUpgrades=0;anzahlUpgrades<this.karanArtOfWar;anzahlUpgrades++)
+			b*=1.3;
+		return b;
+	};
+	this.shield=function(d){
+		var b=0;
+		b+=ships[d].shield;
+		var e=ships[d].id;
+		if(5==e||6==e)
+			for (var anzahlUpgrades=0;anzahlUpgrades<this.qurisArtOfWar;anzahlUpgrades++)
+				b*=1.12;
+		else 
+			for (var anzahlUpgrades=0;anzahlUpgrades<this.qurisArtOfWar;anzahlUpgrades++)
+				b*=1.05;
+		for(var anzahlUpgrades=0;anzahlUpgrades<this.qurisHonorActivated;anzahlUpgrades++)
+			b*=1.5;
+		return b*this.expBonus("shield")
+	};
+	this.armor=function(){
+		for(var b=0,d=0;d<ships.length;d++)
+			b+=this.armorSingleShip(d)*this.ships[d];
+		b*=1+this.storage[resourcesName.armor.id]/1E3*5E-4;
+		return b
+	};
+	this.armorSingleShip=function(d){
+		var b=ships[d].armor;
+		var e=ships[d].id;
+		if(5==e||6==e)
+			for (var anzahlUpgrades=0;anzahlUpgrades<this.qurisArtOfWar;anzahlUpgrades++)
+				b*=1.12;
+		else 
+			for (var anzahlUpgrades=0;anzahlUpgrades<this.qurisArtOfWar;anzahlUpgrades++)
+				b*=1.05;
+		return b*this.expBonus("armor")
+	};
+	this.hp=function(){
+		for(var b=0,d=0;d<ships.length;d++)
+			b+=this.hpSingleShip(d)*this.ships[d];
+		return b
+	};
+	this.hpSingleShip=function(d){
+		var b=0;
+		b+=ships[d].hp;
+		var e=ships[d].id;
+		if(5==e||6==e)
+			for (var anzahlUpgrades=0;anzahlUpgrades<this.qurisArtOfWar;anzahlUpgrades++)
+				b*=1.12;
+		else 
+			for (var anzahlUpgrades=0;anzahlUpgrades<this.qurisArtOfWar;anzahlUpgrades++)
+				b*=1.05;
+		for(var anzahlUpgrades=0;anzahlUpgrades<this.qurisValueActivated;anzahlUpgrades++)
+			b*=1.5;
+		return b*this.expBonus("hp")
+	};
+	this.rawValue=function(){
+		for(var b=0,d=0,e=0;e<ships.length;e++)
+			0<this.ships[e]&&d++;
+		if(0<d)
+			for(e=0;e<ships.length;e++)
+				d=1/(ships[e].speed*(1+this.storage[resourcesName.engine.id]/(5*mi)))*4.6/Math.log(1500)-2,
+				d=.5*(1.1-2*d/(1+Math.abs(2*d))*.9),
+				0<this.ships[e]&&(b+=d*this.ships[e]*ships[e].power*this.expBonus("power")*this.ships[e]*ships[e].hp*this.expBonus("hp")/(1.001-ships[e].armorReduction(this.storage[resourcesName.armor.id]))*ships[e].valueMult);
+		return b
+	};
+	this.value=function(){
+		var b=this.rawValue();
+		b=100*(Math.log(1+b/1)+Math.log(1+(10*Math.log(1+this.storage[resourcesName.ammunition.id]/1E7)/Math.log(2)+20*Math.log(1+this.storage[resourcesName["u-ammunition"].id]/1E7)/Math.log(2)+60*Math.log(1+this.storage[resourcesName["t-ammunition"].id]/2E7)/Math.log(2))/1)+Math.log(1+.1*Math.log(1+this.ships[14])/Math.log(2)/1))/Math.log(1.1);
+		return 0==b?1:b
+	};
+	this.weight=function(){
+		for(var b=0,d=0;d<ships.length;d++)
+			b+=ships[d].weight*this.ships[d];
+		return b
+	};
+	this.combatWeight=function(){
+		for(var b=0,d=0;d<ships.length;d++)
+			b+=ships[d].combatWeight*this.ships[d];
+		return b
+	};
+	this.totalWeight=function(){
+		return this.weight()+this.usedStorage()
+	};
+	this.battleProb=function(b){
+		var d=ramp(b.hp()/(this.power()-b.armor()-.01));
+		b=ramp(this.hp()/(1.1*b.power()-this.armor()-.01));
+		d/=b+.01;
+		return Math.random()<d*d/4?1:0
+	};
+	this.battle=function(b,d){
+		var e="<span style='font-size:90%;'>",
+			h=this,
+			g=b;
+		this.civis==game.id&&(h=b,g=this);
+		var l=g.value(),
+			E=h.value(),
+			F=!1;
+		d&&(F=!0);
+		var z=0,
+			u=b.hp(),
+			y=this.hp(),
+			I=b.hp(),
+			A=this.hp();
+		var J=[];
+		for(var B=[],n=0;n<ships.length;n++)
+			B[n]=b.ships[n],
+			J[n]=0<ships[n].hp?b.ships[n]*b.hpSingleShip(n):0;
+		var G=[],
+			ca=[];
+		for(n=0;n<ships.length;n++)
+			ca[n]=this.ships[n],
+			G[n]=0<ships[n].hp?this.ships[n]*this.hpSingleShip(n):0;
+		for(var T=Array(this.ships.length),aa=0;aa<this.ships.length;aa++)
+			T[n]=0;
+		var N=Array(ships.length);
+		for(n=0;n<ships.length;n++)
+			N[n]=0;
+		var V=Array(ships.length);
+		for(n=0;n<ships.length;n++)
+			V[n]=0;
+		b.maxStorage();
+		this.maxStorage();
+		aa=b.usedStorage();
+		var ma=this.usedStorage(),
+			ha=[],
+			na=[],
+			oa=[],
+			ja=[];
+		for(n=0;n<ships.length;n++)
+			oa[n]=this.ships[n],
+			ja[n]=b.ships[n],
+			ha[n]=this.ships[n],
+			na[n]=b.ships[n];
+		for(var D=!1,la=!1;0<u&&0<y&&256>z;){
+			var ba="",
+				X=20;
+			for(n=u=0;n<ships.length;n++)
+				0<J[n]&&u++;
+			for(n=0;n<ships.length;n++)
+				if(0<J[n]){
+					u=b.ships[n]*ships[n].combatWeight/b.combatWeight();
+					var W=0,
+						Y=0,
+						ia=u*(1+.1*Math.log(1+this.ships[14])/Math.log(2)),
+						AmmoBonus=1+(10*Math.log(1+this.storage[resourcesName.ammunition.id]/1E7)/Math.log(2)+20*Math.log(1+this.storage[resourcesName["u-ammunition"].id]/1E7)/Math.log(2)+60*Math.log(1+this.storage[resourcesName["t-ammunition"].id]/2E7)/Math.log(2)),
+						ea=1/(1+Math.log(1+b.armorSingleShip(n)*(1+b.storage[resourcesName.armor.id]/(2*mi))/1E4)/Math.log(2)),
+						v=0,
+						U=1;
+					la&&(v=.5,U=1+.5*this.ships[72]);
+					for(y=0;y<ships.length;y++){
+						var Z=ships[n].speed*(1+b.storage[resourcesName.engine.id]/(5*mi))/(ships[y].speed*(1+this.storage[resourcesName.engine.id]/(5*mi)))*4.6/Math.log(ships[n].combatWeight)-2;
+						Z=2*Z/(1+Math.abs(2*Z));
+						Y+=.5*N[y]*(1.1-.9*Z)*Math.min(ea+v+this.piercingSingleShip(y)/100,1)*U;
+						var M=N[y]+this.ships[y]*Math.max(this.powerSingleShip(y)/(AmmoBonus)-b.shield(n),0)*(AmmoBonus)*ia*U;
+						N[y]+=this.ships[y]*this.powerSingleShip(y)*(AmmoBonus)*ia*U;
+						W+=.5*M*(1.1-.9*Z)*Math.min(ea+v+this.piercingSingleShip(y)/100,1)*U
+					}
+					J[n]-=W;
+					for(y=0;y<ships.length;y++)
+						N[y]=0>J[n]?-J[n]/(1+W)*N[y]:0;
+					ba+="Attacker <span class='blue_text' style='font-size:100%'>"
+						+ships[n].name
+						+"</span> suffer <span class='blue_text' style='font-size:100%'>"
+						+beauty(W)
+						+"</span> damage, "
+						+beauty(Y)
+						+" from previous cluster, <span class='blue_text' style='font-size:100%'>"
+						+Math.floor(1E4*u)/100
+						+"%</span> weight<br>";
+					X+=24
+				}
+			ba+="<br>";
+			X+=24;
+			for(n=u=0;n<ships.length;n++)
+				0<G[n]&&u++;
+			for(n=0;n<ships.length;n++)
+				if(0<G[n]){
+					u=this.ships[n]*ships[n].combatWeight/this.combatWeight();
+					Y=W=0;
+					ia=u*(1+.1*Math.log(1+b.ships[14])/Math.log(2));
+					AmmoBonus=1+(10*Math.log(1+b.storage[resourcesName.ammunition.id]/1E7)/Math.log(2)+20*Math.log(1+b.storage[resourcesName["u-ammunition"].id]/1E7)/Math.log(2)+60*Math.log(1+b.storage[resourcesName["t-ammunition"].id]/2E7)/Math.log(2));
+					ea=1/(1+Math.log(1+this.armorSingleShip(n)*(1+this.storage[resourcesName.armor.id]/(2*mi))/1E4)/Math.log(2));
+					v=0;
+					U=1;
+					D&&(v=.5,U=1+.5*b.ships[72]);
+					for(y=0;y<ships.length;y++)
+						Z=ships[n].speed*(1+this.storage[resourcesName.engine.id]/(5*mi))/(ships[y].speed*(1+b.storage[resourcesName.engine.id]/(5*mi)))*4.6/Math.log(ships[n].combatWeight)-2,
+						Z=2*Z/(1+Math.abs(2*Z)),
+						Y+=.5*V[y]*(1.1-.9*Z)*Math.min(ea+v+b.piercingSingleShip(y)/100,1)*U,
+						M=V[y]+b.ships[y]*Math.max(b.powerSingleShip(y)/AmmoBonus-this.shield(n),0)*AmmoBonus*ia*U,
+						V[y]+=b.ships[y]*b.powerSingleShip(y)*AmmoBonus*ia*U,
+						W+=.5*M*(1.1-.9*Z)*Math.min(ea+v+b.piercingSingleShip(y)/100,1)*U;
+					G[n]-=W;
+					for(y=0;y<ships.length;y++)
+						V[y]=0>G[n]?-G[n]/(1+W)*V[y]:0;
+					ba+="Defender <span class='blue_text' style='font-size:100%'>"
+						+ships[n].name
+						+"</span> suffer <span class='blue_text' style='font-size:100%'>"
+						+beauty(W)
+						+"</span> damage, "
+						+beauty(Y)
+						+" from previous cluster, <span class='blue_text' style='font-size:100%'>"
+						+Math.floor(1E4*u)/100
+						+"%</span> weight<br>";
+					X+=24
+				}
+			ba+="<br>";
+			ba+="<br>";
+			X+=24;
+			X+=24;
+			Y="";
+			for(n=0;n<ships.length;n++)
+				b.ships[n]=0<J[n]?parseInt(Math.ceil(J[n]/(b.hpSingleShip(n)))):0,
+				0<b.ships[n]&&(
+					Y+="Attacker <span class='blue_text' style='font-size:100%'>"
+					+ships[n].name
+					+"</span> remains <span class='blue_text' style='font-size:100%'>"
+					+b.ships[n]
+					+" </span>(-"
+					+Math.floor(1E4*(1-b.ships[n]/na[n]))/100
+					+"% of previous round, -"
+					+Math.floor(1E4*(1-b.ships[n]/ja[n]))/100
+					+"% of total)<br>",
+					X+=24),
+				na[n]=b.ships[n];
+			X+=24;
+			W="";
+			for(n=0;n<ships.length;n++)
+				this.ships[n]=0<G[n]?parseInt(Math.ceil(G[n]/(this.hpSingleShip(n)))):0,
+				0<this.ships[n]&&(
+					W+="Defender <span class='blue_text' style='font-size:100%'>"
+					+ships[n].name
+					+"</span> remains <span class='blue_text' style='font-size:100%'>"
+					+this.ships[n]
+					+"</span> (-"
+					+Math.floor(1E4*(1-this.ships[n]/ha[n]))/100
+					+"% of previous round, -"
+					+Math.floor(1E4*(1-this.ships[n]/oa[n]))/100
+					+"% of total)<br>",
+					X+=24),
+				ha[n]=this.ships[n];
+			u=b.hp();
+			y=this.hp();gameSettings.hpreport&&(
+				Y="<span class='blue_text' style='font-size:100%'>HP left (%): "
+				+Math.floor(u/I*1E4)/100
+				+"</span><br>"
+				+Y,
+			W="<span class='blue_text' style='font-size:100%'>HP left (%): "
+				+Math.floor(y/A*1E4)/100
+				+"</span><br>"+W);
+			(.15>=u/I||.15>=y/A)&&0<b.ships[72]&&(D=!0,Y="<span class='red_text' style='font-size:100%'>Attacker is in berserk!</span><br>"+Y);
+			(.15>=y/A||.15>=u/I)&&0<this.ships[72]&&(la=!0,W="<span class='red_text' style='font-size:100%'>Defender is in berserk!</span><br>"+W);
+			ba+=Y+"<br>"+W;
+			z++;
+			F||b.addExp(1);
+			e+="<li id='turn"
+				+z
+				+"' name='"
+				+z
+				+"' class='button' style='height:"
+				+X
+				+"px;'><span class='blue_text' style='font-size:120%;'>BATTLE TURN "
+				+z
+				+"</span><br><br><span class='white_text'>"
+				+ba
+				+"</span></li>"
+		}
+		J=0;
+		n=civis[h.civis].influence()/game.influence();
+		if(1>n&&g.power()>2*h.power()&&g.armor()>2*h.armor()&&g.hp()>2*h.hp()&&(n=Math.min(1-n,.3),Math.random()<n)){
+			J=n/3;
+			G=!1;
+			for(n=0;n<ships.length;n++)
+				T[n]=Math.floor(J*h.ships[n]),
+				0<T[n]&&(G=!0);
+			G?console.log("captured something"):J=0
+		}
+		X=20;
+		ba="";
+		if(0<J)
+			for(n=0;n<ships.length;n++)
+				T[n]=Math.floor(J*h.ships[n]),
+				0<T[n]&&(ba+="<span class='blue_text' style='font-size:100%'>"
+					+ships[n].name
+					+"</span> captured: <span class='blue_text' style='font-size:100%'>"
+					+T[n]
+					+"</span><br>",
+					X+=20);
+		20<X&&(e+="<li id='turnCAPTURE' name='capture' class='button' style='height:120px;'><span class='blue_text' style='font-size:120%;'>Your Fleet captured "
+			+Math.floor(100*J)/100
+			+"% of enemy ships: </span><br><br><span class='white_text'>"
+			+ba
+			+"</span></li>");
+		G=!1;
+		0<b.shipNum()&&0<this.shipNum()&&(G=!0);
+		if(F)
+			for(n=0;n<ships.length;n++)
+				b.ships[n]=B[n],
+				this.ships[n]=ca[n];
+		else{
+			this.storage[resourcesName.ammunition.id]=0;
+			this.storage[resourcesName["u-ammunition"].id]=0;
+			this.storage[resourcesName["t-ammunition"].id]=0;
+			this.storage[resourcesName.armor.id]*=.5;
+			b.storage[resourcesName.ammunition.id]=0;
+			b.storage[resourcesName["u-ammunition"].id]=0;
+			b.storage[resourcesName["t-ammunition"].id]=0;
+			b.storage[resourcesName.armor.id]*=.5;
+			B=this.maxStorage()/ma;ca=b.maxStorage()/aa;
+			for(aa=0;aa<resNum;aa++)
+				1>B&&(this.storage[aa]=Math.floor(this.storage[aa]*B)),
+				1>ca&&(b.storage[aa]=Math.floor(b.storage[aa]*ca));
+			if(0<J)
+				for(n=0;n<ships.length;n++)
+					h.ships[n]-=T[n],
+					g.ships[n]+=T[n]
+		}
+		h=0;
+		I=1==z&&0>=u&&0>=y?b.speed()>=this.speed()?"atk":"def":u/I>=y/A?"atk":"def";
+		F||G||("def"==I?b.exp=Math.floor(b.exp/2):.9<l/(E+1)&&(h=Math.ceil(this.exp/2),b.addExp(h),this.exp=Math.floor(this.exp/2)));
+		l="def"==I?this:b;
+		G?(e+="<li id='turnEND' name='battle_end' class='button' style='height:120px;'><span class='white_text'>The battle resulted in a draw!</span><br><span class='white_text'>Awarded </span><span class='blue_text' style=''>"
+		+beauty(h)
+		+"</span><span class='white_text'> experience points</span></li>",
+		I="draw"):e+="<li id='turnEND' name='battle_end' class='button' style='height:120px;'><span class='white_text'>The fleet </span><span class='blue_text' style=''>"
+		+l.name
+		+"</span><span class='white_text'> won the battle.</span><br><span class='white_text'>Awarded </span><span class='blue_text' style=''>"
+		+beauty(z+h)
+		+"</span><span class='white_text'> experience points</span></li>";
+		return{winner:I,r:e+"</span>"}
+	};
+	this.move=function(b,d){
+		return fleetSchedule.push(this,b,b,d,this.type)
+	};
+	this.shipNum=function(){
+		for(var b=0,d=0;d<ships.length;d++)b+=this.ships[d];
+		return b
+	};
+}
+
+for(i=0;i<planets.length;i++)planets[i].fleets[0]=new Fleet(planets[i].civis,"shp"),planets[i].fleets.hub=new Fleet(planets[i].civis,"hub");var mf=new Fleet(1,"The Keeper");mf.ships[3]=100;mf.ships[4]=50;mf.ships[5]=35;mf.ships[8]=10;mf.ships[15]=3;mf.ships[16]=1;mf.exp=6;planets[planetsName.mexager].fleetPush(mf);mf=new Fleet(2,"Phantids Defence Fleet");
 mf.ships[25]=1;mf.exp=12;planets[planetsName.traumland].fleetPush(mf);mf=new Fleet(3,"Thlipsi Fleet");mf.ships[47]=8E3;mf.ships[51]=1;planets[planetsName.tsartasis].fleetPush(mf);mf=new Fleet(3,"Monaxia Fleet");mf.ships[47]=8E4;mf.ships[51]=1;mf.exp=80;planets[planetsName.mermorra].fleetPush(mf);mf=new Fleet(3,"Erimosi Fleet");mf.ships[47]=8E4;mf.ships[48]=1E3;mf.ships[51]=1;planets[planetsName.echoes].fleetPush(mf);mf=new Fleet(3,"Katastrofis Fleet");mf.ships[47]=8E4;mf.ships[48]=2E3;
 mf.ships[51]=1;planets[planetsName.kitrino].fleetPush(mf);mf=new Fleet(3,"Loimos Fleet");mf.ships[47]=3E5;mf.ships[48]=2E3;mf.ships[51]=10;planets[planetsName.kandi].fleetPush(mf);mf=new Fleet(3,"Polemos Fleet");mf.ships[47]=8E5;mf.ships[48]=5E3;mf.ships[49]=1E3;mf.ships[51]=10;mf.exp=80;planets[planetsName.ares].fleetPush(mf);mf=new Fleet(3,"Thanatos Fleet");mf.ships[47]=8E6;mf.ships[48]=8E3;mf.ships[49]=5E3;mf.ships[50]=1E3;mf.ships[51]=25;mf.exp=100;planets[planetsName.xora2].fleetPush(mf);
-mf=new Fleet(3,"Anastasi Fleet");mf.ships[47]=1E7;mf.ships[48]=15E3;mf.ships[49]=8E3;mf.ships[50]=2E3;mf.ships[51]=50;mf.ships[52]=1;mf.exp=150;planets[planetsName.xora].fleetPush(mf);mf=new Fleet(4,"Posirion Defence Fleet");mf.ships[41]=750;mf.ships[46]=15;planets[planetsName.posirion].fleetPush(mf);mf=new Fleet(4,"Traurig Defence Fleet");mf.ships[41]=3E3;mf.ships[46]=60;planets[planetsName.traurig].fleetPush(mf);mf=new Fleet(4,"Diplomatic Fleet");mf.ships[41]=5E3;mf.ships[42]=400;mf.ships[46]=150;
+mf=new Fleet(3,"Anastasi Fleet");mf.ships[47]=3E7;mf.ships[48]=15E3;mf.ships[49]=1E3;mf.ships[50]=2E3;mf.ships[51]=50;mf.ships[52]=1;mf.exp=150;planets[planetsName.xora].fleetPush(mf);mf=new Fleet(4,"Posirion Defence Fleet");mf.ships[41]=750;mf.ships[46]=15;planets[planetsName.posirion].fleetPush(mf);mf=new Fleet(4,"Traurig Defence Fleet");mf.ships[41]=3E3;mf.ships[46]=60;planets[planetsName.traurig].fleetPush(mf);mf=new Fleet(4,"Diplomatic Fleet");mf.ships[41]=5E3;mf.ships[42]=400;mf.ships[46]=150;
 planets[planetsName.epsilon].fleetPush(mf);mf=new Fleet(4,"Zhura Defence Fleet");mf.ships[41]=1E4;mf.ships[42]=1E3;mf.ships[46]=250;mf.ships[43]=10;planets[planetsName.zhura].fleetPush(mf);mf=new Fleet(4,"Juini Shadow");mf.ships[41]=2E4;mf.ships[42]=2E3;mf.ships[46]=500;mf.ships[45]=10;mf.exp=50;planets[planetsName.bhara].fleetPush(mf);mf=new Fleet(4,"Azure Fleet");mf.ships[41]=5E4;mf.ships[42]=5E3;mf.ships[46]=2E3;mf.ships[44]=5;mf.exp=80;planets[planetsName.caerul].fleetPush(mf);
 mf=new Fleet(5,"Purification Fleet");mf.ships[33]=1E3;mf.ships[34]=1;planets[planetsName.miselquris].fleetPush(mf);mf=new Fleet(5,"Konquista");mf.ships[33]=3E3;mf.ships[35]=1;planets[planetsName.kurol].fleetPush(mf);mf=new Fleet(5,"The Last Stand");mf.ships[33]=5E3;mf.ships[36]=1;planets[planetsName.antaris].fleetPush(mf);mf=new Fleet(5,"Styx Legion");mf.ships[33]=1E4;mf.ships[37]=1;mf.ships[38]=1;mf.exp=50;planets[planetsName.teleras].fleetPush(mf);mf=new Fleet(5,"Hell Warden");mf.ships[33]=3E3;
 mf.ships[40]=100;mf.ships[39]=1;mf.exp=50;planets[planetsName.jabir].fleetPush(mf);mf=new Fleet(6,"I.R.C. S.E.A.S. F.L.E.E.T.");mf.ships[29]=1;mf.ships[30]=1;mf.ships[31]=1;mf.ships[32]=1;mf.exp=22;planets[planetsName.zelera].fleetPush(mf);mf=new Fleet(7,"The Ugly");mf.ships[20]=30;mf.ships[23]=1;planets[planetsName.uanass].fleetPush(mf);mf=new Fleet(7,"The Bad");mf.ships[19]=150;mf.ships[22]=1;planets[planetsName.uanass].fleetPush(mf);mf=new Fleet(7,"The Good");mf.ships[20]=50;mf.ships[21]=1;planets[planetsName.uanass].fleetPush(mf);
