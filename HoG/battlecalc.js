@@ -491,6 +491,11 @@ document.addEventListener("DOMContentLoaded", function() {
 			var ship = ships[k];
 			enemylist.appendChild(shipinput(ship, n));
 		});
+		
+		arr(enemystufflist.getElementsByTagName("input")).map(function(input) {
+			if(input.name == "enemy_exp")
+				input.value = o.fleet.exp;
+		});
 	};
 	enemypicker.onchange();
 	if(saveData.enemies) {
@@ -753,46 +758,7 @@ document.addEventListener("DOMContentLoaded", function() {
 				else
 					delete saveData.bonuses[name];
 				return saveData.bonuses;
-			}, {}),/*["artofwar", "karan_artofwar"].reduce(function(obj, name) {
-				var research = researches[researchesName[name]];
-				var researchId = research.id;
-				var v = 0;
-				if(researchId=="artofwar")
-					v = warfleet.qurisArtOfWar;
-				if(researchId=="karan_artofwar")
-					v = warfleet.karanArtOfWar;
-				if(v > 0) obj[name] = v;
-				return obj;
-			}, {}), /*(warfleet.combatWeight() ? ["ammunition", "u-ammunition", "t-ammunition", "armor", "engine", "exp"] : []).reduce(function(obj, name) {
-				var resource = resourcesName[name];
-				var v = warfleet.storage[resource.id];
-				if(v > 0) obj[name] = v;
-				return obj;
-			}, {}), 
-			/*bonuses: ["artofwar", "karan_artofwar"].reduce(function(obj, name) {
-				var research = researches[researchesName[name]];
-				var v = research.level;
-				if(v > 0) obj[name] = v;
-				return obj;
-			}, ["thoroid", "quris_value", "quris_honor"].reduce(function(obj, name) {
-				var artifact = artifacts[artifactsName[name]];
-				var v = artifact.activated;
-				if(v > 0) obj[name] = v;
-				return obj;
-			}, (warfleet.combatWeight() ? ["ammunition", "u-ammunition", "t-ammunition", "armor", "engine"] : []).reduce(function(obj, name) {
-				var resource = resourcesName[name];
-				var v = warfleet.storage[resource.id];
-				if(v > 0) obj[name] = v;
-				return obj;
-			}, {}))),*/
-			/*bonuses: ["artofwar", "karan_artofwar"].reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }),
-				["thoroid", "quris_value", "quris_honor"].reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }),
-				(warfleet.combatWeight() ? ["ammunition", "u-ammunition", "t-ammunition", "armor", "engine"] : []).reduce(function(obj, name) {
-				var resource = resourcesName[name];
-				var v = warfleet.storage[resource.id];
-				if(v > 0) obj[name] = v;
-				return obj;
-			}),*/
+			}, {}),
 			enemySelected: enemypicker.selectedIndex + (enemy.combatWeight() ? 0 : 1),
 			enemies: enemy.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
 		});
