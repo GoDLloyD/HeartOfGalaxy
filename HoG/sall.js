@@ -713,8 +713,8 @@ function Fleet(b,e){
 			for(n=0;n<ships.length;n++)
 				if(0<J[n]){
 					u=b.ships[n]*ships[n].combatWeight/b.combatWeight();
-					var W=0,
-						Y=0,
+					var totalDamage=0,
+						carryOverDamage=0,
 						ia=u*(1+.1*Math.log(1+this.ships[14])/Math.log(2)),
 						ammoBonus=1+(10*Math.log(1+this.storage[resourcesName.ammunition.id]/1E7)/Math.log(2)+20*Math.log(1+this.storage[resourcesName["u-ammunition"].id]/1E7)/Math.log(2)+60*Math.log(1+this.storage[resourcesName["t-ammunition"].id]/2E7)/Math.log(2)),
 						ea=1/(1+Math.log(1+b.armorSingleShip(n)*(1+b.storage[resourcesName.armor.id]/(2*mi))/1E4)/Math.log(2)),
@@ -724,20 +724,20 @@ function Fleet(b,e){
 					for(y=0;y<ships.length;y++){
 						var Z=ships[n].speed*(1+b.storage[resourcesName.engine.id]/(5*mi))/(ships[y].speed*(1+this.storage[resourcesName.engine.id]/(5*mi)))*4.6/Math.log(ships[n].combatWeight)-2;
 						Z=2*Z/(1+Math.abs(2*Z));
-						Y+=.5*N[y]*(1.1-.9*Z)*Math.min(ea+v+this.piercingSingleShip(y)/100,1)*U;
+						carryOverDamage+=.5*N[y]*(1.1-.9*Z)*Math.min(ea+v+this.piercingSingleShip(y)/100,1)*U;
 						var M=N[y]+this.ships[y]*Math.max(this.powerSingleShipWithoutExtras(y)-b.shield(n),0)*ammoBonus*ia*U;
 						N[y]+=this.ships[y]*this.powerSingleShip(y)*u*U;
-						W+=.5*M*(1.1-.9*Z)*Math.min(ea+v+this.piercingSingleShip(y)/100,1)*U
+						totalDamage+=.5*M*(1.1-.9*Z)*Math.min(ea+v+this.piercingSingleShip(y)/100,1)*U
 					}
-					J[n]-=W;
+					J[n]-=totalDamage;
 					for(y=0;y<ships.length;y++)
-						N[y]=0>J[n]?-J[n]/(1+W)*N[y]:0;
+						N[y]=0>J[n]?-J[n]/(1+totalDamage)*N[y]:0;
 					ba+="Attacker <span class='blue_text' style='font-size:100%'>"
 						+ships[n].name
 						+"</span> suffer <span class='blue_text' style='font-size:100%'>"
-						+beauty(W)
+						+beauty(totalDamage)
 						+"</span> damage, "
-						+beauty(Y)
+						+beauty(carryOverDamage)
 						+" from previous cluster, <span class='blue_text' style='font-size:100%'>"
 						+Math.floor(1E4*u)/100
 						+"%</span> weight<br>";
@@ -750,7 +750,7 @@ function Fleet(b,e){
 			for(n=0;n<ships.length;n++)
 				if(0<G[n]){
 					u=this.ships[n]*ships[n].combatWeight/this.combatWeight();
-					Y=W=0;
+					carryOverDamage=totalDamage=0;
 					ia=u*(1+.1*Math.log(1+b.ships[14])/Math.log(2));
 					ammoBonus=1+(10*Math.log(1+b.storage[resourcesName.ammunition.id]/1E7)/Math.log(2)+20*Math.log(1+b.storage[resourcesName["u-ammunition"].id]/1E7)/Math.log(2)+60*Math.log(1+b.storage[resourcesName["t-ammunition"].id]/2E7)/Math.log(2));
 					ea=1/(1+Math.log(1+this.armorSingleShip(n)*(1+this.storage[resourcesName.armor.id]/(2*mi))/1E4)/Math.log(2));
@@ -760,19 +760,19 @@ function Fleet(b,e){
 					for(y=0;y<ships.length;y++)
 						Z=ships[n].speed*(1+this.storage[resourcesName.engine.id]/(5*mi))/(ships[y].speed*(1+b.storage[resourcesName.engine.id]/(5*mi)))*4.6/Math.log(ships[n].combatWeight)-2,
 						Z=2*Z/(1+Math.abs(2*Z)),
-						Y+=.5*V[y]*(1.1-.9*Z)*Math.min(ea+v+b.piercingSingleShip(y)/100,1)*U,
+						carryOverDamage+=.5*V[y]*(1.1-.9*Z)*Math.min(ea+v+b.piercingSingleShip(y)/100,1)*U,
 						M=V[y]+b.ships[y]*Math.max(b.powerSingleShipWithoutExtras(y)-this.shield(n),0)*ammoBonus*ia*U,
 						V[y]+=b.ships[y]*b.powerSingleShip(y)*u*U,
-						W+=.5*M*(1.1-.9*Z)*Math.min(ea+v+b.piercingSingleShip(y)/100,1)*U;
-					G[n]-=W;
+						totalDamage+=.5*M*(1.1-.9*Z)*Math.min(ea+v+b.piercingSingleShip(y)/100,1)*U;
+					G[n]-=totalDamage;
 					for(y=0;y<ships.length;y++)
-						V[y]=0>G[n]?-G[n]/(1+W)*V[y]:0;
+						V[y]=0>G[n]?-G[n]/(1+totalDamage)*V[y]:0;
 					ba+="Defender <span class='blue_text' style='font-size:100%'>"
 						+ships[n].name
 						+"</span> suffer <span class='blue_text' style='font-size:100%'>"
-						+beauty(W)
+						+beauty(totalDamage)
 						+"</span> damage, "
-						+beauty(Y)
+						+beauty(carryOverDamage)
 						+" from previous cluster, <span class='blue_text' style='font-size:100%'>"
 						+Math.floor(1E4*u)/100
 						+"%</span> weight<br>";
@@ -782,7 +782,7 @@ function Fleet(b,e){
 			ba+="<br>";
 			X+=24;
 			X+=24;
-			Y="";
+			var Y="";
 			for(n=0;n<ships.length;n++)
 				b.ships[n]=0<J[n]?parseInt(Math.ceil(J[n]/(b.hpSingleShip(n)))):0,
 				0<b.ships[n]&&(

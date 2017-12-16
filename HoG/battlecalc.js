@@ -232,8 +232,8 @@ document.addEventListener("DOMContentLoaded", function() {
 			/*edits end*/
 		}
 		if(fleet.civis==1) {
-			["Enemy Exp"].map(function(name) {
-				var enemyExp = parseInt(document.getElementsByName("Enemy Exp")[0].value);
+			["enemy_exp"].map(function(name) {
+				var enemyExp = parseInt(document.getElementsByName("enemy_exp")[0].value);
 				if(isNaN(enemyExp)) enemyExp = 0;
 				else if(enemyExp>MAX_FLEET_EXPERIENCE) enemyExp = MAX_FLEET_EXPERIENCE;
 				bonus.power += calcBonus[name](enemyExp);
@@ -426,15 +426,15 @@ document.addEventListener("DOMContentLoaded", function() {
 		input.type = "checkbox";
 		input.name = name;
 		input.value = artifact.description;
-		//if(saveData.bonuses && saveData.bonuses[name]) input.value = saveData.bonuses[name];
+		if(saveData.bonuses && saveData.bonuses[name]) input.checked = saveData.bonuses[name];
 		input.artifact = artifact;
 		return div(label, input);
 	}).map(appendTo(stufflist));
 
 	var enemystufflist = document.getElementById("enemystufflist");
-	["Enemy Exp"].map(function(name) {
+	["enemy_exp"].map(function(name) {
 		var resource = resourcesName[name];
-		var label = span(txt(name.capitalize()));
+		var label = span(txt("Enemy Exp"));
 		var input = el("input");
 		input.type = "text";
 		input.label = label;
@@ -451,7 +451,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		"armor": function(v) { return v / 2e6; },
 		"engine": function(v) { return v / 5e6; },
 		"exp": function(v) { return v/2000;},
-		"Enemy Exp": function(v) { return v/2000;},
+		"enemy_exp": function(v) { return v/2000;},
 	};
 
 	stufflist.statBlock = span();
@@ -504,7 +504,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			enemylist.appendChild(shipinput(ships[k], n));
 		});
 	}
-	var available_enemy_ships = ships.slice();
+	//var available_enemy_ships = ships.slice();
 	//enemylist.appendChild(enemyshipselector());
 	
 	enemylist.statBlock = span();
@@ -527,6 +527,9 @@ document.addEventListener("DOMContentLoaded", function() {
 			delete available_ships[k];
 		});
 		saveData.bonuses && arr(stufflist.getElementsByTagName("input")).map(function(input) {
+			input.value = saveData.bonuses[input.name] || "";
+		});
+		saveData.bonuses && arr(enemystufflist.getElementsByTagName("input")).map(function(input) {
 			input.value = saveData.bonuses[input.name] || "";
 		});
 		if(saveData.enemySelected) {
@@ -617,6 +620,14 @@ document.addEventListener("DOMContentLoaded", function() {
 			}
 			if(val > 0) saveData.bonuses[input.name] = val;
 		});
+		arr(enemystufflist.getElementsByTagName("input")).map(function(input) {
+			var val = inputval(input);
+			if(input.resource) {
+				warfleet.storage[input.resource.id] = val;
+				input.showValue.innerText = "+"+beauty(calcBonus[input.resource.name](warfleet.storage[input.resource.id])) + "x";
+			}
+			if(val > 0) saveData.bonuses[input.name] = val;
+		});
 		var enemy = new Fleet(1, "Test Dummy");
 		saveData.enemySelected = enemypicker.value;
 		arr(enemylist.getElementsByTagName("input")).map(function(input) {
@@ -625,7 +636,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		});
 		
 		/*edit start*/
-		var enemyexp = parseInt(document.getElementsByName("Enemy Exp")[0].value);
+		var enemyexp = parseInt(document.getElementsByName("enemy_exp")[0].value);
 		if(isNaN(enemyexp)) enemyexp = 0;
  		enemy.exp = enemyexp;
 		/*edit end*/
@@ -730,9 +741,20 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		nextrun.href = basePath+"#"+serialize({
 			ships: warfleet.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
-			bonuses: ["artofwar", "karan_artofwar"].reduce(function(obj, name) {
+			bonuses: (warfleet.combatWeight() ? ["ammunition", "u-ammunition", "t-ammunition", "armor", "engine"] : []).reduce(function(obj, name) {
+				var resource = resourcesName[name];
+				var v = warfleet.storage[resource.id];
+				if(v > 0) obj[name] = v;
+				return obj;
+			}, {}), 
+			/*bonuses: ["artofwar", "karan_artofwar"].reduce(function(obj, name) {
 				var research = researches[researchesName[name]];
 				var v = research.level;
+				if(v > 0) obj[name] = v;
+				return obj;
+			}, ["thoroid", "quris_value", "quris_honor"].reduce(function(obj, name) {
+				var artifact = artifacts[artifactsName[name]];
+				var v = artifact.activated;
 				if(v > 0) obj[name] = v;
 				return obj;
 			}, (warfleet.combatWeight() ? ["ammunition", "u-ammunition", "t-ammunition", "armor", "engine"] : []).reduce(function(obj, name) {
@@ -740,7 +762,15 @@ document.addEventListener("DOMContentLoaded", function() {
 				var v = warfleet.storage[resource.id];
 				if(v > 0) obj[name] = v;
 				return obj;
-			}, {})),
+			}, {}))),*/
+			/*bonuses: ["artofwar", "karan_artofwar"].reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }),
+				["thoroid", "quris_value", "quris_honor"].reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }),
+				(warfleet.combatWeight() ? ["ammunition", "u-ammunition", "t-ammunition", "armor", "engine"] : []).reduce(function(obj, name) {
+				var resource = resourcesName[name];
+				var v = warfleet.storage[resource.id];
+				if(v > 0) obj[name] = v;
+				return obj;
+			}),*/
 			enemySelected: enemypicker.selectedIndex + (enemy.combatWeight() ? 0 : 1),
 			enemies: enemy.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
 		});
