@@ -467,7 +467,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	planets.map(function(planet) {
 		for(var k in planet.fleets) {
 			var fleet = planet.fleets[k];
-			if(!fleet.combatWeight()) continue;
+			if(!fleet.combatWeight()&&fleet.name!="Customizable Tournament Fleet") continue;
 			var text = planet.name + " - " + fleet.name;
 			var option = el("option");
 			option.innerText = text;
@@ -476,7 +476,12 @@ document.addEventListener("DOMContentLoaded", function() {
 			enemypicker.appendChild(option);
 		}
 	});
-	arr(enemypicker.options).sort(function(a, b) { return fleetStats(a.fleet).Value - fleetStats(b.fleet).Value; }).map(appendTo(enemypicker));
+	arr(enemypicker.options)
+		.sort(function(a, b) { return fleetStats(a.fleet).Value - fleetStats(b.fleet).Value; })
+		.map(function(b) { 
+			if(b.fleet.civis==17)
+				return enemypicker.insertBefore(b, enemypicker.firstChild);
+			return enemypicker.appendChild(b); }/*appendTo(enemypicker)**/);
 	enemylist.parentNode.insertBefore(div(span(txt("Enemy Fleet")), enemypicker), enemylist);
 	if(isFinite(saveData.enemySelected)) enemypicker.selectedIndex = saveData.enemySelected;
 	else if(saveData.enemySelected) enemypicker.value = saveData.enemySelected;
@@ -487,7 +492,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		while(enemylist.lastChild) enemylist.removeChild(enemylist.lastChild);
 		var o = enemypicker.options[i];
 		o.fleet.ships.map(function(n, k) {
-			if(!n) return;
+			if(!n&&o.fleet.name!="Customizable Tournament Fleet") return;
 			var ship = ships[k];
 			enemylist.appendChild(shipinput(ship, n));
 		});
