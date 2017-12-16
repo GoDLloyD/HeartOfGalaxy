@@ -1,4 +1,6 @@
 Changelog
+* Moved Tournament fleet to the top
+* Set Default for ships in Tournament fleet to 0
 * Enemy EXP are now inserted automatically for the chosen enemy
 * Fixed some more Enemy Fleets
 * Added Changelog
