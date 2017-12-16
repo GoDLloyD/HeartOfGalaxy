@@ -1,6 +1,12 @@
 Changelog
-
-15.12.2017
-- Corrected Heart of the Swarm Stats
-- Added Medals
-- Added Tournament
+* Added Changelog
+* Probably some other minor stuff, I can't remember more than that
+* All of the Bonuses are now saved properly and can be exported/imported via share link/next run
+* Art of War upgrades now affect all available ships
+* Art of War upgrades now only affects the players' fleet instead of both fleets
+* Stats are now displayed correctly for both fleets with EXP
+* Added Fleet "Customizable Tournament Fleet" with all ships available to simulate Tournament Battles
+* Added Artifacts
+* Fixed Xora Tauri Fleet
+* Fixed Aurea Spina Stats
+* Fixed Heart of the Swarm Stats
