@@ -1,5 +1,6 @@
 Changelog
 * Enemy EXP are now inserted automatically for the chosen enemy
+* Fixed some more Enemy Fleets
 * Added Changelog
 * Probably some other minor stuff, I can't remember more than that
 * All of the Bonuses are now saved properly and can be exported/imported via share link/next run
