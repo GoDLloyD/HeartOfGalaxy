@@ -741,7 +741,29 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		nextrun.href = basePath+"#"+serialize({
 			ships: warfleet.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
-			bonuses: (warfleet.combatWeight() ? ["ammunition", "u-ammunition", "t-ammunition", "armor", "engine"] : []).reduce(function(obj, name) {
+			bonuses: ["ammunition", "u-ammunition", "t-ammunition", "armor", "engine", "enemy_exp"].reduce(function(obj, name) {
+				var resource = resourcesName[name];
+				if(name!="enemy_exp") {
+					var v = warfleet.storage[resource.id];
+					if(v > 0) 
+						saveData.bonuses[name] = v;
+					else
+						delete saveData.bonuses[name];
+				}
+				else
+					delete saveData.bonuses[name];
+				return saveData.bonuses;
+			}, {}),/*["artofwar", "karan_artofwar"].reduce(function(obj, name) {
+				var research = researches[researchesName[name]];
+				var researchId = research.id;
+				var v = 0;
+				if(researchId=="artofwar")
+					v = warfleet.qurisArtOfWar;
+				if(researchId=="karan_artofwar")
+					v = warfleet.karanArtOfWar;
+				if(v > 0) obj[name] = v;
+				return obj;
+			}, {}), /*(warfleet.combatWeight() ? ["ammunition", "u-ammunition", "t-ammunition", "armor", "engine", "exp"] : []).reduce(function(obj, name) {
 				var resource = resourcesName[name];
 				var v = warfleet.storage[resource.id];
 				if(v > 0) obj[name] = v;
