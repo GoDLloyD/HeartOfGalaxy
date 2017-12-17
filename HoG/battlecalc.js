@@ -500,7 +500,9 @@ document.addEventListener("DOMContentLoaded", function() {
 				enemylist.appendChild(shipinput(ships[k], n));
 			});
 		}
-		enemylist.appendChild(shipselector(enemy_available_ships));
+		if(o.fleet.name=="Customizable Fleet"){
+			enemylist.appendChild(shipselector(enemy_available_ships));
+		}
 	};
 	enemypicker.onchange();
 	
