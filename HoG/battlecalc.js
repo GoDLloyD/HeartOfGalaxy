@@ -291,7 +291,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		input.showLosses = span();
 		return div(label, input, input.showLosses);
 	}
-	function shipselector() {
+	function shipselector(available_ships) {
 		var pick_new_ship = el("select");
 		available_ships.map(function(ship, k) {
 			var option = el("option");
@@ -313,31 +313,6 @@ document.addEventListener("DOMContentLoaded", function() {
 			parent.appendChild(shipinput(o.ship));
 			delete available_ships[o.value];
 			parent.appendChild(shipselector(available_ships));
-		};
-		return row;
-	}
-	function enemyshipselector() {
-		var pick_new_ship = el("select");
-		available_enemy_ships.map(function(ship, k) {
-			var option = el("option");
-			option.value = k;
-			option.innerText = ship.name;
-			option.ship = ship;
-			return option;
-		}).map(appendTo(pick_new_ship));
-		var add_new_ship = el("input");
-		add_new_ship.type = "button";
-		add_new_ship.value = "Add Ship";
-		var row = div(span(pick_new_ship), add_new_ship);
-		add_new_ship.onclick = function() {
-			var i = pick_new_ship.selectedIndex;
-			if(i == -1) return;
-			var o = pick_new_ship.options[i];
-			var parent = row.parentNode;
-			parent.removeChild(row);
-			parent.appendChild(shipinput(o.ship));
-			delete available_enemy_ships[o.value];
-			parent.appendChild(enemyshipselector(available_enemy_ships));
 		};
 		return row;
 	}
@@ -385,7 +360,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		shiplist.appendChild(shipinput(ships[k], n));
 		delete available_ships[k];
 	});
-	shiplist.appendChild(shipselector());
+	shiplist.appendChild(shipselector(available_ships));
 
 	shiplist.statBlock = span();
 	shiplist.statBlock.className = "statblock";
@@ -463,11 +438,12 @@ document.addEventListener("DOMContentLoaded", function() {
 	stufflist.parentNode.appendChild(resourcelosses);
 
 	var enemylist = document.getElementById("enemylist");
+	var enemy_available_ships;
 	var enemypicker = el("select");
 	planets.map(function(planet) {
 		for(var k in planet.fleets) {
 			var fleet = planet.fleets[k];
-			if(!fleet.combatWeight()&&fleet.name!="Customizable Tournament Fleet") continue;
+			if(!fleet.combatWeight()&&fleet.name!="Customizable Fleet"&&fleet.name!="Tournament Fleet") continue;
 			var text = planet.name + " - " + fleet.name;
 			var option = el("option");
 			option.innerText = text;
@@ -491,9 +467,18 @@ document.addEventListener("DOMContentLoaded", function() {
 		var parent = enemypicker.parentNode;
 		while(enemylist.lastChild) enemylist.removeChild(enemylist.lastChild);
 		var o = enemypicker.options[i];
+		enemy_available_ships = ships.slice();
+		if(o.fleet.name=="Customizable Fleet"){
+			enemy_available_ships.map(function(ship) {
+				if(ship.type === "Colonial Ship" || ship.type === "Cargoship"){
+					delete enemy_available_ships[ship.id];
+				}
+			});
+		}
 		o.fleet.ships.map(function(n, k) {
-			if(!n&&o.fleet.name!="Customizable Tournament Fleet") return;
+			if(!n&&o.fleet.name!="Tournament Fleet") return;
 			var ship = ships[k];
+			if(o.fleet.name=="Tournament Fleet"&&(ship.type=="Colonial Ship"||ship.type=="Cargoship")) return;
 			enemylist.appendChild(shipinput(ship, n));
 		});
 		
@@ -501,21 +486,23 @@ document.addEventListener("DOMContentLoaded", function() {
 			if(input.name == "enemy_exp")
 				input.value = o.fleet.exp;
 		});
+		if(saveData.enemies) {
+			arr(enemylist.getElementsByTagName("input")).map(function(input) {
+				if(input.type === "button") return;
+				input.value = saveData.enemies[input.ship.id] || "";
+				delete saveData.enemies[input.ship.id];
+				delete enemy_available_ships[input.ship.id];
+			});
+			Object.keys(saveData.enemies).map(function(k) {
+				if(!ships[k]) return;
+				var n = saveData.enemies[k];
+				delete enemy_available_ships[k];
+				enemylist.appendChild(shipinput(ships[k], n));
+			});
+		}
+		enemylist.appendChild(shipselector(enemy_available_ships));
 	};
 	enemypicker.onchange();
-	if(saveData.enemies) {
-		arr(enemylist.getElementsByTagName("input")).map(function(input) {
-			input.value = saveData.enemies[input.ship.id] || "";
-			delete saveData.enemies[input.ship.id];
-		});
-		Object.keys(saveData.enemies).map(function(k) {
-			if(!ships[k]) return;
-			var n = saveData.enemies[k];
-			enemylist.appendChild(shipinput(ships[k], n));
-		});
-	}
-	//var available_enemy_ships = ships.slice();
-	//enemylist.appendChild(enemyshipselector());
 	
 	enemylist.statBlock = span();
 	enemylist.statBlock.className = "statblock";
@@ -553,9 +540,10 @@ document.addEventListener("DOMContentLoaded", function() {
 			delete saveData.enemies[input.ship.id];
 		});
 		saveData.enemies && Object.keys(saveData.enemies).map(function(k) {
-			if(!ships[k]) return;
+			if(!ships[k]||!enemy_available_ships[k]) return;
 			var n = saveData.enemies[k] || "";
 			enemylist.appendChild(shipinput(ships[k], n));
+			delete enemy_available_ships[k];
 		});
 	}
 
@@ -711,6 +699,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			input.label.title = shipSummary(input.ship, warfleet, enemy);
 		});
 		arr(enemylist.getElementsByTagName("input")).map(function(input) {
+			if(input.type === "button") return;
 			input.label.title = shipSummary(input.ship, enemy, warfleet);
 		});
 
@@ -721,6 +710,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		});
 		shiplist.dataset.weightRemaining = warfleet.combatWeight();
 		arr(enemylist.getElementsByTagName("input")).map(function(input) {
+			if(input.type === "button") return;
 			input.showLosses.innerText = enemy.ships[input.ship.id];
 		});
 		enemylist.dataset.weightRemaining = enemy.combatWeight();
