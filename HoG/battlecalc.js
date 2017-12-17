@@ -474,6 +474,9 @@ document.addEventListener("DOMContentLoaded", function() {
 					delete enemy_available_ships[ship.id];
 				}
 			});
+			if(o.fleet.name=="Customizable Fleet"){
+				enemylist.appendChild(shipselector(enemy_available_ships));
+			}
 		}
 		o.fleet.ships.map(function(n, k) {
 			if(!n&&o.fleet.name!="Tournament Fleet") return;
@@ -486,25 +489,27 @@ document.addEventListener("DOMContentLoaded", function() {
 			if(input.name == "enemy_exp")
 				input.value = o.fleet.exp;
 		});
-		if(saveData.enemies) {
-			arr(enemylist.getElementsByTagName("input")).map(function(input) {
-				if(input.type === "button") return;
-				input.value = saveData.enemies[input.ship.id] || "";
-				delete saveData.enemies[input.ship.id];
-				delete enemy_available_ships[input.ship.id];
-			});
-			Object.keys(saveData.enemies).map(function(k) {
-				if(!ships[k]) return;
-				var n = saveData.enemies[k];
-				delete enemy_available_ships[k];
-				enemylist.appendChild(shipinput(ships[k], n));
-			});
-		}
-		if(o.fleet.name=="Customizable Fleet"){
-			enemylist.appendChild(shipselector(enemy_available_ships));
-		}
 	};
 	enemypicker.onchange();
+	
+	if(saveData.enemies) {
+		arr(enemylist.getElementsByTagName("input")).map(function(input) {
+			if(input.type === "button") return;
+			input.value = saveData.enemies[input.ship.id] || "";
+			delete saveData.enemies[input.ship.id];
+			delete enemy_available_ships[input.ship.id];
+		});
+		Object.keys(saveData.enemies).map(function(k) {
+			if(!ships[k]) return;
+			var n = saveData.enemies[k];
+			delete enemy_available_ships[k];
+			enemylist.appendChild(shipinput(ships[k], n));
+		});
+		if(enemypicker.options[enemypicker.selectedIndex].fleet.name=="Customizable Fleet"){
+			enemylist.removeChild(enemylist.firstChild);
+			enemylist.appendChild(shipselector(enemy_available_ships));
+		}
+	}
 	
 	enemylist.statBlock = span();
 	enemylist.statBlock.className = "statblock";
@@ -547,6 +552,10 @@ document.addEventListener("DOMContentLoaded", function() {
 			enemylist.appendChild(shipinput(ships[k], n));
 			delete enemy_available_ships[k];
 		});
+		if(enemypicker.options[enemypicker.selectedIndex].fleet.name=="Customizable Fleet"){
+			enemylist.removeChild(enemylist.firstChild);
+			enemylist.appendChild(shipselector(enemy_available_ships));
+		}
 	}
 
 	window.onhashchange = function() {
