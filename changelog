@@ -1,4 +1,6 @@
 Changelog
+* Moved Shipselector to the top
+* Added "Clear All" Button for both fleets
 * Moved Tournament fleet to the top
 * Set Default for ships in Tournament fleet to 0
 * Enemy EXP are now inserted automatically for the chosen enemy
