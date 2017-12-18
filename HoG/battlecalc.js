@@ -1,5 +1,8 @@
 document.addEventListener("DOMContentLoaded", function() {
 	'use strict';
+	
+	
+	var battlecalc_save_name=['HoG_Researchcalc','HoG_Researchcalc1','HoG_Researchcalc2'];
 
 	function arr(v) { return Array.prototype.slice.call(v); }
 	function appendTo(a) { return function(b) { return a.appendChild(b); }; }
@@ -303,7 +306,10 @@ document.addEventListener("DOMContentLoaded", function() {
 		var add_new_ship = el("input");
 		add_new_ship.type = "button";
 		add_new_ship.value = "Add Ship";
-		var row = div(span(pick_new_ship), add_new_ship);
+		var clearFleetButton = el("input");
+		clearFleetButton.type = "button";
+		clearFleetButton.value = "Clear All";
+		var row = div(span(pick_new_ship), add_new_ship, clearFleetButton);
 		add_new_ship.onclick = function() {
 			var i = pick_new_ship.selectedIndex;
 			if(i == -1) return;
@@ -312,7 +318,15 @@ document.addEventListener("DOMContentLoaded", function() {
 			parent.removeChild(row);
 			parent.appendChild(shipinput(o.ship));
 			delete available_ships[o.value];
-			parent.appendChild(shipselector(available_ships));
+			parent.insertBefore(shipselector(available_ships), parent.firstChild);
+		};
+		clearFleetButton.onclick = function() {
+			var parent = row.parentNode;
+			arr(parent.getElementsByTagName("input")).map(function(input) {
+				if(input.type === "button") return;
+				input.value = "";
+			});
+			update();
 		};
 		return row;
 	}
@@ -360,7 +374,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		shiplist.appendChild(shipinput(ships[k], n));
 		delete available_ships[k];
 	});
-	shiplist.appendChild(shipselector(available_ships));
+	shiplist.insertBefore(shipselector(available_ships), shiplist.firstChild);
 
 	shiplist.statBlock = span();
 	shiplist.statBlock.className = "statblock";
@@ -475,7 +489,7 @@ document.addEventListener("DOMContentLoaded", function() {
 				}
 			});
 			if(o.fleet.name=="Customizable Fleet"){
-				enemylist.appendChild(shipselector(enemy_available_ships));
+				enemylist.insertBefore(shipselector(enemy_available_ships), enemylist.firstChild);
 			}
 		}
 		o.fleet.ships.map(function(n, k) {
@@ -507,7 +521,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		});
 		if(enemypicker.options[enemypicker.selectedIndex].fleet.name=="Customizable Fleet"){
 			enemylist.removeChild(enemylist.firstChild);
-			enemylist.appendChild(shipselector(enemy_available_ships));
+			enemylist.insertBefore(shipselector(enemy_available_ships), enemylist.firstChild);
 		}
 	}
 	
@@ -554,7 +568,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		});
 		if(enemypicker.options[enemypicker.selectedIndex].fleet.name=="Customizable Fleet"){
 			enemylist.removeChild(enemylist.firstChild);
-			enemylist.appendChild(shipselector(enemy_available_ships));
+			enemylist.insertBefore(shipselector(enemy_available_ships), enemylist.firstChild);
 		}
 	}
 
