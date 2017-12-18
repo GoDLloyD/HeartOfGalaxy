@@ -1,8 +1,7 @@
+battlecalc_save_name=['HoG_Battlecalc','HoG_Battlecalc1','HoG_Battlecalc2'];
+
 document.addEventListener("DOMContentLoaded", function() {
 	'use strict';
-	
-	
-	var battlecalc_save_name=['HoG_Researchcalc','HoG_Researchcalc1','HoG_Researchcalc2'];
 
 	function arr(v) { return Array.prototype.slice.call(v); }
 	function appendTo(a) { return function(b) { return a.appendChild(b); }; }
@@ -352,7 +351,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	
 	var saveData;
 	try {
-		saveData = history.state || deserialize(window.location.hash.substring(1)) || JSON.parse(localStorage.getItem("battlecalc-persist")) || {};
+		saveData = /*history.state || */deserialize(window.location.hash.substring(1)) || JSON.parse(localStorage.getItem("battlecalc-persist")) || {};
 	} catch(e) {
 		console.log(e);
 		saveData = {};
@@ -784,4 +783,13 @@ document.addEventListener("DOMContentLoaded", function() {
 		});
 	};
 	update();
+	
 });
+
+function load_fleet (datano) {
+	localStorage.setItem("battlecalc-persist", localStorage.getItem(battlecalc_save_name[datano]));
+}
+
+function save_fleet (datano) {
+	localStorage.setItem(battlecalc_save_name[datano], localStorage.getItem("battlecalc-persist"));
+}
