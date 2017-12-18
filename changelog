@@ -1,4 +1,5 @@
 Changelog
+* Added save and load fleet options (Doesn't look good right now, but it's working, I'll make it look better later)
 * Moved Shipselector to the top
 * Added "Clear All" Button for both fleets
 * Moved Tournament fleet to the top
