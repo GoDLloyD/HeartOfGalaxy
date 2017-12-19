@@ -339,13 +339,14 @@ document.addEventListener("DOMContentLoaded", function() {
 		
 		arr(shiplist.getElementsByTagName("input")).map(function(input) {
 			var affordableShipsAmount = [];
-			warfleet.costSingleShip(input.ship.id).map(function(value, resourceIndex) {
-				if(!value) return;
-				affordableShipsAmount.push((saveData.resources[resources[resourceIndex].name] * 60 * 60 * 24) / value);
+			warfleet.costSingleShip(input.ship.id).map(function(resourceCost, resourceIndex) {
+				if(!resourceCost) return;
+				var availableResourcesPerDay = saveData.resources[resources[resourceIndex].name] * 60 * 60 * 24 || 0;
+				affordableShipsAmount.push(availableResourcesPerDay / resourceCost);
 			})
 			affordableShipsAmount.sort();
-			warfleet.ships[input.ship.id] = affordableShipsAmount[0];
-			input.value = affordableShipsAmount[0];//warfleet.ships[input.ship.id];
+			warfleet.ships[input.ship.id] = affordableShipsAmount[0] || 0;
+			input.value = affordableShipsAmount[0] || 0;//warfleet.ships[input.ship.id];
 		});
 		shipIndexList.sort(function(shipIndex2, shipIndex1) {
 			return shipStats(warfleet, shipIndex1, warfleet.ships[shipIndex1]).Value - shipStats(warfleet, shipIndex2, warfleet.ships[shipIndex2]).Value;
