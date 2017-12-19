@@ -687,7 +687,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		shiplist.statBlock.innerText = beautyObj(warfleet.ships.reduce(function(obj, n, k) {
 			if(n === 0) return obj;
-			ships[k].cost.map(function(v, i) {
+			warfleet.costSingleShip(k).map(function(v, i) {
 				if(!v) return;
 				var resName = resources[i].name.capitalize();
 				obj[resName] = (obj[resName] || 0) + n * v;
@@ -701,7 +701,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		});
 		enemylist.statBlock.innerText = beautyObj(enemy.ships.reduce(function(obj, n, k) {
 			if(n === 0) return obj;
-			ships[k].cost.map(function(v, i) {
+			enemy.costSingleShip(k).map(function(v, i) {
 				if(!v) return;
 				var resName = resources[i].name.capitalize();
 				obj[resName] = (obj[resName] || 0) + n * v;
@@ -712,7 +712,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		var warfleetNetWorth = warfleet.ships.reduce(function(arr, n, k) {
 			if(n === 0) return arr;
-			ships[k].cost.map(function(v, i) {
+			warfleet.costSingleShip(k).map(function(v, i) {
 				arr[i] += n * v;
 			})
 			return arr;
@@ -745,7 +745,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		var warfleetRemainingNetWorth = warfleet.ships.reduce(function(arr, n, k) {
 			if(n === 0) return arr;
-			ships[k].cost.map(function(v, i) {
+			warfleet.costSingleShip(k).map(function(v, i) {
 				arr[i] += n * v;
 			})
 			return arr;

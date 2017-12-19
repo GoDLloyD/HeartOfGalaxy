@@ -543,6 +543,14 @@ function Fleet(b,e){
 				b*=.92;
 		return b
 	};
+	this.costSingleShip=function(shipIndex){
+		var shipCost=ships[shipIndex].cost.slice();
+		for(var costIndex = 0; costIndex<shipCost.length; costIndex++) {
+			for (var anzahlUpgrades=0; anzahlUpgrades<this.karanArtOfWar; anzahlUpgrades++)
+				shipCost[costIndex]*=0.92;
+		}
+		return shipCost;
+	};
 	this.power=function(){
 		for(var b=0,d=0;d<ships.length;d++)
 			b+=this.powerSingleShip(d)*this.ships[d];
