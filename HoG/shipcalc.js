@@ -341,7 +341,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			var affordableShipsAmount = [];
 			warfleet.costSingleShip(input.ship.id).map(function(value, resourceIndex) {
 				if(!value) return;
-				affordableShipsAmount.push(Math.floor(saveData.resources[resources[resourceIndex].name]) / value);
+				affordableShipsAmount.push((saveData.resources[resources[resourceIndex].name] * 60 * 60 * 24) / value);
 			})
 			affordableShipsAmount.sort();
 			warfleet.ships[input.ship.id] = affordableShipsAmount[0];
