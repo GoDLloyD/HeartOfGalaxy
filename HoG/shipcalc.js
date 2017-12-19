@@ -344,7 +344,9 @@ document.addEventListener("DOMContentLoaded", function() {
 				var availableResourcesPerDay = saveData.resources[resources[resourceIndex].name] * 60 * 60 * 24 || 0;
 				affordableShipsAmount.push(availableResourcesPerDay / resourceCost);
 			})
-			affordableShipsAmount.sort();
+			affordableShipsAmount.sort(function(a, b) {
+				return a - b;
+			});
 			warfleet.ships[input.ship.id] = affordableShipsAmount[0] || 0;
 			input.value = affordableShipsAmount[0] || 0;//warfleet.ships[input.ship.id];
 		});
