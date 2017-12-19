@@ -1,4 +1,5 @@
 Changelog
+* Fixed resource cost with karan art of war research
 * Repositioned save/load buttons
 * Added save and load fleet options (Doesn't look good right now, but it's working, I'll make it look better later)
 * Moved Shipselector to the top
