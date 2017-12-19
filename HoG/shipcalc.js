@@ -342,7 +342,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			warfleet.costSingleShip(input.ship.id).map(function(resourceCost, resourceIndex) {
 				if(!resourceCost) return;
 				var availableResourcesPerDay = saveData.resources[resources[resourceIndex].name] * 60 * 60 * 24 || 0;
-				affordableShipsAmount.push(availableResourcesPerDay / resourceCost);
+				affordableShipsAmount.push(Math.round(availableResourcesPerDay / resourceCost * 100) / 100);
 			})
 			affordableShipsAmount.sort(function(a, b) {
 				return a - b;
