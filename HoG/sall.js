@@ -62,16 +62,46 @@ artifacts.push(new Artifact({id:"quris_honor",name:"Quris Medal of Honor",descri
 var alphanumeric="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789012345678901234567890123456789",numeric="0123456789";function randomString(b){b=b||8;for(var e="",d=0;d<b;d++)e+=alphanumeric.charAt(Math.floor(Math.random()*alphanumeric.length));return e}function randomNumericString(b){b=b||6;for(var e="",d=0;d<b;d++)e+=numeric.charAt(Math.floor(Math.random()*numeric.length));return e}
 function Article(b,e,d,h){this.name=b;this.type=e;this.cost=[];for(b=0;b<resNum;b++)this.cost[b]=0;for(b=0;b<h.length;b++)this.cost[h[b][0]]=h[b][1];this.prob=function(){};this.effect=function(){};this.desc=d}var questNames=[];
 function Resource(b){this.id=b.id;this.name=b.name;this.type=b.type||"ore";this.value=b.value||0;this.requirement={};for(var e in b.req)this.requirement[e]=b.req[e];this.quests={};for(e in b.quests)this.quests[e]=questNames[e];this.prodValue=function(b){for(var d=0,e=0,l=0;l<b.planets.length;l++){var m=planets[b.planets[l]];d+=m.resources[this.id];e+=m.globalProd[this.id]+m.globalImport[this.id]-m.globalExport[this.id]}return Math.log(1+d)/10-Math.log(1+Math.abs(e))};this.show=function(b){var d=0,
-e;for(e in this.requirement){if(this.requirement[e]<=b.researches[researchesName[e]].level)return!0;d++}for(e in this.quests){if(quests[questNames[e]].done)return!0;d++}return d?!1:!0}}var resources=[],resourcesName=[];resources[0]=new Resource({id:0,name:"iron",value:16,category:"extraction",functional:"construction"});resources[1]=new Resource({id:1,name:"steel",type:"prod",value:4,category:"production",functional:"construction"});
-resources[2]=new Resource({id:2,name:"titanium",value:3,req:{mineralogy:4},category:"extraction",functional:"construction"});resources[3]=new Resource({id:3,name:"silicon",type:"prod",req:{electronics:1},value:11,category:"production",functional:"refining"});resources[4]=new Resource({id:4,name:"graphite",value:7,category:"extraction",functional:"refining"});resources[5]=new Resource({id:5,name:"oil",value:2,req:{chemical:1},category:"extraction",functional:"refining"});
-resources[6]=new Resource({id:6,name:"fuel",type:"prod",value:6,category:"production",functional:"energy"});resources[7]=new Resource({id:7,name:"hydrogen",category:"extraction",functional:"energy"});resources[8]=new Resource({id:8,name:"oxygen",req:{nononono:1},category:"production",functional:"population"});resources[9]=new Resource({id:9,name:"methane",category:"extraction",functional:"refining"});resources[10]=new Resource({id:10,name:"water",category:"extraction",functional:"refining"});
-resources[11]=new Resource({id:11,name:"osmium",req:{osmium:1},category:"extraction",functional:"construction"});resources[12]=new Resource({id:12,name:"technetium",type:"prod",req:{halean:1},functional:"construction"});resources[13]=new Resource({id:13,name:"rhodium",req:{rhodium:1},category:"extraction",functional:"construction"});resources[14]=new Resource({id:14,name:"uranium",req:{mineralogy:4},category:"extraction",functional:"energy"});
-resources[15]=new Resource({id:15,name:"plastic",type:"prod",req:{chemical:4},value:29,category:"production",functional:"construction"});resources[16]=new Resource({id:16,name:"circuit",type:"prod",req:{electronics:1},value:18,category:"production",functional:"construction"});resources[17]=new Resource({id:17,name:"nanotubes",type:"prod",req:{material:14},category:"production",functional:"construction"});resources[18]=new Resource({id:18,name:"ice",req:{ice:1},category:"extraction",functional:"refining"});
-resources[19]=new Resource({id:19,name:"biomass",category:"extraction",functional:"population"});resources[20]=new Resource({id:20,name:"ammunition",type:"prod",req:{military:1},quests:{city_5:0},category:"military",functional:"military"});resources[21]=new Resource({id:21,name:"sand",req:{mineralogy:4},category:"extraction",functional:"refining"});resources[22]=new Resource({id:22,name:"empty cryocell",type:"prod",req:{ice:2},category:"production",functional:"population"});
-resources[23]=new Resource({id:23,name:"coolant",type:"prod",req:{ice:10},category:"production",functional:"refining"});resources[24]=new Resource({id:24,name:"robots",type:"prod",req:{artificial_intelligence:1,halean:1},category:"production",functional:"construction"});resources[25]=new Resource({id:25,name:"armor",type:"prod",req:{military:12},category:"military",functional:"military"});resources[26]=new Resource({id:26,name:"engine",type:"prod",req:{military:16},category:"military",functional:"construction"});
-resources[27]=new Resource({id:27,name:"empty battery",type:"prod",req:{electronics:8},category:"production",functional:"energy"});resources[28]=new Resource({id:28,name:"full battery",type:"prod",req:{electronics:8},category:"production",functional:"energy"});resources[29]=new Resource({id:29,name:"u-ammunition",type:"prod",req:{military:8},category:"military",functional:"military"});resources[30]=new Resource({id:30,name:"t-ammunition",type:"prod",req:{artofwar:1},category:"military",functional:"military"});
-resources[31]=new Resource({id:31,name:"sulfur",req:{vulcan:1},category:"extraction",functional:"refining"});resources[32]=new Resource({id:32,name:"antimatter",type:"prod",req:{quantum:1},category:"production",functional:"energy"});resources[33]=new Resource({id:33,name:"mK Embryo",type:"prod",req:{osmium:1},category:"production",functional:"construction"});resources[34]=new Resource({id:34,name:"superconductors",type:"prod",req:{nononono:15},category:"production",functional:"construction"});
-resources[35]=new Resource({id:35,name:"caesium",req:{karan_nuclear:1},category:"extraction",functional:"refining"});resources[36]=new Resource({id:36,name:"thorium",req:{karan_nuclear:1},category:"extraction",functional:"energy"});resources[37]=new Resource({id:37,name:"ammonia",req:{ammonia_chemistry:1},category:"extraction",functional:"refining"});resources[38]=new Resource({id:38,name:"loaded cryocell",req:{ice:2},category:"production",functional:"population"});
+e;for(e in this.requirement){if(this.requirement[e]<=b.researches[researchesName[e]].level)return!0;d++}for(e in this.quests){if(quests[questNames[e]].done)return!0;d++}return d?!1:!0}}var resources=[],resourcesName=[];
+resources[0]=new Resource({id:0,name:"iron",value:16,category:"extraction",functional:"construction"});
+resources[1]=new Resource({id:1,name:"steel",type:"prod",value:4,category:"production",functional:"construction"});
+resources[2]=new Resource({id:2,name:"titanium",value:3,req:{mineralogy:4},category:"extraction",functional:"construction"});
+resources[3]=new Resource({id:3,name:"silicon",type:"prod",req:{electronics:1},value:11,category:"production",functional:"refining"});
+resources[4]=new Resource({id:4,name:"graphite",value:7,category:"extraction",functional:"refining"});
+resources[5]=new Resource({id:5,name:"oil",value:2,req:{chemical:1},category:"extraction",functional:"refining"});
+resources[6]=new Resource({id:6,name:"fuel",type:"prod",value:6,category:"production",functional:"energy"});
+resources[7]=new Resource({id:7,name:"hydrogen",category:"extraction",functional:"energy"});
+resources[8]=new Resource({id:8,name:"oxygen",req:{nononono:1},category:"production",functional:"population"});
+resources[9]=new Resource({id:9,name:"methane",category:"extraction",functional:"refining"});
+resources[10]=new Resource({id:10,name:"water",category:"extraction",functional:"refining"});
+resources[11]=new Resource({id:11,name:"osmium",req:{osmium:1},category:"extraction",functional:"construction"});
+resources[12]=new Resource({id:12,name:"technetium",type:"prod",req:{halean:1},functional:"construction"});
+resources[13]=new Resource({id:13,name:"rhodium",req:{rhodium:1},category:"extraction",functional:"construction"});
+resources[14]=new Resource({id:14,name:"uranium",req:{mineralogy:4},category:"extraction",functional:"energy"});
+resources[15]=new Resource({id:15,name:"plastic",type:"prod",req:{chemical:4},value:29,category:"production",functional:"construction"});
+resources[16]=new Resource({id:16,name:"circuit",type:"prod",req:{electronics:1},value:18,category:"production",functional:"construction"});
+resources[17]=new Resource({id:17,name:"nanotubes",type:"prod",req:{material:14},category:"production",functional:"construction"});
+resources[18]=new Resource({id:18,name:"ice",req:{ice:1},category:"extraction",functional:"refining"});
+resources[19]=new Resource({id:19,name:"biomass",category:"extraction",functional:"population"});
+resources[20]=new Resource({id:20,name:"ammunition",type:"prod",req:{military:1},quests:{city_5:0},category:"military",functional:"military"});
+resources[21]=new Resource({id:21,name:"sand",req:{mineralogy:4},category:"extraction",functional:"refining"});
+resources[22]=new Resource({id:22,name:"empty cryocell",type:"prod",req:{ice:2},category:"production",functional:"population"});
+resources[23]=new Resource({id:23,name:"coolant",type:"prod",req:{ice:10},category:"production",functional:"refining"});
+resources[24]=new Resource({id:24,name:"robots",type:"prod",req:{artificial_intelligence:1,halean:1},category:"production",functional:"construction"});
+resources[25]=new Resource({id:25,name:"armor",type:"prod",req:{military:12},category:"military",functional:"military"});
+resources[26]=new Resource({id:26,name:"engine",type:"prod",req:{military:16},category:"military",functional:"construction"});
+resources[27]=new Resource({id:27,name:"empty battery",type:"prod",req:{electronics:8},category:"production",functional:"energy"});
+resources[28]=new Resource({id:28,name:"full battery",type:"prod",req:{electronics:8},category:"production",functional:"energy"});
+resources[29]=new Resource({id:29,name:"u-ammunition",type:"prod",req:{military:8},category:"military",functional:"military"});
+resources[30]=new Resource({id:30,name:"t-ammunition",type:"prod",req:{artofwar:1},category:"military",functional:"military"});
+resources[31]=new Resource({id:31,name:"sulfur",req:{vulcan:1},category:"extraction",functional:"refining"});
+resources[32]=new Resource({id:32,name:"antimatter",type:"prod",req:{quantum:1},category:"production",functional:"energy"});
+resources[33]=new Resource({id:33,name:"mK Embryo",type:"prod",req:{osmium:1},category:"production",functional:"construction"});
+resources[34]=new Resource({id:34,name:"superconductors",type:"prod",req:{nononono:15},category:"production",functional:"construction"});
+resources[35]=new Resource({id:35,name:"caesium",req:{karan_nuclear:1},category:"extraction",functional:"refining"});
+resources[36]=new Resource({id:36,name:"thorium",req:{karan_nuclear:1},category:"extraction",functional:"energy"});
+resources[37]=new Resource({id:37,name:"ammonia",req:{ammonia_chemistry:1},category:"extraction",functional:"refining"});
+resources[38]=new Resource({id:38,name:"loaded cryocell",req:{ice:2},category:"production",functional:"population"});
 for(var resNum=resources.length,researchNum=0,highlightRes=Array(resNum),r=0;r<resNum;r++)highlightRes[r]=!1;for(r=resNum;r<100-resNum;r++)resources[r]=new Resource({id:r,name:"zzzplaceholder",type:"prod",req:{nononono:3}});var resourcesPrices=[.01,.1,4.53,22307.38,141.77,303.03,8,1.54,5E3,7.28,28,5E3,907.3,5E3,66.36,3.33,810.26,5580.62,43.74,362.49,82.93,73.46,5E3,13802.12,16892.96,4163.75,62241.59,.12,1.2,1856.36,22E3,12989.2,5E3,5E5,5E5,5E5,5E5,5E5,5E5,5E5,5E5];
 for(r=0;r<resourcesPrices.length;r++)resourcesPrices[r]/=10,resources[r].value=1/resourcesPrices[r];resources.energy=new Resource({id:"energy",name:"energy",type:"prod",value:4});resources.researchPoint=new Resource({id:"research",name:"research point",type:"prod",value:0});for(var i=0;i<resNum;i++)resources[i].id=i,resourcesName[resources[i].name]=resources[i];
 var allEnv="desert;ice;terrestrial;forest;metallic;ocean;gas giant;lava;carbon;ammonia".split(";"),allEnvExt="desert;ice;terrestrial;forest;metallic;ocean;gas giant;lava;acid;radioactive;carbon;ammonia".split(";"),allEnvRadio="desert;ice;terrestrial;forest;metallic;ocean;gas giant;lava;radioactive;carbon;ammonia".split(";"),allEnvAcid="desert;ice;terrestrial;forest;metallic;ocean;gas giant;lava;acid;carbon;ammonia".split(";"),allEnvHot=["desert","lava","acid"],allEnvCold=["ice","radioactive","metallic",
@@ -546,7 +576,7 @@ function Fleet(b,e){
 	this.costSingleShip=function(shipIndex){
 		var shipCost=ships[shipIndex].cost.slice();
 		for(var costIndex = 0; costIndex<shipCost.length; costIndex++) {
-			for (var anzahlUpgrades=0; anzahlUpgrades<this.karanArtOfWar; anzahlUpgrades++)
+			for (var upgradeLevel=0; upgradeLevel<this.karanArtOfWar; upgradeLevel++)
 				shipCost[costIndex]*=0.92;
 		}
 		return shipCost;
@@ -568,20 +598,20 @@ function Fleet(b,e){
 		var b=ships[d].power;
 		var e=ships[d].id;
 		if(5==e||6==e)
-			for (var anzahlUpgrades=0;anzahlUpgrades<this.qurisArtOfWar;anzahlUpgrades++)
+			for (var upgradeLevel=0;upgradeLevel<this.qurisArtOfWar;upgradeLevel++)
 				b*=1.12;
 		else 
-			for (var anzahlUpgrades=0;anzahlUpgrades<this.qurisArtOfWar;anzahlUpgrades++)
+			for (var upgradeLevel=0;upgradeLevel<this.qurisArtOfWar;upgradeLevel++)
 				b*=1.05;
 		if("ballistic"==ships[d].weapon)
-			for(var anzahlUpgrades=0;anzahlUpgrades<this.thoroidActivated;anzahlUpgrades++)
+			for(var upgradeLevel=0;upgradeLevel<this.thoroidActivated;upgradeLevel++)
 				b*=1.1;
 		b*=this.expBonus("power");
 		return b;
 	};
 	this.piercingSingleShip=function(d){
 		var b=ships[d].piercing;
-		for(var anzahlUpgrades=0;anzahlUpgrades<this.karanArtOfWar;anzahlUpgrades++)
+		for(var upgradeLevel=0;upgradeLevel<this.karanArtOfWar;upgradeLevel++)
 			b*=1.3;
 		return b;
 	};
@@ -590,12 +620,12 @@ function Fleet(b,e){
 		b+=ships[d].shield;
 		var e=ships[d].id;
 		if(5==e||6==e)
-			for (var anzahlUpgrades=0;anzahlUpgrades<this.qurisArtOfWar;anzahlUpgrades++)
+			for (var upgradeLevel=0;upgradeLevel<this.qurisArtOfWar;upgradeLevel++)
 				b*=1.12;
 		else 
-			for (var anzahlUpgrades=0;anzahlUpgrades<this.qurisArtOfWar;anzahlUpgrades++)
+			for (var upgradeLevel=0;upgradeLevel<this.qurisArtOfWar;upgradeLevel++)
 				b*=1.05;
-		for(var anzahlUpgrades=0;anzahlUpgrades<this.qurisHonorActivated;anzahlUpgrades++)
+		for(var upgradeLevel=0;upgradeLevel<this.qurisHonorActivated;upgradeLevel++)
 			b*=1.5;
 		return b*this.expBonus("shield")
 	};
@@ -609,11 +639,13 @@ function Fleet(b,e){
 		var b=ships[d].armor;
 		var e=ships[d].id;
 		if(5==e||6==e)
-			for (var anzahlUpgrades=0;anzahlUpgrades<this.qurisArtOfWar;anzahlUpgrades++)
+			for (var upgradeLevel=0;upgradeLevel<this.qurisArtOfWar;upgradeLevel++)
 				b*=1.12;
 		else 
-			for (var anzahlUpgrades=0;anzahlUpgrades<this.qurisArtOfWar;anzahlUpgrades++)
+			for (var upgradeLevel=0;upgradeLevel<this.qurisArtOfWar;upgradeLevel++)
 				b*=1.05;
+		for(var upgradeLevel=0;upgradeLevel<this.qurisValueActivated;upgradeLevel++)
+			b*=1.5;
 		return b*this.expBonus("armor")
 	};
 	this.hp=function(){
@@ -626,13 +658,11 @@ function Fleet(b,e){
 		b+=ships[d].hp;
 		var e=ships[d].id;
 		if(5==e||6==e)
-			for (var anzahlUpgrades=0;anzahlUpgrades<this.qurisArtOfWar;anzahlUpgrades++)
+			for (var upgradeLevel=0;upgradeLevel<this.qurisArtOfWar;upgradeLevel++)
 				b*=1.12;
 		else 
-			for (var anzahlUpgrades=0;anzahlUpgrades<this.qurisArtOfWar;anzahlUpgrades++)
+			for (var upgradeLevel=0;upgradeLevel<this.qurisArtOfWar;upgradeLevel++)
 				b*=1.05;
-		for(var anzahlUpgrades=0;anzahlUpgrades<this.qurisValueActivated;anzahlUpgrades++)
-			b*=1.5;
 		return b*this.expBonus("hp")
 	};
 	this.rawValue=function(){
