@@ -330,7 +330,7 @@ document.addEventListener("DOMContentLoaded", function() {
 				if(artifactId=="thoroid")
 					warfleet.thoroidActivated=newPossession;
 				if(artifactId=="quris_value")
-					warfleet.qurisValueActivated=newPossession;
+					warfleet.qurisValorActivated=newPossession;
 				if(artifactId=="quris_honor")
 					warfleet.qurisHonorActivated=newPossession;
 			}
