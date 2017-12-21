@@ -57,7 +57,7 @@ artifacts.push(new Artifact({id:"thoroid",name:"Mysterious Thoroid",description:
 artifacts.push(new Artifact({id:"magnet",name:"Self Levitating Magnet",description:"This powerful magnet boosts production of <span style='blue_text'>Silicon</span> by +25%"}));artifacts.push(new Artifact({id:"necklace",name:"Utoma's Necklace",description:"This powerful magnet boosting production of <span style='blue_text'>Silicon</span> by +25%"}));artifacts.push(new Artifact({id:"ancient",name:"Idol of Ancient Haleans",description:"The following inscription is carved in this relic: Mihra min mi lura krasusia ruthen, Muhra mun mu lura silinusia serul, pachra pan pa lura cininusia pharun"}));
 artifacts.push(new Artifact({id:"shard",name:"Emerald Shard",description:"This powerful magnet boosting production of <span style='blue_text'>Silicon</span> by +25%"}));artifacts.push(new Artifact({id:"book_of_life",name:"Juini's Book of Life",description:"This powerful magnet boosting production of <span style='blue_text'>Silicon</span> by +25%"}));artifacts.push(new Artifact({id:"stone",name:"Ling-Wa Stone",description:"The rosetta stone of galactic era. Some inscription are still visible: us - iron - ?,  krasnus - ? - rodj, cinii - blue - ?,  mi - ? - un, ma - ? - dva, mu - three - ?, lura - million - ?"}));
 artifacts.push(new Artifact({id:"shard",name:"Shard ",description:"This powerful magnet boosting production of <span style='blue_text'>Silicon</span> by +25%"}));
-artifacts.push(new Artifact({id:"quris_value",name:"Quris Medal of Value",description:"A reward for your military value, a great honor for Quris. <span style='blue_text'>+50%</span> to all ships HP",action:function(){for(var b=0;b<game.ships.length;b++)game.ships[b].hp*=1.5},unaction:function(){for(var b=0;b<game.ships.length;b++)game.ships[b].hp/=1.5}}));
+artifacts.push(new Artifact({id:"quris_value",name:"Quris Medal of Valor",description:"A reward for your military value, a great honor for Quris. <span style='blue_text'>+50%</span> to all ships HP",action:function(){for(var b=0;b<game.ships.length;b++)game.ships[b].hp*=1.5},unaction:function(){for(var b=0;b<game.ships.length;b++)game.ships[b].hp/=1.5}}));
 artifacts.push(new Artifact({id:"quris_honor",name:"Quris Medal of Honor",description:"A reward for your military honor that earns you the respect of Quris people. <span style='blue_text'>+50%</span> to all ships shields",action:function(){for(var b=0;b<game.ships.length;b++)game.ships[b].shield*=1.5},unaction:function(){for(var b=0;b<game.ships.length;b++)game.ships[b].shield/=1.5}}));for(var artifactsName=[],a=0;a<artifacts.length;a++)artifactsName[artifacts[a].id]=a;
 var alphanumeric="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789012345678901234567890123456789",numeric="0123456789";function randomString(b){b=b||8;for(var e="",d=0;d<b;d++)e+=alphanumeric.charAt(Math.floor(Math.random()*alphanumeric.length));return e}function randomNumericString(b){b=b||6;for(var e="",d=0;d<b;d++)e+=numeric.charAt(Math.floor(Math.random()*numeric.length));return e}
 function Article(b,e,d,h){this.name=b;this.type=e;this.cost=[];for(b=0;b<resNum;b++)this.cost[b]=0;for(b=0;b<h.length;b++)this.cost[h[b][0]]=h[b][1];this.prob=function(){};this.effect=function(){};this.desc=d}var questNames=[];
@@ -215,15 +215,113 @@ b.researches[d].bonusLevel,b:b.researches[d].bonusLevel};e.fleets=b.fleets;retur
 function Market(){this.stock=Array(resNum);this.maxStock=Array(resNum);for(var b=0;b<resNum;b++)this.stock[b]=0,this.maxStock[b]=mi*mi/resourcesPrices[b];this.esportTime=50;this.fees=.03;this.esport=function(b){if(0>=this.esportTime){for(b=0;b<civis.length;b++)for(var d=0;d<resNum;d++){this.stock[d]+=100*civis[b].marketExport(d)-100*civis[b].marketImport(d);if(game.searchPlanet(planetsName.virgo)){var e=100*(civis[b].marketExport(d)*this.sellPrice(d)+civis[b].marketImport(d)*this.buyPrice(d,game))*
 this.fees;isNaN(e)||(game.money+=e)}0>this.stock[d]&&(this.stock[d]=0)}this.esportTime=(40*Math.random()+80)/idleBon}else this.esportTime-=b};this.load=function(b){for(var d=0;d<resNum;d++)this.stock[d]=b[d]};this.toobj=function(){for(var b={},d=0;d<resNum;d++)b[d]=this.stock[d];return b};this.sellPrice=function(b,d){return resourcesPrices[b]};this.buyPrice=function(b,d){return this.sellPrice(b,d)*this.buyTaxes(d)};this.buyTaxes=function(b){for(var d=0,e=0;e<b.planets.length;e++)d+=planets[b.planets[e]].structure[buildingsName.tradehub].number;
 return 1+.5*Math.exp(-.01*d)};this.sell=function(b){for(var d=0;d<resNum;d++){var e=Math.max(0,Math.min(b.storage[d],this.maxStock[d]-this.stock[d]));this.stock[d]+=e;civis[b.civis].money+=this.sellPrice(d,civis[b.civis])*e;b.storage[d]-=e}};this.buy=function(){}}function Government(b){this.name=b.name;this.bonus=b.bonus;this.unbonus=b.unbonus;this.malus=b.malus;this.description=b.description}
-function Game(b,e,d,h,g,l,m){this.version=GAME_VERSION;this.id=this.techPoints=this.timeTravelNum=0;this.icon="void.png";this.capital=0;this.strategy=null;this.biomass=g;this.maps={0:1};this.govern="none";this.showInTournament=!0;this.idleTime=0;this.mapsLength=function(){var b=0,d;for(d in this.maps)b++;return b};this.contacted=function(){return game.researches[3].level>=this.hops};this.repName=function(b){return this.reputation[b]<=repLevel.hostile.max?"hostile":this.reputation[b]>=repLevel.neutral.min&&
-this.reputation[b]<=repLevel.neutral.max?"neutral":this.reputation[b]>=repLevel.friendly.min&&this.reputation[b]<=repLevel.friendly.max?"friendly":this.reputation[b]>=repLevel.allied.min?"allied":"N/A"};this.days=this.researchPoint=this.money=0;this.shortName=this.name=b;this.playerName=d;this.playerRace=e;this.description=h;this.playerRank=new Rank("Exiled","#999",function(){return!0});this.timeDust=0;this.planets=[];this.planetsTransport=[];this.lastSaved=(new Date).getTime();this.buildings=[];
-this.researches=[];this.ships=[];this.reputation=[];this.repLevel=null;this.completedQuest={};this.acceptedQuest={};this.lastRes=this.lastProd=0;this.lastCheck=(new Date).getTime();this.lastTime=(new Date).getTime();this.map=this.researchPointProd=0;this.esportage=Array(resNum);for(b=0;b<resNum;b++)this.esportage[b]={amount:0,repNeeded:0,bonus:0};if(l)for(b=0;b<resNum;b++)this.esportage[b]=l[resources[b].name]||{amount:0,repNeeded:0,bonus:0};this.importage=Array(resNum);for(b=0;b<resNum;b++)this.importage[b]=
-{amount:0,repNeeded:0,bonus:0};if(m)for(b=0;b<resNum;b++)this.importage[b]=m[resources[b].name]||{amount:0,repNeeded:0,bonus:0};this.marketExport=function(b){b=this.esportage[b];return game.reputation[this.id]>=b.repNeeded?b.amount*(1+b.bonus*game.reputation[this.id])*(1+Math.log(game.totalTPspent()+1)/Math.log(5))*this.planets.length:0};this.marketImport=function(b){return this.importage[b].amount*this.planets.length};this.achievements=[];this.routes=[];this.traits=[];this.purposes=[];this.atkTimer=
-Math.floor(ATK_TIMER/8+ATK_TIMER/8*Math.random());this.findTrait=function(b){for(var d=0;d<this.traits.length&&this.traits[d].name!=b;)d++;return d};this.hasTrait=function(b){for(var d=!1,e=0;e<this.traits.length&&!d;)this.traits[e].name==b&&(d=!0),e++;return d};this.protect=function(){for(var b=0;b<this.planets.length;b++){var d=planets[this.planets[b]],e=[],g=[],h=[],l;for(l in d.fleets)if(0!=l&&"hub"!=l&&d.fleets[l].civis==this.id&&e.push(l),0!=l&&"hub"!=l&&d.fleets[l].civis!=this.id){var m=this.repName(d.fleets[l].civis);
-"hostile"==m?g.push(l):"neutral"==m&&h.push(l)}this.hasTrait("aggressive")?this.attackOrbitingFleets(d,e,g):this.hasTrait("defensive")&&this.attackOrbitingFleets(d,e,g)}};this.attackOrbitingFleets=function(b,d,e){for(var g=0,h=0,l=0;g<d.length&&0<b.fleets[d[g]].shipNum()&&h<e.length&&50>l;){if("atk"==b.fleets[e[h]].battle(b.fleets[d[g]],!0).winner){console.log("ATTACKING "+h+" "+g);var m=b.fleets[e[h]].battle(b.fleets[d[g]],!1);"atk"==m.winner||"draw"==m.winner?0==b.fleets[e[h]].shipNum()&&(b.fleets[e[h]].civis==
-game.id&&(pop=new exportPopup(300,0,"<br><span class='red_text text_shadow'>The fleet - "+b.fleets[e[h]].name+" - has been attacked in "+b.name+" and lost the battle!</span>","info"),pop.drawToast()),delete b.fleets[e[h]],h++):"def"==m.winner&&0==b.fleets[d[g]].shipNum()&&(delete b.fleets[d[g]],g++)}l++}};this.behave=function(){if(0>=this.atkTimer){this.atkTimer=0;for(var b=[],d=[],e=[],g="",h="",l=0;l<this.planets.length;l++)for(var m=planets[this.planets[l]],y=0;y<m.routes.length;y++){var I=planets[m.routes[y].other(m.id)];
-I.civis&&I.civis!=m.civis&&(b.push({planet:I.id,source:m.id}),h+=planets[I.id].name+" ("+civis[I.civis].shortName+")["+m.name+"], ",e.has(m.id)||e.push(m.id),"hostile"==civis[m.civis].repName(I.civis)&&(d.push({planet:I.id,source:m.id}),g+=planets[I.id].name+" ("+civis[I.civis].shortName+")["+m.name+"], "))}b=[];y="";for(l=e=0;l<this.planets.length;l++){m=planets[this.planets[l]];for(var A in m.fleets)0!=A&&"hub"!=A&&m.fleets[A].civis==this.id&&(b.push({fleet:A,planet:m.id,loss:m.fleets[A].originalStrength-
-m.fleets[A].rawValue()}),b[b.length-1].loss>b[e].loss&&(e=b.length-1),y+=m.fleets[A].name+" ("+m.name+"), ")}console.log(h);console.log(g);console.log(y);g=1E300;for(A=0;A<b.length;A++)g=Math.min(g,planets[b[A].planet].fleets[b[A].fleet].originalStrength);g/=10;this.hasTrait("aggressive")?(this.atkTimer=ATK_TIMER/this.traits[this.findTrait("aggressive")].value,this.atkTimer+=.2*this.atkTimer-.4*Math.random()*this.atkTimer,0<d.length?(d=d[Math.floor(Math.random()*d.length)],l=d.planet,d=d.source,0<
+function Game(b,e,d,h,g,l,m){
+	this.version=GAME_VERSION;
+	this.id=this.techPoints=this.timeTravelNum=0;
+	this.icon="void.png";this.capital=0;
+	this.strategy=null;this.biomass=g;
+	this.maps={0:1};
+	this.govern="none";
+	this.showInTournament=!0;
+	this.idleTime=0;
+	this.mapsLength=function(){
+		var b=0,d;
+		for(d in this.maps)
+			b++;return b
+	};
+	this.contacted=function(){
+		return game.researches[3].level>=this.hops
+	};
+	this.repName=function(b){
+		return this.reputation[b]<=repLevel.hostile.max?"hostile":this.reputation[b]>=repLevel.neutral.min&&this.reputation[b]<=repLevel.neutral.max?"neutral":this.reputation[b]>=repLevel.friendly.min&&this.reputation[b]<=repLevel.friendly.max?"friendly":this.reputation[b]>=repLevel.allied.min?"allied":"N/A"
+	};
+	this.days=this.researchPoint=this.money=0;
+	this.shortName=this.name=b;
+	this.playerName=d;
+	this.playerRace=e;
+	this.description=h;
+	this.playerRank=new Rank("Exiled","#999",function(){return!0});
+	this.timeDust=0;
+	this.planets=[];
+	this.planetsTransport=[];
+	this.lastSaved=(new Date).getTime();this.buildings=[];
+	this.researches=[];
+	this.ships=[];
+	this.reputation=[];
+	this.repLevel=null;
+	this.completedQuest={};
+	this.acceptedQuest={};
+	this.lastRes=this.lastProd=0;
+	this.lastCheck=(new Date).getTime();
+	this.lastTime=(new Date).getTime();
+	this.map=this.researchPointProd=0;
+	this.esportage=Array(resNum);
+	for(b=0;b<resNum;b++)
+		this.esportage[b]={amount:0,repNeeded:0,bonus:0};
+	if(l)
+		for(b=0;b<resNum;b++)
+			this.esportage[b]=l[resources[b].name]||{amount:0,repNeeded:0,bonus:0};
+	this.importage=Array(resNum);
+	for(b=0;b<resNum;b++)
+		this.importage[b]={amount:0,repNeeded:0,bonus:0};
+	if(m)
+		for(b=0;b<resNum;b++)
+			this.importage[b]=m[resources[b].name]||{amount:0,repNeeded:0,bonus:0};
+	this.marketExport=function(b){
+		b=this.esportage[b];
+		return game.reputation[this.id]>=b.repNeeded?b.amount*(1+b.bonus*game.reputation[this.id])*(1+Math.log(game.totalTPspent()+1)/Math.log(5))*this.planets.length:0
+	};
+	this.marketImport=function(b){
+		return this.importage[b].amount*this.planets.length
+	};
+	this.achievements=[];
+	this.routes=[];
+	this.traits=[];
+	this.purposes=[];
+	this.atkTimer=Math.floor(ATK_TIMER/8+ATK_TIMER/8*Math.random());
+	this.findTrait=function(b){
+		for(var d=0;d<this.traits.length&&this.traits[d].name!=b;)
+			d++;return d
+	};
+	this.hasTrait=function(b){
+		for(var d=!1,e=0;e<this.traits.length&&!d;)
+			this.traits[e].name==b&&(d=!0),e++;
+		return d
+	};
+	this.protect=function(){
+		for(var b=0;b<this.planets.length;b++){
+			var d=planets[this.planets[b]],e=[],g=[],h=[],l;
+			for(l in d.fleets)
+				if(0!=l&&"hub"!=l&&d.fleets[l].civis==this.id&&e.push(l),0!=l&&"hub"!=l&&d.fleets[l].civis!=this.id){
+					var m=this.repName(d.fleets[l].civis);
+					"hostile"==m?g.push(l):"neutral"==m&&h.push(l)
+				}
+			this.hasTrait("aggressive")?this.attackOrbitingFleets(d,e,g):this.hasTrait("defensive")&&this.attackOrbitingFleets(d,e,g)
+		}
+	};
+	this.attackOrbitingFleets=function(b,d,e){
+		for(var g=0,h=0,l=0;g<d.length&&0<b.fleets[d[g]].shipNum()&&h<e.length&&50>l;){
+			if("atk"==b.fleets[e[h]].battle(b.fleets[d[g]],!0).winner){
+				console.log("ATTACKING "+h+" "+g);
+				var m=b.fleets[e[h]].battle(b.fleets[d[g]],!1);
+				"atk"==m.winner||"draw"==m.winner?0==b.fleets[e[h]].shipNum()&&(b.fleets[e[h]].civis==game.id&&(pop=new exportPopup(300,0,"<br><span class='red_text text_shadow'>The fleet - "+b.fleets[e[h]].name+" - has been attacked in "+b.name+" and lost the battle!</span>","info"),pop.drawToast()),delete b.fleets[e[h]],h++):"def"==m.winner&&0==b.fleets[d[g]].shipNum()&&(delete b.fleets[d[g]],g++)
+			}
+			l++
+		}
+	};
+	this.behave=function(){
+		if(0>=this.atkTimer){
+			this.atkTimer=0;
+			for(var b=[],d=[],e=[],g="",h="",l=0;l<this.planets.length;l++)
+				for(var m=planets[this.planets[l]],y=0;y<m.routes.length;y++){
+					var I=planets[m.routes[y].other(m.id)];
+					I.civis&&I.civis!=m.civis&&(b.push({planet:I.id,source:m.id}),h+=planets[I.id].name+" ("+civis[I.civis].shortName+")["+m.name+"], ",e.has(m.id)||e.push(m.id),"hostile"==civis[m.civis].repName(I.civis)&&(d.push({planet:I.id,source:m.id}),g+=planets[I.id].name+" ("+civis[I.civis].shortName+")["+m.name+"], "))
+				}
+			b=[];
+			y="";
+			for(l=e=0;l<this.planets.length;l++){
+				m=planets[this.planets[l]];
+				for(var A in m.fleets)0!=A&&"hub"!=A&&m.fleets[A].civis==this.id&&(b.push({fleet:A,planet:m.id,loss:m.fleets[A].originalStrength-m.fleets[A].rawValue()}),b[b.length-1].loss>b[e].loss&&(e=b.length-1),y+=m.fleets[A].name+" ("+m.name+"), ")}console.log(h);console.log(g);console.log(y);g=1E300;for(A=0;A<b.length;A++)g=Math.min(g,planets[b[A].planet].fleets[b[A].fleet].originalStrength);g/=10;this.hasTrait("aggressive")?(this.atkTimer=ATK_TIMER/this.traits[this.findTrait("aggressive")].value,this.atkTimer+=.2*this.atkTimer-.4*Math.random()*this.atkTimer,0<d.length?(d=d[Math.floor(Math.random()*d.length)],l=d.planet,d=d.source,0<
 b.length&&0<g&&(A=generateFleet(this.id,g,this.shortName+" Attack Fleet"),null!=A&&(A.type="enemy_raid",A.move(d,l)))):0<b.length&&(A=generateFleet(this.id,Math.min(b[e].loss,g),this.shortName+" Reinforce Fleet"),null!=A&&planets[b[e].planet].fleets[b[e].fleet].fusion(A))):this.hasTrait("defensive")?(this.atkTimer=ATK_TIMER/this.traits[this.findTrait("defensive")].value,this.atkTimer+=.2*this.atkTimer-.4*Math.random()*this.atkTimer,console.log("GEPPETTO"),0<b.length&&(A=generateFleet(this.id,Math.min(b[e].loss,
 g),this.shortName+" Reinforce Fleet"),console.log(A),console.log(planets[b[e].planet].fleets[b[e].fleet].name),null!=A&&planets[b[e].planet].fleets[b[e].fleet].fusion(A))):this.hasTrait("neutral")?(this.atkTimer=ATK_TIMER/this.traits[this.findTrait("neutral")].value,this.atkTimer+=.2*this.atkTimer-.4*Math.random()*this.atkTimer,.5>Math.random()?0<d.length?(d=d[Math.floor(Math.random()*d.length)],l=d.planet,d=d.source,0<b.length&&0<g&&(A=generateFleet(this.id,g,this.shortName+" Attack Fleet"),null!=
 A&&(A.type="enemy_raid",A.move(d,l)))):0<b.length&&(A=generateFleet(this.id,Math.min(b[e].loss,g),this.shortName+" Reinforce Fleet"),null!=A&&planets[b[e].planet].fleets[b[e].fleet].fusion(A)):0<b.length?(A=generateFleet(this.id,Math.min(b[e].loss,g),this.shortName+" Reinforce Fleet"),null!=A&&planets[b[e].planet].fleets[b[e].fleet].fusion(A)):0<d.length&&(d=d[Math.floor(Math.random()*d.length)],l=d.planet,d=d.source,0<b.length&&0<g&&(A=generateFleet(this.id,g,this.shortName+" Attack Fleet"),null!=
@@ -565,7 +663,7 @@ function Fleet(b,e){
 	this.qurisArtOfWar=0;
 	this.karanArtOfWar=0;
 	this.thoroidActivated=0;
-	this.qurisValueActivated=0;
+	this.qurisValorActivated=0;
 	this.qurisHonorActivated=0;
 	this.costSingleShip=function(d){
 		var b=ships[d].cost;
@@ -644,8 +742,6 @@ function Fleet(b,e){
 		else 
 			for (var upgradeLevel=0;upgradeLevel<this.qurisArtOfWar;upgradeLevel++)
 				b*=1.05;
-		for(var upgradeLevel=0;upgradeLevel<this.qurisValueActivated;upgradeLevel++)
-			b*=1.5;
 		return b*this.expBonus("armor")
 	};
 	this.hp=function(){
@@ -663,6 +759,8 @@ function Fleet(b,e){
 		else 
 			for (var upgradeLevel=0;upgradeLevel<this.qurisArtOfWar;upgradeLevel++)
 				b*=1.05;
+		for(var upgradeLevel=0;upgradeLevel<this.qurisValorActivated;upgradeLevel++)
+			b*=1.5;
 		return b*this.expBonus("hp")
 	};
 	this.rawValue=function(){
