@@ -251,6 +251,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	game.ships.map(function(ship) {
 		var n;
 		if(ship.type === "Colonial Ship" || ship.type === "Cargoship") return;
+		if(ship.name === "Augustus" || ship.name === "Leonidas" || ship.name === "Alexander" || ship.name === "Cerberus" || ship.name === "Charon") return;
 		shiplist.appendChild(shipinput(ship, n));
 		shipIndexList.push(ship.id);
 	});

@@ -452,6 +452,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	var enemylist = document.getElementById("enemylist");
 	var enemy_available_ships;
+	var enemy_available_tournament_ships;
 	var enemypicker = el("select");
 	planets.map(function(planet) {
 		for(var k in planet.fleets) {
@@ -481,6 +482,9 @@ document.addEventListener("DOMContentLoaded", function() {
 		while(enemylist.lastChild) enemylist.removeChild(enemylist.lastChild);
 		var o = enemypicker.options[i];
 		enemy_available_ships = ships.slice();
+		civis[0].ships.map(function(ship){
+			delete enemy_available_ships[ship.id]
+		});
 		if(o.fleet.name=="Customizable Fleet"){
 			enemy_available_ships.map(function(ship) {
 				if(ship.type === "Colonial Ship" || ship.type === "Cargoship"){
@@ -491,10 +495,14 @@ document.addEventListener("DOMContentLoaded", function() {
 				enemylist.insertBefore(shipselector(enemy_available_ships), enemylist.firstChild);
 			}
 		}
+		enemy_available_tournament_ships = ships.slice();
+		civis[0].ships.map(function(ship){
+			delete enemy_available_tournament_ships[ship.id]
+		});
 		o.fleet.ships.map(function(n, k) {
 			if(!n&&o.fleet.name!="Tournament Fleet") return;
 			var ship = ships[k];
-			if(o.fleet.name=="Tournament Fleet"&&(ship.type=="Colonial Ship"||ship.type=="Cargoship")) return;
+			if(o.fleet.name=="Tournament Fleet"&&(ship.type=="Colonial Ship"||ship.type=="Cargoship"||!enemy_available_tournament_ships[k])) return;
 			enemylist.appendChild(shipinput(ship, n));
 		});
 		
