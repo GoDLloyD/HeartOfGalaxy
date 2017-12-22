@@ -1,4 +1,6 @@
 Changelog
+* Fixed order for tournament ships
+* Removed all non-tournament ships from Free Battle
 * Renamed Medal of Value to Medal of Valor
 * Changed the Medal Bonus back to HP
 * Fixed resource cost with karan art of war research
