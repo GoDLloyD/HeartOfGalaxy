@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			
 			/*edits start*/
 			["exp"].map(function(name) {
-				var exp = parseInt(document.getElementsByName("exp")[0].value);
+				var exp = fleet.exp;
 				if(isNaN(exp)) exp = 0;
 				else if(exp>MAX_FLEET_EXPERIENCE) exp = MAX_FLEET_EXPERIENCE;
 				bonus.power += calcBonus[name](exp);
@@ -125,14 +125,14 @@ document.addEventListener("DOMContentLoaded", function() {
 		    rawtough = 0;
 		var bonus = fleetBonus(fleet);
 		var ship = ships[shipIndex];
-		power += shipAmount * fleet.powerSingleShip(shipIndex);
-		piercepower += power * (fleet.piercingSingleShip(shipIndex) || 0) / 100,
-		armor += shipAmount * fleet.armorSingleShip(shipIndex);
-		hp += shipAmount * fleet.hpSingleShip(shipIndex);
-		var shiptough = fleet.hpSingleShip(shipIndex) / (1 - dmgred(fleet.armorSingleShip(shipIndex)));
-		var piercingbonus = Math.min(1 + 10 * (fleet.piercingSingleShip(shipIndex) || 0) / 100, 10);
+		power += shipAmount * ship.power * bonus.power;
+		piercepower += power * (ship.piercing || 0) / 100,
+		armor += shipAmount * ship.armor * bonus.armor;
+		hp += shipAmount * ship.hp * bonus.hp;
+		var shiptough = ship.hp / (1 - dmgred(ship.armor * bonus.armor));
+		var piercingbonus = Math.min(1 + 10 * (ship.piercing || 0) / 100, 10);
 		toughness += shipAmount * shiptough;
-		speedpower += (shipAmount+1) * fleet.powerSingleShip(shipIndex) * piercingbonus;
+		speedpower += (shipAmount+1) * ship.power * piercingbonus * bonus.power;
 		speedtough += shipAmount * shiptough;
 		return {
 			Power: power,
@@ -168,21 +168,21 @@ document.addEventListener("DOMContentLoaded", function() {
 		input.setCustomValidity("");
 
 		var value = input.value;
+		if(input.type=="checkbox")
+			if(input.checked)
+				value=1;
+			else
+				value=0;
 		try {
 			value = eval(value);
 		} catch(e) {
 			input.title = e.message;
 			input.setCustomValidity(e.message);
 		}
-		if(input.type=="checkbox")
-			if(input.checked)
-				value=1;
-			else
-				value=0;
 			
 		return parseInt(value) || 0;
 	}
-	
+
 	var saveData;
 	try {
 		saveData = /*history.state || */deserialize(window.location.hash.substring(1)) || JSON.parse(localStorage.getItem("shipcalc-persist")) || {};
@@ -290,10 +290,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		if(document.execCommand) document.execCommand("copy");
 	};
 
-	var nextrun = document.getElementById("nextrun");
-	if(window.name) nextrun.target = window.name+"+";
-
-	var battlereport = document.getElementById("battlereport");
 	var update = document.getElementById("shipcalc").onchange = function() {
 		saveData = {
 			resources: {},
@@ -320,31 +316,26 @@ document.addEventListener("DOMContentLoaded", function() {
 				input.showValue.innerText = "+"+beauty(calcBonus[input.resource.name](warfleet.storage[input.resource.id])) + "x";
 			} else if(input.research) {
 				var newLevel = val;
-				var researchId = input.research.id;
-				if(researchId=="artofwar")
-					warfleet.qurisArtOfWar = newLevel;
-				if(researchId=="karan_artofwar")
-					warfleet.karanArtOfWar = newLevel;
+				while(input.research.level > newLevel) { input.research.level--; input.research.unbonus(); }
+				while(input.research.level < newLevel) { input.research.level++; input.research.bonus(); }
 			} else if(input.artifact) {
-				var newPossession = val;
-				var artifactId = input.artifact.id;
-				if(artifactId=="thoroid")
-					warfleet.thoroidActivated=newPossession;
-				if(artifactId=="quris_value")
-					warfleet.qurisValorActivated=newPossession;
-				if(artifactId=="quris_honor")
-					warfleet.qurisHonorActivated=newPossession;
+				var newLevel = val;
+				while(input.artifact.possessed > newLevel) { input.artifact.possessed--; input.artifact.unaction(); }
+				while(input.artifact.possessed < newLevel) { input.artifact.possessed++; input.artifact.action(); }
+			} else {
+				var exp = parseInt(document.getElementsByName("exp")[0].value);
+				warfleet.exp = exp;
 			}
 			if(val > 0) saveData.bonuses[input.name] = val;
 		});
 		
 		arr(shiplist.getElementsByTagName("input")).map(function(input) {
 			var affordableShipsAmount = [];
-			warfleet.costSingleShip(input.ship.id).map(function(resourceCost, resourceIndex) {
+			ships[input.ship.id].cost.map(function(resourceCost, resourceIndex) {
 				if(!resourceCost) return;
 				var availableResourcesPerDay = saveData.resources[resources[resourceIndex].name] * 60 * 60 * 24 || 0;
 				affordableShipsAmount.push(Math.round(availableResourcesPerDay / resourceCost * 100) / 100);
-			})
+			});
 			affordableShipsAmount.sort(function(a, b) {
 				return a - b;
 			});
