@@ -1,0 +1,117 @@
+
+html, body {
+	background: #88c;
+}
+
+#battlecalc {
+	overflow: hidden;
+}
+
+#battlecalc > div {
+	float: left;
+	min-width: 33%;
+	text-align: center;
+}
+
+h2 {
+	text-align: center;
+}
+
+h3 {
+	text-align: center;
+}
+
+.tablelike {
+	display: table;
+	margin: auto;
+	text-align: left;
+}
+
+.tablelike > div {
+	display: table-row;
+}
+
+.tablelike > div > * {
+	display: table-cell;
+}
+
+.tablelike span {
+	padding: 0 1ex;
+	text-align: right;
+}
+
+.tablelike[data-weight-remaining] input + span {
+	background: green;
+}
+
+.tablelike[data-weight-remaining="0"] input + span {
+	background: red;
+}
+
+.statblock {
+	float: left;
+	margin-top: 1em;
+	padding: 1ex;
+	border: 1px solid transparent;
+	box-sizing: border-box;
+	width: 50%;
+	text-align: left;
+	white-space: pre-wrap;
+}
+
+.statblock.only {
+	float: none;
+	display: table;
+	margin: 1em auto;
+	width: auto;
+}
+
+.statblock.combat {
+	border-color: black;
+}
+
+.tablelike[data-weight-remaining] ~ .statblock.combat {
+	background: green;
+}
+
+.tablelike[data-weight-remaining="0"] ~ .statblock.combat {
+	background: red;
+}
+
+input:invalid {
+	border-color: red;
+}
+
+#exporter {
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+
+#nextrun {
+	position: absolute;
+	top: 32px;
+	right: 0;
+	transform: scaleX(-1);
+}
+
+#battlereport {
+	background: #333;
+	margin: 2em;
+	padding: 1em;
+}
+
+#battlereport li {
+	list-style-type: none;
+}
+
+.white_text {
+	color: #fff;
+	font-size: 80%;
+}
+
+.blue_text {
+	color: #80c0ff;
+	font-size: 80%; 	
+}
+
