@@ -1,4 +1,5 @@
 Changelog
+* Added option to either show ships left or show ships lost
 * Major refactoring, if there was anything not the same as ingame, it should be now, new changes should also be faster and easier to implement
 * Fixed order for tournament ships
 * Removed all non-tournament ships from Free Battle
