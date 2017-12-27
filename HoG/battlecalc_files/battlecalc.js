@@ -288,8 +288,8 @@ document.addEventListener("DOMContentLoaded", function() {
 		input.label = label;
 		input.ship = ship;
 		if(typeof n !== "undefined") input.value = n;
-		input.showLosses = span();
-		return div(label, input, input.showLosses);
+		input.showShipsLeftOrShipsLost = span();
+		return div(label, input, input.showShipsLeftOrShipsLost);
 	}
 	function shipselector(available_ships) {
 		var pick_new_ship = el("select");
@@ -326,6 +326,20 @@ document.addEventListener("DOMContentLoaded", function() {
 			update();
 		};
 		return row;
+	}
+	function generateOptions() {
+		var showShipsLeftOrShipsLostRadioName = "showShipsLeftOrShipsLost";
+		["Show ships left", "Show ships lost"].map(function(name) {
+			var label = span(txt(name));
+			var input = el("input");
+			input.type = "radio";
+			input.label = label;
+			input.name = showShipsLeftOrShipsLostRadioName;
+			input.value = name;
+			if(name == "Show ships left") input.defaultChecked = true;
+			if(saveData.options && saveData.options[showShipsLeftOrShipsLostRadioName] && saveData.options[showShipsLeftOrShipsLostRadioName] == input.value) input.defaultChecked = true;
+			return div(label, input);
+		}).map(appendTo(optionslist));
 	}
 	function inputval(input) {
 		delete input.title;
@@ -449,6 +463,9 @@ document.addEventListener("DOMContentLoaded", function() {
 		"exp": function(v) { return 1+v/2000;},
 		"enemy_exp": function(v) { return 1+v/2000;},
 	};
+	
+	var optionslist = document.getElementById("optionslist");
+	generateOptions();
 
 	stufflist.statBlock = span();
 	stufflist.statBlock.className = "statblock only";
@@ -634,6 +651,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		saveData = {
 			ships: {},
 			bonuses: {},
+			options: {},
 			enemies: {},
 		};
 
@@ -662,6 +680,9 @@ document.addEventListener("DOMContentLoaded", function() {
 				while(input.artifact.possessed < newLevel) { input.artifact.possessed++; input.artifact.action(); }
 			}
 			if(val > 0) saveData.bonuses[input.name] = val;
+		});
+		arr(optionslist.getElementsByTagName("input")).map(function(input) {
+			if(input.checked) saveData.options[input.name] = input.value;
 		});
 		
 		
@@ -740,15 +761,24 @@ document.addEventListener("DOMContentLoaded", function() {
 			input.label.title = shipSummary(input.ship, enemy, warfleet);
 		});
 
+		var playerShipsBeforeFight = warfleet.ships.slice();
+		var enemyShipsBeforeFight = enemy.ships.slice();
+		
 		battlereport.innerHTML = enemy.battle(warfleet).r;
 		arr(shiplist.getElementsByTagName("input")).map(function(input) {
 			if(input.type === "button") return;
-			input.showLosses.innerText = warfleet.ships[input.ship.id];
+			if(saveData.options["showShipsLeftOrShipsLost"] == "Show ships left")
+				input.showShipsLeftOrShipsLost.innerText = warfleet.ships[input.ship.id];
+			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show ships lost")
+				input.showShipsLeftOrShipsLost.innerText = "-" + (playerShipsBeforeFight[input.ship.id] - warfleet.ships[input.ship.id]);
 		});
 		shiplist.dataset.weightRemaining = warfleet.combatWeight();
 		arr(enemylist.getElementsByTagName("input")).map(function(input) {
 			if(input.type === "button") return;
-			input.showLosses.innerText = enemy.ships[input.ship.id];
+			if(saveData.options["showShipsLeftOrShipsLost"] == "Show ships left")
+				input.showShipsLeftOrShipsLost.innerText = enemy.ships[input.ship.id];
+			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show ships lost")
+				input.showShipsLeftOrShipsLost.innerText = "-" + (enemyShipsBeforeFight[input.ship.id] - enemy.ships[input.ship.id]);
 		});
 		enemylist.dataset.weightRemaining = enemy.combatWeight();
 
