@@ -145,6 +145,18 @@ document.addEventListener("DOMContentLoaded", function() {
 	}
 	function shipinput(ship, n) {
 		var label = span(txt(ship.name));
+		label.title = "Power: " + ship.power;
+		label.title += "\nPiercing: " + (ship.piercing || 0);
+		label.title += "\nShield: " + ship.shield;
+		label.title += "\nArmor: " + ship.armor;
+		label.title += "\nHP: " + ship.hp;
+		label.title += "\nSpeed: " + ship.speed;
+		label.title += "\nWeight: " + ship.combatWeight;
+		label.title += "\n\nRequirements:";
+		label.title += "\nShipyard: " + ship.req;
+		for(var requiredResearch in ship.resReq){
+			label.title += "\n" + game.researches[researchesName[requiredResearch]].name + ": " + ship.resReq[requiredResearch];
+		}
 		var input = el("input");
 		input.type = "text";
 		input.label = label;
@@ -251,7 +263,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	game.ships.map(function(ship) {
 		var n;
 		if(ship.type === "Colonial Ship" || ship.type === "Cargoship") return;
-		if(ship.name === "Augustus" || ship.name === "Leonidas" || ship.name === "Alexander" || ship.name === "Cerberus" || ship.name === "Charon") return;
+		//if(ship.name === "Koroleva" || ship.name === "Augustus" || ship.name === "Leonidas" || ship.name === "Alexander" || ship.name === "Cerberus" || ship.name === "Charon") return;
 		shiplist.appendChild(shipinput(ship, n));
 		shipIndexList.push(ship.id);
 	});
