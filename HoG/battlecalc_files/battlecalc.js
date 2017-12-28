@@ -477,13 +477,15 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	
 	var freeBattleFleets = [];
-	var freeBattleFleet=new Fleet(17,"Tournament Fleet");
-	for(var enemyTournamentShipIndex=0;enemyTournamentShipIndex<97;enemyTournamentShipIndex++){
-		freeBattleFleet.ships[enemyTournamentShipIndex]=0;
-	};
-	freeBattleFleet.exp=0;
-	planets[planetsName.teleras].fleetPush(freeBattleFleet);
-	freeBattleFleet=new Fleet(17,"Customizable Fleet");
+	for(var civisIndex = 1; civisIndex < civis.length; civisIndex++) {
+		var freeBattleFleet=new Fleet(civis[civisIndex].id,"Tournament Fleet");
+		for(var enemyTournamentShipIndex=0;enemyTournamentShipIndex<97;enemyTournamentShipIndex++){
+			freeBattleFleet.ships[enemyTournamentShipIndex]=0;
+		};
+		freeBattleFleet.exp=0;
+		planets[planetsName.teleras].fleetPush(freeBattleFleet);
+	}
+	freeBattleFleet=new Fleet(1,"Customizable Fleet");
 	for(var enemyTournamentShipIndex=0;enemyTournamentShipIndex<97;enemyTournamentShipIndex++){
 		freeBattleFleet.ships[enemyTournamentShipIndex]=0;
 	};
@@ -503,7 +505,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			option.value = planet.id + "_" + k;
 			option.fleet = fleet;
 			if(fleet.name == "Customizable Fleet" || fleet.name == "Tournament Fleet"){
-				option.innerText = "Free Battle" + " - " + fleet.name;
+				option.innerText = "Free Battle" + " - " + fleet.name + " - " + civis[fleet.civis].name;
 				option.value = "free_battle" + "_" + k;
 			}
 			enemypicker.appendChild(option);
@@ -542,7 +544,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		o.fleet.ships.map(function(n, k) {
 			if(!n&&o.fleet.name!="Tournament Fleet") return;
 			var ship = ships[k];
-			if(o.fleet.name=="Tournament Fleet"&&(ship.type=="Colonial Ship"||ship.type=="Cargoship"||!enemy_available_tournament_ships[k])) return;
+			if(o.fleet.name=="Tournament Fleet"&&(ship.type=="Colonial Ship"||ship.type=="Cargoship"||!enemy_available_tournament_ships[k]||!civis[o.fleet.civis].ships.includes(ship))) return;
 			enemylist.appendChild(shipinput(ship, n));
 		});
 		
