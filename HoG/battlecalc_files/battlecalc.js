@@ -424,16 +424,18 @@ document.addEventListener("DOMContentLoaded", function() {
 		var label = span(txt(research.name));
 		var input = el("input");
 		input.type = "text";
+		input.label = label;
 		input.name = name;
 		if(saveData.bonuses && saveData.bonuses[name]) input.value = saveData.bonuses[name];
 		input.research = research;
 		return div(label, input);
 	}).map(appendTo(stufflist));
-	["thoroid", "quris_value", "quris_honor"].map(function(name) {
+	["thoroid", "quris_value", "quris_honor", "quris_glory"].map(function(name) {
 		var artifact = artifacts[artifactsName[name]];
 		var label = span(txt(artifact.name));
 		var input = el("input");
 		input.type = "checkbox";
+		input.label = label;
 		input.name = name;
 		input.value = artifact.description;
 		if(saveData.bonuses && saveData.bonuses[name]) input.checked = saveData.bonuses[name];
@@ -443,14 +445,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	var enemystufflist = document.getElementById("enemystufflist");
 	["enemy_exp"].map(function(name) {
-		var resource = resourcesName[name];
 		var label = span(txt("Enemy Exp"));
 		var input = el("input");
 		input.type = "text";
 		input.label = label;
 		input.name = name;
 		if(saveData.bonuses && saveData.bonuses[name]) input.value = saveData.bonuses[name];
-		input.resource = resource;
 		input.showValue = span();
 		return div(label, input, input.showValue);
 	}).map(appendTo(enemystufflist));
@@ -659,6 +659,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		
 		var exp = parseInt(document.getElementsByName("exp")[0].value);
 		if(isNaN(exp)) exp = 0;
+		if(exp > MAX_FLEET_EXPERIENCE) exp = MAX_FLEET_EXPERIENCE;
  		warfleet.exp = exp;
 		
 		arr(shiplist.getElementsByTagName("input")).map(function(input) {
@@ -679,6 +680,7 @@ document.addEventListener("DOMContentLoaded", function() {
 				while(input.artifact.possessed > newLevel) { input.artifact.possessed--; input.artifact.unaction(); }
 				while(input.artifact.possessed < newLevel) { input.artifact.possessed++; input.artifact.action(); }
 			}
+			
 			if(val > 0) saveData.bonuses[input.name] = val;
 		});
 		arr(optionslist.getElementsByTagName("input")).map(function(input) {
@@ -718,6 +720,26 @@ document.addEventListener("DOMContentLoaded", function() {
 
 			return fleetRealStats;
 		}, fleetSummaryData(warfleet, enemy));
+		
+		arr(stufflist.getElementsByTagName("input")).map(function(input) {
+			if(input.name == "exp") {
+				input.label.title = "Each Exp increases all shipstats by 0.05%\nMaximum Exp: " + MAX_FLEET_EXPERIENCE;
+			} else if(input.research) {
+				var researchDescription = input.research.extraDescription();
+				var splitString = researchDescription.split(new RegExp("<[b][r]>"));
+				researchDescription = splitString.join("\n");
+				splitString = researchDescription.split(new RegExp("<[^>]*>"));
+				var researchTitle = splitString.join("");
+				input.label.title = researchTitle;
+			} else if(input.artifact) {
+				var artifactDescription = input.artifact.description;
+				var splitString = artifactDescription.split(new RegExp("<[b][r]>"));
+				artifactDescription = splitString.join("\n");
+				splitString = artifactDescription.split(new RegExp("<[^>]*>"));
+				var artifactTitle = splitString.join("");
+				input.label.title = artifactTitle;
+			}
+		});
 
 		shiplist.statBlock.innerText = beautyObj(warfleet.ships.reduce(function(obj, n, k) {
 			if(n === 0) return obj;
