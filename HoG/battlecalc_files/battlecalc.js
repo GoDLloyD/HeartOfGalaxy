@@ -505,7 +505,9 @@ document.addEventListener("DOMContentLoaded", function() {
 			option.value = planet.id + "_" + k;
 			option.fleet = fleet;
 			if(fleet.name == "Customizable Fleet" || fleet.name == "Tournament Fleet"){
-				option.innerText = "Free Battle" + " - " + fleet.name + " - " + civis[fleet.civis].name;
+				option.innerText = "Free Battle" + " - " + fleet.name;
+				if(fleet.name == "Tournament Fleet")
+					option.innerText += ": " + civis[fleet.civis].name;
 				option.value = "free_battle" + "_" + k;
 			}
 			enemypicker.appendChild(option);
