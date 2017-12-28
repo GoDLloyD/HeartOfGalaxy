@@ -145,13 +145,13 @@ document.addEventListener("DOMContentLoaded", function() {
 	}
 	function shipinput(ship, n) {
 		var label = span(txt(ship.name));
-		label.title = "Power: " + ship.power;
-		label.title += "\nPiercing: " + (ship.piercing || 0);
-		label.title += "\nShield: " + ship.shield;
-		label.title += "\nArmor: " + ship.armor;
-		label.title += "\nHP: " + ship.hp;
-		label.title += "\nSpeed: " + ship.speed;
-		label.title += "\nWeight: " + ship.combatWeight;
+		label.title = "Power: " + beauty(ship.power);
+		label.title += "\nPiercing: " + beauty((ship.piercing || 0));
+		label.title += "\nShield: " + beauty(ship.shield);
+		label.title += "\nArmor: " + beauty(ship.armor);
+		label.title += "\nHP: " + beauty(ship.hp);
+		label.title += "\nSpeed: " + beauty(ship.speed);
+		label.title += "\nWeight: " + beauty(ship.combatWeight);
 		label.title += "\n\nRequirements:";
 		label.title += "\nShipyard: " + ship.req;
 		for(var requiredResearch in ship.resReq){
@@ -347,6 +347,25 @@ document.addEventListener("DOMContentLoaded", function() {
 		});
 		
 		arr(shiplist.getElementsByTagName("input")).map(function(input) {
+			var ship = input.ship;
+			var label = input.label;
+			label.title = "Power: " + beauty(ship.power);
+			label.title += "\nPiercing: " + beauty((ship.piercing || 0));
+			label.title += "\nShield: " + beauty(ship.shield);
+			label.title += "\nArmor: " + beauty(ship.armor);
+			label.title += "\nHP: " + beauty(ship.hp);
+			label.title += "\nSpeed: " + beauty(ship.speed);
+			label.title += "\nWeight: " + beauty(ship.combatWeight);
+			label.title += "\n\nRequirements:";
+			label.title += "\nShipyard: " + ship.req;
+			for(var requiredResearch in ship.resReq){
+				label.title += "\n" + game.researches[researchesName[requiredResearch]].name + ": " + ship.resReq[requiredResearch];
+			}
+			label.title += "\n\nCost:"
+			for(var requiredResourceIndex in ship.cost){
+				if(ship.cost[requiredResourceIndex]>0)
+					label.title += "\n" + resources[requiredResourceIndex].name.capitalize() + ": " + beauty(ship.cost[requiredResourceIndex]);
+			}
 			var affordableShipsAmount = [];
 			ships[input.ship.id].cost.map(function(resourceCost, resourceIndex) {
 				if(!resourceCost) return;
