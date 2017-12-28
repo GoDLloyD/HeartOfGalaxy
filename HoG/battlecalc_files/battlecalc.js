@@ -764,6 +764,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		var playerShipsBeforeFight = warfleet.ships.slice();
 		var enemyShipsBeforeFight = enemy.ships.slice();
 		
+		enemy.battle(warfleet, !0);
 		battlereport.innerHTML = enemy.battle(warfleet).r;
 		arr(shiplist.getElementsByTagName("input")).map(function(input) {
 			if(input.type === "button") return;
