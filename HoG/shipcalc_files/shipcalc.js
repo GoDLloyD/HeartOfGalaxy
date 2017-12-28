@@ -157,6 +157,11 @@ document.addEventListener("DOMContentLoaded", function() {
 		for(var requiredResearch in ship.resReq){
 			label.title += "\n" + game.researches[researchesName[requiredResearch]].name + ": " + ship.resReq[requiredResearch];
 		}
+		label.title += "\n\nCost:"
+		for(var requiredResourceIndex in ship.cost){
+			if(ship.cost[requiredResourceIndex]>0)
+				label.title += "\n" + resources[requiredResourceIndex].name.capitalize() + ": " + beauty(ship.cost[requiredResourceIndex]);
+		}
 		var input = el("input");
 		input.type = "text";
 		input.label = label;
