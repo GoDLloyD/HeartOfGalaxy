@@ -145,23 +145,6 @@ document.addEventListener("DOMContentLoaded", function() {
 	}
 	function shipinput(ship, n) {
 		var label = span(txt(ship.name));
-		label.title = "Power: " + beauty(ship.power);
-		label.title += "\nPiercing: " + beauty((ship.piercing || 0));
-		label.title += "\nShield: " + beauty(ship.shield);
-		label.title += "\nArmor: " + beauty(ship.armor);
-		label.title += "\nHP: " + beauty(ship.hp);
-		label.title += "\nSpeed: " + beauty(ship.speed);
-		label.title += "\nWeight: " + beauty(ship.combatWeight);
-		label.title += "\n\nRequirements:";
-		label.title += "\nShipyard: " + ship.req;
-		for(var requiredResearch in ship.resReq){
-			label.title += "\n" + game.researches[researchesName[requiredResearch]].name + ": " + ship.resReq[requiredResearch];
-		}
-		label.title += "\n\nCost:"
-		for(var requiredResourceIndex in ship.cost){
-			if(ship.cost[requiredResourceIndex]>0)
-				label.title += "\n" + resources[requiredResourceIndex].name.capitalize() + ": " + beauty(ship.cost[requiredResourceIndex]);
-		}
 		var input = el("input");
 		input.type = "text";
 		input.label = label;
