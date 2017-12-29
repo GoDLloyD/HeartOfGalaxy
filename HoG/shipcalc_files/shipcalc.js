@@ -151,8 +151,10 @@ document.addEventListener("DOMContentLoaded", function() {
 		input.ship = ship;
 		if(typeof n !== "undefined") input.value = n;
 		input.showRank = span();
+		input.resourceLimit = span();
+		input.resourceLimit.setAttribute("id", "resourceLimit");
 		//input.disabled = true;
-		return div(label, input, input.showRank);
+		return div(label, input, input.showRank, input.resourceLimit);
 	}
 	function resourceinput(resource, n) {
 		var label = span(txt(resource.name.capitalize() + "/s"));
@@ -247,7 +249,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	var shipIndexList = [];
 	var shiplist = document.getElementById("shiplist");
-	shiplist.appendChild(div(span(txt("Shiptype")), span(txt("Ships/day")), span(txt("Rank"))))
+	shiplist.appendChild(div(span(txt("Shiptype")), span(txt("Ships/day")), span(txt("Rank")), span(txt("Limit"))));
 	game.ships.map(function(ship) {
 		var n;
 		if(ship.type === "Colonial Ship" || ship.type === "Cargoship") return;
@@ -350,16 +352,26 @@ document.addEventListener("DOMContentLoaded", function() {
 					label.title += "\n" + resources[requiredResourceIndex].name.capitalize() + ": " + beauty(ship.cost[requiredResourceIndex]);
 			}
 			var affordableShipsAmount = [];
+			var limitingResource = {
+				resourceName: "",
+				shipsPerDay: -1,
+			};
 			ships[input.ship.id].cost.map(function(resourceCost, resourceIndex) {
 				if(!resourceCost) return;
 				var availableResourcesPerDay = saveData.resources[resources[resourceIndex].name] * 60 * 60 * 24 || 0;
-				affordableShipsAmount.push(Math.round(availableResourcesPerDay / resourceCost * 100) / 100);
+				var shipsPerDay = Math.round(availableResourcesPerDay / resourceCost * 100) / 100;
+				if(limitingResource.shipsPerDay == -1 || limitingResource.shipsPerDay > shipsPerDay) {
+					limitingResource.resourceName = resources[resourceIndex].name;
+					limitingResource.shipsPerDay = shipsPerDay;
+				}
+				affordableShipsAmount.push(shipsPerDay);
 			});
 			affordableShipsAmount.sort(function(a, b) {
 				return a - b;
 			});
 			warfleet.ships[input.ship.id] = affordableShipsAmount[0] || 0;
 			input.value = beauty(affordableShipsAmount[0]) || 0;//warfleet.ships[input.ship.id];
+			input.resourceLimit.innerText = limitingResource.resourceName.capitalize();
 		});
 		shipIndexList.sort(function(shipIndex2, shipIndex1) {
 			return shipStats(warfleet, shipIndex1, warfleet.ships[shipIndex1]).Value - shipStats(warfleet, shipIndex2, warfleet.ships[shipIndex2]).Value;
