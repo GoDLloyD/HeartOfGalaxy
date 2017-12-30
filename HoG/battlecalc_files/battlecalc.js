@@ -661,11 +661,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		var warfleet = new Fleet(0, "Simulation");
 		
-		var exp = parseInt(document.getElementsByName("exp")[0].value);
-		if(isNaN(exp)) exp = 0;
-		if(exp > MAX_FLEET_EXPERIENCE) exp = MAX_FLEET_EXPERIENCE;
- 		warfleet.exp = exp;
-		
 		arr(shiplist.getElementsByTagName("input")).map(function(input) {
 			var val = inputval(input);
 			if(val > 0) warfleet.ships[input.ship.id] = saveData.ships[input.ship.id] = val;
@@ -683,6 +678,13 @@ document.addEventListener("DOMContentLoaded", function() {
 				var newLevel = val;
 				while(input.artifact.possessed > newLevel) { input.artifact.possessed--; input.artifact.unaction(); }
 				while(input.artifact.possessed < newLevel) { input.artifact.possessed++; input.artifact.action(); }
+			}
+			if(input.name == "exp") {
+				if(input.value > MAX_FLEET_EXPERIENCE) {
+					val = MAX_FLEET_EXPERIENCE;
+					input.value = MAX_FLEET_EXPERIENCE;
+				}
+				warfleet.exp = val;
 			}
 			
 			if(val > 0) saveData.bonuses[input.name] = val;
