@@ -835,14 +835,22 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		nextrun.href = basePath+"#"+serialize({
 			ships: warfleet.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
-			bonuses: ["ammunition", "u-ammunition", "t-ammunition", "armor", "engine", "enemy_exp"].reduce(function(obj, name) {
+			bonuses: ["ammunition", "u-ammunition", "t-ammunition", "armor", "engine", "exp", "enemy_exp"].reduce(function(obj, name) {
 				var resource = resourcesName[name];
 				if(name!="enemy_exp") {
-					var v = warfleet.storage[resource.id];
-					if(v > 0) 
-						saveData.bonuses[name] = v;
-					else
-						delete saveData.bonuses[name];
+					if(name!="exp") {
+						var v = warfleet.storage[resource.id];
+						if(v > 0) 
+							saveData.bonuses[name] = v;
+						else
+							delete saveData.bonuses[name];
+					}
+					else {
+						if(warfleet.combatWeight() > 0) 
+							saveData.bonuses[name] = warfleet.exp;
+						else
+							delete saveData.bonuses[name];
+					}
 				}
 				else
 					delete saveData.bonuses[name];
