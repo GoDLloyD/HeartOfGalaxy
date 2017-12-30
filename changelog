@@ -1,4 +1,5 @@
 Changelog
+* Battlecalc: Exp are now autimatically updated on Next Run
 * Shipcalc: Added a column for the limiting Resource
 * Shipcalc: Added required resources to Shiptooltips
 * Shipcalc: Added Tooltips with Shipstats and Requirements to Ships
