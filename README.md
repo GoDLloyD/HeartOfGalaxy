@@ -8,3 +8,6 @@ Heart of Galaxy:
 
 Heart of Galaxy:
 <a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/Researchcalc.html">Research Calculator</a>
+
+Heart of Galaxy:
+<a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/InfoTool.html">Info Tool</a>
