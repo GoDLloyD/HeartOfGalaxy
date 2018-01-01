@@ -80,8 +80,13 @@ document.addEventListener("DOMContentLoaded", function() {
 			
 			for(var resourceCostIndex = 0; resourceCostIndex<resNum; resourceCostIndex++)
 				if(building.resourcesCost[resourceCostIndex]>0) {
+					var resourcesCost = building.resourcesCost[resourceCostIndex];
+					if(resourcesCost >= 1)
+						resourcesCost = beauty(resourcesCost);
+					else
+						resourcesCost = resourcesCost.toExponential(2);
 					resourceCostDiv.appendChild(div(txt(resources[resourceCostIndex].name.capitalize() + ":")));
-					resourceCostDiv.appendChild(div(txt(building.resourcesCost[resourceCostIndex])));
+					resourceCostDiv.appendChild(div(txt(resourcesCost)));
 				}
 					
 			buildingCostCell.appendChild(resourceCostDiv);
