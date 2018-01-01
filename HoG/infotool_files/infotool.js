@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function() {
 				
 				
 			for(var requiredResearch in building.researchReq) {
-				if(requiredResearch == "nononono")
+				if(!researches[researchesName[requiredResearch]].pos || requiredResearch == "demographics" || building.researchReq[requiredResearch] > 100)
 					return;
 			}
 				
@@ -280,6 +280,8 @@ document.addEventListener("DOMContentLoaded", function() {
 			var requirementsDiv = div();;
 			
 			for(var requiredResearch in building.researchReq) {
+				if(building.researchReq[requiredResearch] == 0)
+					continue;
 				var research = researches[researchesName[requiredResearch]];
 				requirementsDiv.appendChild(div(txt(research.name.capitalize() + ":")));
 				requirementsDiv.appendChild(div(txt(building.researchReq[requiredResearch])));
