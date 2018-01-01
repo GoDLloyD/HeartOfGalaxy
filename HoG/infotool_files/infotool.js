@@ -23,6 +23,12 @@ document.addEventListener("DOMContentLoaded", function() {
 		var infoTable = document.createElement("TABLE");
 		infoTable.setAttribute("id", "infotable");
 		document.getElementById("infotablediv").appendChild(infoTable);
+		
+		var tableWidth = 100;
+		
+		var column = document.createElement("COL");
+		column.setAttribute("width", 100);
+		document.getElementById("infotable").appendChild(column);
 
 		var headRow = tr();
 		headRow.setAttribute("id", "headRow");
@@ -32,19 +38,26 @@ document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById("headRow").appendChild(tableFirstCell);
 		
 		
-		buildings.map(function(building){
+		buildings.map(function(building) {
 			if(building.displayName == "placeholder")
 				return;
 			
 			if(building.type)
 				if(building.type != buildingTypeSelect.value)
 					return;
+			
+			tableWidth += 100;
+			var column = document.createElement("COL");
+			column.setAttribute("width", 100);
+			document.getElementById("infotable").appendChild(column);
 				
 			var buildingNameCell = th();
 			var buildingNameTextNode = txt(building.displayName);
 			buildingNameCell.appendChild(buildingNameTextNode);
 			document.getElementById("headRow").appendChild(buildingNameCell);
 		})
+		
+		infoTable.setAttribute("width", tableWidth);
 		
 		var costRow = tr();
 		costRow.setAttribute("id", "costRow");
@@ -54,7 +67,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		costRowFirstCell.appendChild(txt("Resource Cost"))
 		document.getElementById("costRow").appendChild(costRowFirstCell);
 		
-		buildings.map(function(building){
+		buildings.map(function(building) {
 			if(building.displayName == "placeholder")
 				return;
 			
@@ -63,16 +76,48 @@ document.addEventListener("DOMContentLoaded", function() {
 					return;
 				
 			var buildingCostCell = td();
-			var resourceCostString = "";
+			var resourceCostDiv = div();;
+			
+			for(var resourceCostIndex = 0; resourceCostIndex<resNum; resourceCostIndex++)
+				if(building.resourcesCost[resourceCostIndex]>0) {
+					resourceCostDiv.appendChild(div(txt(resources[resourceCostIndex].name.capitalize() + ":")));
+					resourceCostDiv.appendChild(div(txt(building.resourcesCost[resourceCostIndex])));
+				}
+					
+			buildingCostCell.appendChild(resourceCostDiv);
+			
+			document.getElementById("costRow").appendChild(buildingCostCell);
+		})
+		
+		var costMultRow = tr();
+		costMultRow.setAttribute("id", "costMultRow");
+		document.getElementById("infotable").appendChild(costMultRow);
+		
+		var costRowFirstCell = td();
+		costRowFirstCell.appendChild(txt("Resource Multiplier"))
+		document.getElementById("costMultRow").appendChild(costRowFirstCell);
+		
+		buildings.map(function(building) {
+			if(building.displayName == "placeholder")
+				return;
+			
+			if(building.type)
+				if(building.type != buildingTypeSelect.value)
+					return;
+				
+			var buildingCostMultCell = td();
+			var resourceCostMultDiv = div();
 			
 			for(var resourceCostIndex = 0; resourceCostIndex<resNum; resourceCostIndex++)
 				if(building.resourcesCost[resourceCostIndex]>0)
-					resourceCostString += resources[resourceCostIndex].name.capitalize() + ": " + beauty(building.resourcesCost[resourceCostIndex]) + "\n";
+					if(building.resourcesCost[resourceCostIndex]>0) {
+						resourceCostMultDiv.appendChild(div(txt(resources[resourceCostIndex].name.capitalize() + ":")));
+						resourceCostMultDiv.appendChild(div(txt(building.resourcesMult[resourceCostIndex])));
+					}
 					
-			var buildingNameTextNode = txt(resourceCostString);
-			buildingCostCell.appendChild(buildingNameTextNode);
+			buildingCostMultCell.appendChild(resourceCostMultDiv);
 			
-			document.getElementById("costRow").appendChild(buildingCostCell);
+			document.getElementById("costMultRow").appendChild(buildingCostMultCell);
 		})
 		
 	}

@@ -4,6 +4,10 @@ table, td, th {
 	border: 1px solid black;
 }
 
+table {
+	table-layout: fixed;
+}
+
 td {
 	text-align: center;
 }
