@@ -18,13 +18,13 @@ document.addEventListener("DOMContentLoaded", function() {
 			infoTableDiv.removeChild(infoTableDiv.lastChild);
 	}
 	function setCellWidth(tableWidth, cell) {
-		var cellWidth = 100;
+		var cellWidth = 150;
 		tableWidth += cellWidth;
 		cell.setAttribute("width", cellWidth);
 	}
 	function createBuildingTable() {
 		var buildingTypeSelect = document.getElementById("buildingtypeselect");
-		var tableWidth = 100;
+		var tableWidth = 150;
 		
 		var infoTable = document.createElement("TABLE");
 		infoTable.setAttribute("id", "infotable");
@@ -56,12 +56,116 @@ document.addEventListener("DOMContentLoaded", function() {
 		
 		infoTable.setAttribute("width", tableWidth);
 		
+		var energyProductionRow = tr();
+		energyProductionRow.setAttribute("id", "energyProductionRow");
+		document.getElementById("infotable").appendChild(energyProductionRow);
+		
+		var energyProductionRowFirstCell = td();
+		if(buildingTypeSelect.value == "energy")
+			energyProductionRowFirstCell.appendChild(txt("Energy Production"));
+		else
+			energyProductionRowFirstCell.appendChild(txt("Energy Consumption"));
+		document.getElementById("energyProductionRow").appendChild(energyProductionRowFirstCell);
+		
+		buildings.map(function(building) {
+			if(building.displayName == "placeholder")
+				return;
+			
+			if(building.type)
+				if(building.type != buildingTypeSelect.value)
+					return;
+				
+			var buildingenergyProductionCell = td();
+			var energyProductionDiv = div();;
+			
+			if(building.energy != 0) {
+				var energyProduction = building.energy;
+				energyProduction = beauty(energyProduction);
+				energyProductionDiv.appendChild(div(txt(energyProduction + "/s")));
+			}
+					
+			buildingenergyProductionCell.appendChild(energyProductionDiv);
+			
+			document.getElementById("energyProductionRow").appendChild(buildingenergyProductionCell);
+		})
+		
+		var productionRow = tr();
+		productionRow.setAttribute("id", "productionRow");
+		document.getElementById("infotable").appendChild(productionRow);
+		
+		var productionRowFirstCell = td();
+		productionRowFirstCell.appendChild(txt("Resource Production"));
+		document.getElementById("productionRow").appendChild(productionRowFirstCell);
+		
+		buildings.map(function(building) {
+			if(building.displayName == "placeholder")
+				return;
+			
+			if(building.type)
+				if(building.type != buildingTypeSelect.value)
+					return;
+				
+			var buildingProductionCell = td();
+			var resourceProductionDiv = div();;
+			
+			if(buildingTypeSelect.value != "research") {
+				for(var resourceCostIndex = 0; resourceCostIndex<resNum; resourceCostIndex++)
+					if(building.resourcesProd[resourceCostIndex]>0) {
+						var resourceProduction = building.resourcesProd[resourceCostIndex];
+						resourceProduction = beauty(resourceProduction);
+						resourceProductionDiv.appendChild(div(txt(resources[resourceCostIndex].name.capitalize() + ":")));
+						resourceProductionDiv.appendChild(div(txt(resourceProduction + "/s")));
+					}
+			} else {
+				var resourceProduction = building.researchPoint;
+				resourceProduction = beauty(resourceProduction);
+				resourceProductionDiv.appendChild(div(txt("Research Points:")));
+				resourceProductionDiv.appendChild(div(txt(resourceProduction + "/s")));
+			}
+					
+			buildingProductionCell.appendChild(resourceProductionDiv);
+			
+			document.getElementById("productionRow").appendChild(buildingProductionCell);
+		})
+		
+		var consumptionRow = tr();
+		consumptionRow.setAttribute("id", "consumptionRow");
+		document.getElementById("infotable").appendChild(consumptionRow);
+		
+		var consumptionRowFirstCell = td();
+		consumptionRowFirstCell.appendChild(txt("Resource Consumption"));
+		document.getElementById("consumptionRow").appendChild(consumptionRowFirstCell);
+		
+		buildings.map(function(building) {
+			if(building.displayName == "placeholder")
+				return;
+			
+			if(building.type)
+				if(building.type != buildingTypeSelect.value)
+					return;
+				
+			var buildingConsumptionCell = td();
+			var resourceConsumptionDiv = div();;
+			
+			for(var resourceCostIndex = 0; resourceCostIndex<resNum; resourceCostIndex++)
+				if(building.resourcesProd[resourceCostIndex]<0) {
+					var resourceConsumption = building.resourcesProd[resourceCostIndex];
+					resourceConsumption = beauty(resourceConsumption);
+					resourceConsumptionDiv.appendChild(div(txt(resources[resourceCostIndex].name.capitalize() + ":")));
+					resourceConsumptionDiv.appendChild(div(txt("-" + resourceConsumption + "/s")));
+				}
+					
+			buildingConsumptionCell.appendChild(resourceConsumptionDiv);
+			
+			document.getElementById("consumptionRow").appendChild(buildingConsumptionCell);
+		})
+		
 		var costRow = tr();
 		costRow.setAttribute("id", "costRow");
 		document.getElementById("infotable").appendChild(costRow);
 		
 		var costRowFirstCell = td();
-		costRowFirstCell.appendChild(txt("Resource Cost"))
+		costRowFirstCell.appendChild(txt("Resource Cost"));
 		document.getElementById("costRow").appendChild(costRowFirstCell);
 		
 		buildings.map(function(building) {
@@ -96,7 +200,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById("infotable").appendChild(costMultRow);
 		
 		var costRowFirstCell = td();
-		costRowFirstCell.appendChild(txt("Resource Multiplier"))
+		costRowFirstCell.appendChild(txt("Resource Multiplier"));
 		document.getElementById("costMultRow").appendChild(costRowFirstCell);
 		
 		buildings.map(function(building) {
@@ -122,6 +226,32 @@ document.addEventListener("DOMContentLoaded", function() {
 			document.getElementById("costMultRow").appendChild(buildingCostMultCell);
 		})
 		
+		var environmentRow = tr();
+		environmentRow.setAttribute("id", "environmentRow");
+		document.getElementById("infotable").appendChild(environmentRow);
+		
+		var environmentRowFirstCell = td();
+		environmentRowFirstCell.appendChild(txt("Environment"));
+		document.getElementById("environmentRow").appendChild(environmentRowFirstCell);
+		
+		buildings.map(function(building) {
+			if(building.displayName == "placeholder")
+				return;
+			
+			if(building.type)
+				if(building.type != buildingTypeSelect.value)
+					return;
+				
+			var buildingEnvironmentCell = td();
+			var environmentDiv = div();;
+			
+			for(var environmentIndex = 0; environmentIndex<building.environment.length; environmentIndex++)
+				environmentDiv.appendChild(div(txt(building.environment[environmentIndex].capitalize() + " planet")));
+					
+			buildingEnvironmentCell.appendChild(environmentDiv);
+			
+			document.getElementById("environmentRow").appendChild(buildingEnvironmentCell);
+		})
 	}
 	function createResearchTable() {
 		var infoTable = document.createElement("TABLE");
