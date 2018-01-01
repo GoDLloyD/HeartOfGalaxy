@@ -46,6 +46,35 @@ document.addEventListener("DOMContentLoaded", function() {
 			document.getElementById("headRow").appendChild(buildingNameCell);
 		})
 		
+		var costRow = tr();
+		costRow.setAttribute("id", "costRow");
+		document.getElementById("infotable").appendChild(costRow);
+		
+		var costRowFirstCell = td();
+		costRowFirstCell.appendChild(txt("Resource Cost"))
+		document.getElementById("costRow").appendChild(costRowFirstCell);
+		
+		buildings.map(function(building){
+			if(building.displayName == "placeholder")
+				return;
+			
+			if(building.type)
+				if(building.type != buildingTypeSelect.value)
+					return;
+				
+			var buildingCostCell = td();
+			var resourceCostString = "";
+			
+			for(var resourceCostIndex = 0; resourceCostIndex<resNum; resourceCostIndex++)
+				if(building.resourcesCost[resourceCostIndex]>0)
+					resourceCostString += resources[resourceCostIndex].name.capitalize() + ": " + beauty(building.resourcesCost[resourceCostIndex]) + "\n";
+					
+			var buildingNameTextNode = txt(resourceCostString);
+			buildingCostCell.appendChild(buildingNameTextNode);
+			
+			document.getElementById("costRow").appendChild(buildingCostCell);
+		})
+		
 	}
 	function createResearchTable() {
 		var infoTable = document.createElement("TABLE");
