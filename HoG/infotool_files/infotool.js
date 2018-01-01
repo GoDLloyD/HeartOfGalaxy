@@ -28,6 +28,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		
 		var infoTable = document.createElement("TABLE");
 		infoTable.setAttribute("id", "infotable");
+		infoTable.buildings = [];
 		document.getElementById("infotablediv").appendChild(infoTable);
 		
 		var headRow = tr();
@@ -38,7 +39,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		setCellWidth(tableWidth, tableFirstCell);
 		document.getElementById("headRow").appendChild(tableFirstCell);
 		
-		
 		buildings.map(function(building) {
 			if(building.displayName == "placeholder")
 				return;
@@ -47,11 +47,18 @@ document.addEventListener("DOMContentLoaded", function() {
 				if(building.type != buildingTypeSelect.value)
 					return;
 				
+				
+			for(var requiredResearch in building.researchReq) {
+				if(requiredResearch == "nononono")
+					return;
+			}
+				
 			var buildingNameCell = th();
 			setCellWidth(tableWidth, buildingNameCell);
 			var buildingNameTextNode = txt(building.displayName);
 			buildingNameCell.appendChild(buildingNameTextNode);
 			document.getElementById("headRow").appendChild(buildingNameCell);
+			infoTable.buildings.push(building);
 		})
 		
 		infoTable.setAttribute("width", tableWidth);
@@ -67,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			energyProductionRowFirstCell.appendChild(txt("Energy Consumption"));
 		document.getElementById("energyProductionRow").appendChild(energyProductionRowFirstCell);
 		
-		buildings.map(function(building) {
+		infoTable.buildings.map(function(building) {
 			if(building.displayName == "placeholder")
 				return;
 			
@@ -97,7 +104,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		productionRowFirstCell.appendChild(txt("Resource Production"));
 		document.getElementById("productionRow").appendChild(productionRowFirstCell);
 		
-		buildings.map(function(building) {
+		infoTable.buildings.map(function(building) {
 			if(building.displayName == "placeholder")
 				return;
 			
@@ -136,7 +143,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		consumptionRowFirstCell.appendChild(txt("Resource Consumption"));
 		document.getElementById("consumptionRow").appendChild(consumptionRowFirstCell);
 		
-		buildings.map(function(building) {
+		infoTable.buildings.map(function(building) {
 			if(building.displayName == "placeholder")
 				return;
 			
@@ -168,7 +175,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		costRowFirstCell.appendChild(txt("Resource Cost"));
 		document.getElementById("costRow").appendChild(costRowFirstCell);
 		
-		buildings.map(function(building) {
+		infoTable.buildings.map(function(building) {
 			if(building.displayName == "placeholder")
 				return;
 			
@@ -203,7 +210,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		costRowFirstCell.appendChild(txt("Resource Multiplier"));
 		document.getElementById("costMultRow").appendChild(costRowFirstCell);
 		
-		buildings.map(function(building) {
+		infoTable.buildings.map(function(building) {
 			if(building.displayName == "placeholder")
 				return;
 			
@@ -234,7 +241,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		environmentRowFirstCell.appendChild(txt("Environment"));
 		document.getElementById("environmentRow").appendChild(environmentRowFirstCell);
 		
-		buildings.map(function(building) {
+		infoTable.buildings.map(function(building) {
 			if(building.displayName == "placeholder")
 				return;
 			
@@ -251,6 +258,36 @@ document.addEventListener("DOMContentLoaded", function() {
 			buildingEnvironmentCell.appendChild(environmentDiv);
 			
 			document.getElementById("environmentRow").appendChild(buildingEnvironmentCell);
+		})
+		
+		var requirementsRow = tr();
+		requirementsRow.setAttribute("id", "requirementsRow");
+		document.getElementById("infotable").appendChild(requirementsRow);
+		
+		var requirementsRowFirstCell = td();
+		requirementsRowFirstCell.appendChild(txt("Requirements"));
+		document.getElementById("requirementsRow").appendChild(requirementsRowFirstCell);
+		
+		infoTable.buildings.map(function(building) {
+			if(building.displayName == "placeholder")
+				return;
+			
+			if(building.type)
+				if(building.type != buildingTypeSelect.value)
+					return;
+				
+			var buildingRequirementsCell = td();
+			var requirementsDiv = div();;
+			
+			for(var requiredResearch in building.researchReq) {
+				var research = researches[researchesName[requiredResearch]];
+				requirementsDiv.appendChild(div(txt(research.name.capitalize() + ":")));
+				requirementsDiv.appendChild(div(txt(building.researchReq[requiredResearch])));
+			}
+					
+			buildingRequirementsCell.appendChild(requirementsDiv);
+			
+			document.getElementById("requirementsRow").appendChild(buildingRequirementsCell);
 		})
 	}
 	function createResearchTable() {
@@ -320,7 +357,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	}
 	
 	/*
-	game.buildings.map(function(building){
+	game.infoTable.buildings.map(function(building){
 		for(var resourceIndex=0;resourceIndex<resNum;resourceIndex++){
 			var resourceFirstPlanet = true;
 			if(0!=building.resourcesProd[resourceIndex]&&(0<building.resourcesProd[resourceIndex])){
@@ -387,7 +424,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			
 		}
 		/*
-		game.buildings.map(function(building){
+		game.infoTable.buildings.map(function(building){
 			for(var resourceIndex=0;resourceIndex<resNum;resourceIndex++){
 				var resourceFirstPlanet = true;
 				var resourceCostInput = Array(resNum);
