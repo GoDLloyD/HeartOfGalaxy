@@ -1,4 +1,5 @@
 Changelog
+* Added InfoTool
 * Battlecalc: Added Exp cap
 * Battlecalc: Exp are now autimatically updated on Next Run
 * Shipcalc: Added a column for the limiting Resource
