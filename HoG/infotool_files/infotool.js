@@ -17,24 +17,25 @@ document.addEventListener("DOMContentLoaded", function() {
 		while(infoTableDiv.lastChild)
 			infoTableDiv.removeChild(infoTableDiv.lastChild);
 	}
+	function setCellWidth(tableWidth, cell) {
+		var cellWidth = 100;
+		tableWidth += cellWidth;
+		cell.setAttribute("width", cellWidth);
+	}
 	function createBuildingTable() {
 		var buildingTypeSelect = document.getElementById("buildingtypeselect");
+		var tableWidth = 100;
 		
 		var infoTable = document.createElement("TABLE");
 		infoTable.setAttribute("id", "infotable");
 		document.getElementById("infotablediv").appendChild(infoTable);
 		
-		var tableWidth = 100;
-		
-		var column = document.createElement("COL");
-		column.setAttribute("width", 100);
-		document.getElementById("infotable").appendChild(column);
-
 		var headRow = tr();
 		headRow.setAttribute("id", "headRow");
 		document.getElementById("infotable").appendChild(headRow);
 
 		var tableFirstCell = th();
+		setCellWidth(tableWidth, tableFirstCell);
 		document.getElementById("headRow").appendChild(tableFirstCell);
 		
 		
@@ -45,13 +46,9 @@ document.addEventListener("DOMContentLoaded", function() {
 			if(building.type)
 				if(building.type != buildingTypeSelect.value)
 					return;
-			
-			tableWidth += 100;
-			var column = document.createElement("COL");
-			column.setAttribute("width", 100);
-			document.getElementById("infotable").appendChild(column);
 				
 			var buildingNameCell = th();
+			setCellWidth(tableWidth, buildingNameCell);
 			var buildingNameTextNode = txt(building.displayName);
 			buildingNameCell.appendChild(buildingNameTextNode);
 			document.getElementById("headRow").appendChild(buildingNameCell);
