@@ -22,6 +22,154 @@ document.addEventListener("DOMContentLoaded", function() {
 		tableWidth += cellWidth;
 		cell.setAttribute("width", cellWidth);
 	}
+	function createPlanetTable() {
+		var tableWidth = 150;
+		
+		var infoTable = document.createElement("TABLE");
+		infoTable.setAttribute("id", "infotable");
+		infoTable.planets = [];
+		document.getElementById("infotablediv").appendChild(infoTable);
+		
+		var headRow = tr();
+		headRow.setAttribute("id", "headRow");
+		document.getElementById("infotable").appendChild(headRow);
+
+		var tableFirstCell = th();
+		setCellWidth(tableWidth, tableFirstCell);
+		document.getElementById("headRow").appendChild(tableFirstCell);
+		
+		planets.map(function(planet) {
+			var planetNameCell = th();
+			setCellWidth(tableWidth, planetNameCell);
+			var planetNameTextNode = txt(planet.name);
+			planetNameCell.appendChild(planetNameTextNode);
+			document.getElementById("headRow").appendChild(planetNameCell);
+			infoTable.planets.push(planet);
+		})
+		
+		infoTable.setAttribute("width", tableWidth);
+		
+		var influenceRow = tr();
+		influenceRow.setAttribute("id", "influenceRow");
+		document.getElementById("infotable").appendChild(influenceRow);
+		
+		var influenceRowFirstCell = td();
+		influenceRowFirstCell.appendChild(txt("Influence"));
+		document.getElementById("influenceRow").appendChild(influenceRowFirstCell);
+		
+		infoTable.planets.map(function(planet) {
+			var planetInfluenceCell = td();
+			var influenceDiv = div();
+			
+			influenceDiv.appendChild(div(txt(planet.influence)));
+					
+			planetInfluenceCell.appendChild(influenceDiv);
+			
+			document.getElementById("influenceRow").appendChild(planetInfluenceCell);
+		})
+		
+		var unlocksRow = tr();
+		unlocksRow.setAttribute("id", "unlocksRow");
+		document.getElementById("infotable").appendChild(unlocksRow);
+		
+		var unlocksRowFirstCell = td();
+		unlocksRowFirstCell.appendChild(txt("Unlocks"));
+		document.getElementById("unlocksRow").appendChild(unlocksRowFirstCell);
+		
+		infoTable.planets.map(function(planet) {
+			var planetUnlocksCell = td();
+			var unlocksDiv = div();
+			
+			if(planet.unlock)
+				unlocksDiv.appendChild(div(txt(researches[researchesName[planet.unlock]].name.capitalize())));
+						
+			planetUnlocksCell.appendChild(unlocksDiv);
+			
+			document.getElementById("unlocksRow").appendChild(planetUnlocksCell);
+		})
+		
+		var environmentRow = tr();
+		environmentRow.setAttribute("id", "environmentRow");
+		document.getElementById("infotable").appendChild(environmentRow);
+		
+		var environmentRowFirstCell = td();
+		environmentRowFirstCell.appendChild(txt("Environment"));
+		document.getElementById("environmentRow").appendChild(environmentRowFirstCell);
+		
+		infoTable.planets.map(function(planet) {
+			var planetEnvironmentCell = td();
+			var environmentDiv = div();
+			
+			environmentDiv.appendChild(div(txt(planet.type.capitalize() + " planet")));
+					
+			planetEnvironmentCell.appendChild(environmentDiv);
+			
+			document.getElementById("environmentRow").appendChild(planetEnvironmentCell);
+		})
+		
+		var orbitalDistanceRow = tr();
+		orbitalDistanceRow.setAttribute("id", "orbitalDistanceRow");
+		document.getElementById("infotable").appendChild(orbitalDistanceRow);
+		
+		var orbitalDistanceRowFirstCell = td();
+		orbitalDistanceRowFirstCell.appendChild(txt("Orbital Distance"));
+		document.getElementById("orbitalDistanceRow").appendChild(orbitalDistanceRowFirstCell);
+		
+		infoTable.planets.map(function(planet) {
+			var planetOrbitalDistanceCell = td();
+			var orbitalDistanceDiv = div();
+			
+			orbitalDistanceDiv.appendChild(div(txt(planet.info["orbit"] + " AU")));
+					
+			planetOrbitalDistanceCell.appendChild(orbitalDistanceDiv);
+			
+			document.getElementById("orbitalDistanceRow").appendChild(planetOrbitalDistanceCell);
+		})
+		
+		var temperatureRow = tr();
+		temperatureRow.setAttribute("id", "temperatureRow");
+		document.getElementById("infotable").appendChild(temperatureRow);
+		
+		var temperatureRowFirstCell = td();
+		temperatureRowFirstCell.appendChild(txt("Environment"));
+		document.getElementById("temperatureRow").appendChild(temperatureRowFirstCell);
+		
+		infoTable.planets.map(function(planet) {
+			var planetTemperatureCell = td();
+			var temperatureDiv = div();
+			
+			temperatureDiv.appendChild(div(txt(planet.info["temp"] + " °C")));
+					
+			planetTemperatureCell.appendChild(temperatureDiv);
+			
+			document.getElementById("temperatureRow").appendChild(planetTemperatureCell);
+		})
+		
+		var baseResourcesRow = tr();
+		baseResourcesRow.setAttribute("id", "baseResourcesRow");
+		document.getElementById("infotable").appendChild(baseResourcesRow);
+		
+		var baseResourcesRowFirstCell = td();
+		baseResourcesRowFirstCell.appendChild(txt("Base Resources"));
+		document.getElementById("baseResourcesRow").appendChild(baseResourcesRowFirstCell);
+		
+		infoTable.planets.map(function(planet) {
+			var planetBaseResourcesCell = td();
+			var baseResourcesDiv = div();
+			
+			for(var resourceCostIndex = 0; resourceCostIndex<resNum; resourceCostIndex++) {
+				var baseResource = planet.baseResources[resourceCostIndex];
+				if(baseResource == 0 || (baseResource == 1 && resources[resourceCostIndex].type != "ore"))
+					continue;
+				baseResourcesDiv.appendChild(div(txt(resources[resourceCostIndex].name.capitalize() + ":")));
+				baseResourcesDiv.appendChild(div(txt(baseResource)));
+			}
+					
+			planetBaseResourcesCell.appendChild(baseResourcesDiv);
+			
+			document.getElementById("baseResourcesRow").appendChild(planetBaseResourcesCell);
+		})
+	}
 	function createBuildingTable() {
 		var buildingTypeSelect = document.getElementById("buildingtypeselect");
 		var tableWidth = 150;
@@ -75,15 +223,8 @@ document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById("energyProductionRow").appendChild(energyProductionRowFirstCell);
 		
 		infoTable.buildings.map(function(building) {
-			if(building.displayName == "placeholder")
-				return;
-			
-			if(building.type)
-				if(building.type != buildingTypeSelect.value)
-					return;
-				
 			var buildingenergyProductionCell = td();
-			var energyProductionDiv = div();;
+			var energyProductionDiv = div();
 			
 			if(building.energy != 0) {
 				var energyProduction = building.energy;
@@ -105,15 +246,8 @@ document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById("productionRow").appendChild(productionRowFirstCell);
 		
 		infoTable.buildings.map(function(building) {
-			if(building.displayName == "placeholder")
-				return;
-			
-			if(building.type)
-				if(building.type != buildingTypeSelect.value)
-					return;
-				
 			var buildingProductionCell = td();
-			var resourceProductionDiv = div();;
+			var resourceProductionDiv = div();
 			
 			if(buildingTypeSelect.value != "research") {
 				for(var resourceCostIndex = 0; resourceCostIndex<resNum; resourceCostIndex++)
@@ -144,15 +278,8 @@ document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById("consumptionRow").appendChild(consumptionRowFirstCell);
 		
 		infoTable.buildings.map(function(building) {
-			if(building.displayName == "placeholder")
-				return;
-			
-			if(building.type)
-				if(building.type != buildingTypeSelect.value)
-					return;
-				
 			var buildingConsumptionCell = td();
-			var resourceConsumptionDiv = div();;
+			var resourceConsumptionDiv = div();
 			
 			for(var resourceCostIndex = 0; resourceCostIndex<resNum; resourceCostIndex++)
 				if(building.resourcesProd[resourceCostIndex]<0) {
@@ -176,15 +303,8 @@ document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById("costRow").appendChild(costRowFirstCell);
 		
 		infoTable.buildings.map(function(building) {
-			if(building.displayName == "placeholder")
-				return;
-			
-			if(building.type)
-				if(building.type != buildingTypeSelect.value)
-					return;
-				
 			var buildingCostCell = td();
-			var resourceCostDiv = div();;
+			var resourceCostDiv = div();
 			
 			for(var resourceCostIndex = 0; resourceCostIndex<resNum; resourceCostIndex++)
 				if(building.resourcesCost[resourceCostIndex]>0) {
@@ -211,13 +331,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById("costMultRow").appendChild(costRowFirstCell);
 		
 		infoTable.buildings.map(function(building) {
-			if(building.displayName == "placeholder")
-				return;
-			
-			if(building.type)
-				if(building.type != buildingTypeSelect.value)
-					return;
-				
 			var buildingCostMultCell = td();
 			var resourceCostMultDiv = div();
 			
@@ -242,15 +355,8 @@ document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById("environmentRow").appendChild(environmentRowFirstCell);
 		
 		infoTable.buildings.map(function(building) {
-			if(building.displayName == "placeholder")
-				return;
-			
-			if(building.type)
-				if(building.type != buildingTypeSelect.value)
-					return;
-				
 			var buildingEnvironmentCell = td();
-			var environmentDiv = div();;
+			var environmentDiv = div();
 			
 			for(var environmentIndex = 0; environmentIndex<building.environment.length; environmentIndex++)
 				environmentDiv.appendChild(div(txt(building.environment[environmentIndex].capitalize() + " planet")));
@@ -269,15 +375,8 @@ document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById("requirementsRow").appendChild(requirementsRowFirstCell);
 		
 		infoTable.buildings.map(function(building) {
-			if(building.displayName == "placeholder")
-				return;
-			
-			if(building.type)
-				if(building.type != buildingTypeSelect.value)
-					return;
-				
 			var buildingRequirementsCell = td();
-			var requirementsDiv = div();;
+			var requirementsDiv = div();
 			
 			for(var requiredResearch in building.researchReq) {
 				if(building.researchReq[requiredResearch] == 0)
@@ -321,7 +420,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	function createinfoSelectionList() {
 		var infoSelect = el("select");
 		infoSelect.setAttribute("id", "infoselect");
-		["buildings", "researches", "ships"].map(function(infoSelectionList) {
+		["planets", "buildings", "researches", "ships"].map(function(infoSelectionList) {
 			var option = el("option");
 			option.value = infoSelectionList;
 			option.innerText = infoSelectionList.capitalize();
@@ -358,43 +457,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		return infoSelect.lastSelected == "buildings" && infoSelect.lastSelected != infoSelect.value;
 	}
 	
-	/*
-	game.infoTable.buildings.map(function(building){
-		for(var resourceIndex=0;resourceIndex<resNum;resourceIndex++){
-			var resourceFirstPlanet = true;
-			if(0!=building.resourcesProd[resourceIndex]&&(0<building.resourcesProd[resourceIndex])){
-				var resource = resources[resourceIndex];
-				var buildingResourceRow = tr();
-				buildingResourceRow.setAttribute("id", "tr_" + building.id + "_" + resource.id);
-				document.getElementById("infotable").appendChild(buildingResourceRow);
-				var buildingResourceCell = td();
-				var buildingResourceNode = txt(building.displayName + "(" + resource.name.capitalize() + ")");
-				buildingResourceCell.appendChild(buildingResourceNode);
-				document.getElementById("tr_" + building.id + "_" + resource.id).appendChild(buildingResourceCell);
-				planets.map(function(planet){
-					var inputCell = td();
-					if((0<planet.baseResources[resourceIndex]||"mine"!=building.type2)){
-						for(var environmentIndex=0;environmentIndex<building.environment.length;environmentIndex++)
-							if(building.environment[environmentIndex]==planet.type){
-								var input = el("input");
-								input.setAttribute("id", "input_" + planet.id + "_" + building.id + "_" + resource.id);
-								input.type = "text";
-								input.disabled = !resourceFirstPlanet;
-								input.required = resourceFirstPlanet;
-								input.value = 0;
-								if(saveData.buildingLevels && saveData.buildingLevels["input_" + planet.id + "_" + building.id + "_" + resource.id]) input.value = saveData.buildingLevels["input_" + planet.id + "_" + building.id + "_" + resource.id];
-								resourceFirstPlanet = false;
-								var planetInput = input;
-								inputCell.setAttribute("id", "td_" + planet.id + "_" + building.id + "_" + resource.id);
-								inputCell.appendChild(planetInput);
-							}
-					}
-					document.getElementById("tr_" + building.id + "_" + resource.id).appendChild(inputCell);
-				})
-			}
-		}
-	})
-	*/
 	createinfoSelectionList();
 
 	window.onpopstate = function() {
@@ -404,6 +466,12 @@ document.addEventListener("DOMContentLoaded", function() {
 	var update = document.getElementById("infotool").onchange = function() {
 		var infoSelect = document.getElementById("infoselect");
 		var infoSelected = infoSelect.value;
+		if(infoSelected == "planets") {
+			if(checkbuildingtypeselect(infoSelect))
+				removebuildingtypeselect();
+			deleteTable();
+			createPlanetTable();
+		}
 		if(infoSelected == "buildings") {
 			if(infoSelect.lastSelected != infoSelect.value)
 				createbuildingtypeselect();
@@ -425,46 +493,6 @@ document.addEventListener("DOMContentLoaded", function() {
 			createShipTable();
 			
 		}
-		/*
-		game.infoTable.buildings.map(function(building){
-			for(var resourceIndex=0;resourceIndex<resNum;resourceIndex++){
-				var resourceFirstPlanet = true;
-				var resourceCostInput = Array(resNum);
-				var buildingLevel;
-				if(0!=building.resourcesProd[resourceIndex]&&(0<building.resourcesProd[resourceIndex])){
-					var resource = resources[resourceIndex];
-					planets.map(function(planet){
-						if((0<planet.baseResources[resourceIndex]||"mine"!=building.type2)){
-							for(var environmentIndex=0;environmentIndex<building.environment.length;environmentIndex++)
-								if(building.environment[environmentIndex]==planet.type){
-									var input = document.getElementById("input_" + planet.id + "_" + building.id + "_" + resource.id);
-									if(resourceFirstPlanet){
-										buildingLevel = input.value;
-										for(var resourceCostIndex = 0; resourceCostIndex<resNum; resourceCostIndex++)
-											resourceCostInput[resourceCostIndex] = Math.floor((building.resourcesCost[resourceCostIndex]*Math.pow(building.resourcesMult[resourceCostIndex],buildingLevel))/planet.baseResources[resourceIndex]);
-										resourceFirstPlanet = false;
-									} else {
-										var efficientBuildingLevels = [];
-										for(var resourceCostIndex = 0; resourceCostIndex<resNum; resourceCostIndex++){
-											if(resourceCostInput[resourceCostIndex]==0) continue;
-											var efficientBuildingLevel = 0;
-											var resourceCost = Math.floor(building.resourcesCost[resourceCostIndex]*Math.pow(building.resourcesMult[resourceCostIndex],efficientBuildingLevel));
-											while((resourceCostInput[resourceCostIndex]*planet.baseResources[resourceIndex])>resourceCost){
-												resourceCost = Math.floor(building.resourcesCost[resourceCostIndex]*Math.pow(building.resourcesMult[resourceCostIndex],efficientBuildingLevel));
-												efficientBuildingLevel++;
-											}
-											if(efficientBuildingLevel>0) efficientBuildingLevel -= 1;
-											efficientBuildingLevels.push(efficientBuildingLevel);
-										}
-										var newBuildingLevel = Math.min.apply(null, efficientBuildingLevels);
-										input.value = newBuildingLevel;
-									}
-								}
-						}
-					})
-				}
-			}
-		})*/
 		infoSelect.lastSelected = infoSelect.value;
 	}
 	update();
