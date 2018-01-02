@@ -714,7 +714,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		
 		var weaponRowFirstCell = td();
 		var weaponLabel = label(txt("Weapon"));
-		weaponLabel.title = "The Weapon type of a Ship\nBallistic Weapon Ships gain a 10% Power Bonus with the \"" + artifacts[artifactsName["thoroid"]] + "\"-Artifact";
+		weaponLabel.title = "The Weapon type of a Ship\nBallistic Weapon Ships gain a 10% Power Bonus with the \"" + artifacts[artifactsName["thoroid"]].name + "\"-Artifact";
 		weaponRowFirstCell.appendChild(weaponLabel);
 		document.getElementById("weaponRow").appendChild(weaponRowFirstCell);
 		
