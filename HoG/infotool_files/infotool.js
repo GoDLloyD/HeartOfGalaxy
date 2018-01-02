@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			var planetNameCell = th();
 			setCellWidth(tableWidth, planetNameCell);
 			var planetNameTextNode = label(txt(planet.name));
-			planetNameTextNode.title = "Well that's a Planet, what did you expect?";
+			planetNameTextNode.title = "Well, that's a Planet, what did you expect?";
 			planetNameCell.appendChild(planetNameTextNode);
 			document.getElementById("headRow").appendChild(planetNameCell);
 			infoTable.planets.push(planet);
@@ -222,7 +222,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			var buildingNameCell = th();
 			setCellWidth(tableWidth, buildingNameCell);
 			var buildingNameTextNode = label(txt(building.displayName));
-			buildingNameTextNode.title = "Well that's a Building, what did you expect?";
+			buildingNameTextNode.title = "Well, that's a Building, what did you expect?";
 			buildingNameCell.appendChild(buildingNameTextNode);
 			document.getElementById("headRow").appendChild(buildingNameCell);
 			infoTable.buildings.push(building);
@@ -456,7 +456,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			var researchNameCell = th();
 			setCellWidth(tableWidth, researchNameCell);
 			var researchNameTextNode = label(txt(research.name));
-			researchNameTextNode.title = "Well that's a Research, what did you expect?";
+			researchNameTextNode.title = "Well, that's a Research, what did you expect?";
 			researchNameCell.appendChild(researchNameTextNode);
 			document.getElementById("headRow").appendChild(researchNameCell);
 			infoTable.researches.push(research);
@@ -637,7 +637,7 @@ document.addEventListener("DOMContentLoaded", function() {
 				shipNameCell.setAttribute("Width", 320);
 			}
 			var shipNameTextNode = label(txt(ship.name));
-			shipNameTextNode.title = "Well that's a Ship, what did you expect?";
+			shipNameTextNode.title = "Well, that's a Ship, what did you expect?";
 			shipNameCell.appendChild(shipNameTextNode);
 			document.getElementById("headRow").appendChild(shipNameCell);
 			infoTable.ships.push(ship);
