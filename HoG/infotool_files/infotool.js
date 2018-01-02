@@ -843,7 +843,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		
 		var weightRowFirstCell = td();
 		var weightLabel = label(txt("Weight"));
-		weightLabel.title = "Weight (does includes cargo) increases the Cost of sending your fleet through the \"" + buildings[buildingsName["space_machine"]] + "\" or the \"" + buildings[buildingsName["space_beta"]] + "\"";
+		weightLabel.title = "Weight (does includes cargo) increases the Cost of sending your fleet through the \"" + buildings[buildingsName["space_machine"]].displayName + "\" or the \"" + buildings[buildingsName["space_beta"]].displayName + "\"";
 		weightRowFirstCell.appendChild(weightLabel);
 		document.getElementById("weightRow").appendChild(weightRowFirstCell);
 		
