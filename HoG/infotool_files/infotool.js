@@ -385,7 +385,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		var environmentRowFirstCell = td();
 		var environmentLabel = label(txt("Environment"));
 		environmentLabel.title = "The Environments of a Building, those decide on which types of Planet a Buildings can be built";
-		environmentRowFirstCell.appendChild(environmentLabelenvironmentLabel);
+		environmentRowFirstCell.appendChild(environmentLabel);
 		document.getElementById("environmentRow").appendChild(environmentRowFirstCell);
 		
 		infoTable.buildings.map(function(building) {
