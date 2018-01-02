@@ -42,6 +42,8 @@ document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById("headRow").appendChild(tableFirstCell);
 		
 		planets.map(function(planet) {
+			if(!planet.x || !planet.y || planet.info["orbit"] == 0)
+				return;
 			var planetNameCell = th();
 			setCellWidth(tableWidth, planetNameCell);
 			var planetNameTextNode = label(txt(planet.name));
