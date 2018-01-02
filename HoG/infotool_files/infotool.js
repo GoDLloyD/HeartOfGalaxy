@@ -197,7 +197,7 @@ document.addEventListener("DOMContentLoaded", function() {
 				
 				
 			for(var requiredResearch in building.researchReq) {
-				if(!researches[researchesName[requiredResearch]].pos || requiredResearch == "demographics" || building.researchReq[requiredResearch] > 100)
+				if(!researches[researchesName[requiredResearch]].pos || requiredResearch == "demographics" || requiredResearch == "energetics")
 					return;
 			}
 				
@@ -223,7 +223,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById("energyProductionRow").appendChild(energyProductionRowFirstCell);
 		
 		infoTable.buildings.map(function(building) {
-			var buildingenergyProductionCell = td();
+			var buildingEnergyProductionCell = td();
 			var energyProductionDiv = div();
 			
 			if(building.energy != 0) {
@@ -232,9 +232,9 @@ document.addEventListener("DOMContentLoaded", function() {
 				energyProductionDiv.appendChild(div(txt(energyProduction + "/s")));
 			}
 					
-			buildingenergyProductionCell.appendChild(energyProductionDiv);
+			buildingEnergyProductionCell.appendChild(energyProductionDiv);
 			
-			document.getElementById("energyProductionRow").appendChild(buildingenergyProductionCell);
+			document.getElementById("energyProductionRow").appendChild(buildingEnergyProductionCell);
 		})
 		
 		var productionRow = tr();
@@ -392,8 +392,11 @@ document.addEventListener("DOMContentLoaded", function() {
 		})
 	}
 	function createResearchTable() {
+		var tableWidth = 150;
+		
 		var infoTable = document.createElement("TABLE");
 		infoTable.setAttribute("id", "infotable");
+		infoTable.researches = [];
 		document.getElementById("infotablediv").appendChild(infoTable);
 
 		var headRow = tr();
@@ -401,8 +404,172 @@ document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById("infotable").appendChild(headRow);
 
 		var tableFirstCell = th();
+		setCellWidth(tableWidth, tableFirstCell);
 		document.getElementById("headRow").appendChild(tableFirstCell);
 		
+		researches.map(function(research) {
+			if(!research.pos || research.id == "demographics" || research.id == "energetics")
+				return;
+			
+			for(var requirement in research.req) {
+				var requiredResearch = researches[researchesName[requirement]];
+				if(!requiredResearch.pos || requiredResearch.id == "demographics" || requiredResearch.id == "energetics")
+					return;
+			}
+				
+			var researchNameCell = th();
+			setCellWidth(tableWidth, researchNameCell);
+			var researchNameTextNode = txt(research.name);
+			researchNameCell.appendChild(researchNameTextNode);
+			document.getElementById("headRow").appendChild(researchNameCell);
+			infoTable.researches.push(research);
+		})
+		
+		infoTable.setAttribute("width", tableWidth);
+		
+		var descriptionRow = tr();
+		descriptionRow.setAttribute("id", "descriptionRow");
+		document.getElementById("infotable").appendChild(descriptionRow);
+		
+		var descriptionRowFirstCell = td();
+		descriptionRowFirstCell.appendChild(txt("Description"));
+		document.getElementById("descriptionRow").appendChild(descriptionRowFirstCell);
+		
+		infoTable.researches.map(function(research) {
+			var researchDescriptionCell = td();
+			var descriptionDiv = div();
+			
+			var researchExtraDescription = research.extraDescription();
+			var splitString = researchExtraDescription.split(new RegExp("<[b][r]>"));
+			researchExtraDescription = splitString.join("\n");
+			splitString = researchExtraDescription.split(new RegExp("<[^>]*>"));
+			var researchDescription = splitString.join("");
+			var stuff = research.extraDescription();
+			//var otherstuff = span(stuff);
+			researchDescriptionCell.innerHTML = stuff;
+			//descriptionDiv.appendChild(div(txt(researchDescription)));
+					
+			researchDescriptionCell.appendChild(descriptionDiv);
+			
+			document.getElementById("descriptionRow").appendChild(researchDescriptionCell);
+		})
+		
+		var researchPointsCostRow = tr();
+		researchPointsCostRow.setAttribute("id", "researchPointsCostRow");
+		document.getElementById("infotable").appendChild(researchPointsCostRow);
+		
+		var researchPointsCostRowFirstCell = td();
+		researchPointsCostRowFirstCell.appendChild(txt("Research Points Cost"));
+		document.getElementById("researchPointsCostRow").appendChild(researchPointsCostRowFirstCell);
+		
+		infoTable.researches.map(function(research) {
+			var researchResearchPointsCostCell = td();
+			var researchPointsCostDiv = div();
+			
+			researchPointsCostDiv.appendChild(div(txt(beauty(research.researchPoint))));
+					
+			researchResearchPointsCostCell.appendChild(researchPointsCostDiv);
+			
+			document.getElementById("researchPointsCostRow").appendChild(researchResearchPointsCostCell);
+		})
+		
+		var researchPointsMultRow = tr();
+		researchPointsMultRow.setAttribute("id", "researchPointsMultRow");
+		document.getElementById("infotable").appendChild(researchPointsMultRow);
+		
+		var researchPointsMultRowFirstCell = td();
+		researchPointsMultRowFirstCell.appendChild(txt("Research Points Multiplier"));
+		document.getElementById("researchPointsMultRow").appendChild(researchPointsMultRowFirstCell);
+		
+		infoTable.researches.map(function(research) {
+			var researchResearchPointsMultCell = td();
+			var researchPointsMultDiv = div();
+			
+			researchPointsMultDiv.appendChild(div(txt(beauty(research.mult))));
+					
+			researchResearchPointsMultCell.appendChild(researchPointsMultDiv);
+			
+			document.getElementById("researchPointsMultRow").appendChild(researchResearchPointsMultCell);
+		})
+		
+		var techPointsCostRow = tr();
+		techPointsCostRow.setAttribute("id", "techPointsCostRow");
+		document.getElementById("infotable").appendChild(techPointsCostRow);
+		
+		var techPointsCostRowFirstCell = td();
+		techPointsCostRowFirstCell.appendChild(txt("Tech Points Cost"));
+		document.getElementById("techPointsCostRow").appendChild(techPointsCostRowFirstCell);
+		
+		infoTable.researches.map(function(research) {
+			var researchTechPointsCostCell = td();
+			var techPointsCostDiv = div();
+			
+			techPointsCostDiv.appendChild(div(txt(beauty(research.techPoint))));
+					
+			researchTechPointsCostCell.appendChild(techPointsCostDiv);
+			
+			document.getElementById("techPointsCostRow").appendChild(researchTechPointsCostCell);
+		})
+		
+		var techPointsMultRow = tr();
+		techPointsMultRow.setAttribute("id", "techPointsMultRow");
+		document.getElementById("infotable").appendChild(techPointsMultRow);
+		
+		var techPointsMultRowFirstCell = td();
+		techPointsMultRowFirstCell.appendChild(txt("Tech Points Multiplier"));
+		document.getElementById("techPointsMultRow").appendChild(techPointsMultRowFirstCell);
+		
+		infoTable.researches.map(function(research) {
+			var researchTechPointsMultCell = td();
+			var techPointsMultDiv = div();
+			
+			techPointsMultDiv.appendChild(div(txt(beauty(research.multBonus))));
+					
+			researchTechPointsMultCell.appendChild(techPointsMultDiv);
+			
+			document.getElementById("techPointsMultRow").appendChild(researchTechPointsMultCell);
+		})
+		
+		var maxLevelRow = tr();
+		maxLevelRow.setAttribute("id", "maxLevelRow");
+		document.getElementById("infotable").appendChild(maxLevelRow);
+		
+		var maxLevelRowFirstCell = td();
+		maxLevelRowFirstCell.appendChild(txt("Max Level"));
+		document.getElementById("maxLevelRow").appendChild(maxLevelRowFirstCell);
+		
+		infoTable.researches.map(function(research) {
+			var researchMaxLevelCell = td();
+			var maxLevelDiv = div();
+			
+			maxLevelDiv.appendChild(div(txt(research.max)));
+					
+			researchMaxLevelCell.appendChild(maxLevelDiv);
+			
+			document.getElementById("maxLevelRow").appendChild(researchMaxLevelCell);
+		})
+		
+		var requirementsRow = tr();
+		requirementsRow.setAttribute("id", "requirementsRow");
+		document.getElementById("infotable").appendChild(requirementsRow);
+		
+		var requirementsRowFirstCell = td();
+		requirementsRowFirstCell.appendChild(txt("Requirements"));
+		document.getElementById("requirementsRow").appendChild(requirementsRowFirstCell);
+		
+		infoTable.researches.map(function(research) {
+			var researchRequirementsCell = td();
+			var requirementsDiv = div();
+			
+			for(var requirement in research.req) {
+				requirementsDiv.appendChild(div(txt(researches[researchesName[requirement]].name.capitalize() + ":")));
+				requirementsDiv.appendChild(div(txt(research.req[requirement])));
+			}
+					
+			researchRequirementsCell.appendChild(requirementsDiv);
+			
+			document.getElementById("requirementsRow").appendChild(researchRequirementsCell);
+		})
 	}
 	function createShipTable() {
 		var infoTable = document.createElement("TABLE");
@@ -420,7 +587,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	function createinfoSelectionList() {
 		var infoSelect = el("select");
 		infoSelect.setAttribute("id", "infoselect");
-		["planets", "buildings", "researches", "ships"].map(function(infoSelectionList) {
+		["planets", "buildings", "researches", "ships"/*, "artifacts", "quests"*/].map(function(infoSelectionList) {
 			var option = el("option");
 			option.value = infoSelectionList;
 			option.innerText = infoSelectionList.capitalize();
