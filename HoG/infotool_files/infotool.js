@@ -485,6 +485,33 @@ document.addEventListener("DOMContentLoaded", function() {
 			document.getElementById("descriptionRow").appendChild(researchDescriptionCell);
 		})
 		
+		var bonusRow = tr();
+		bonusRow.setAttribute("id", "bonusRow");
+		document.getElementById("infotable").appendChild(bonusRow);
+		
+		var bonusRowFirstCell = td();
+		var bonusLabel = label(txt("Bonus"));
+		bonusLabel.title = "The ingame Bonus of a Research, each Bonus is unlocked at a certain Level of a Research";
+		bonusRowFirstCell.appendChild(bonusLabel);
+		document.getElementById("bonusRow").appendChild(bonusRowFirstCell);
+		
+		infoTable.researches.map(function(research) {
+			var researchBonusCell = td();
+			var bonusDiv = div();
+			
+			research.level = 10000;
+			researchBonusCell.innerHTML = research.description();
+			if(research.id == "astronomy") {
+				var astronomyBonus = [];
+				astronomyBonus = researchBonusCell.innerHTML.split(research.level + 1);
+				researchBonusCell.innerHTML = astronomyBonus.join("+1");
+			}
+					
+			researchBonusCell.appendChild(bonusDiv);
+			
+			document.getElementById("bonusRow").appendChild(researchBonusCell);
+		})
+		
 		var researchPointsCostRow = tr();
 		researchPointsCostRow.setAttribute("id", "researchPointsCostRow");
 		document.getElementById("infotable").appendChild(researchPointsCostRow);
