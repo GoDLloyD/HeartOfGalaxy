@@ -162,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function() {
 				if(baseResource == 0 || (baseResource == 1 && resources[resourceCostIndex].type != "ore"))
 					continue;
 				baseResourcesDiv.appendChild(div(txt(resources[resourceCostIndex].name.capitalize() + ":")));
-				baseResourcesDiv.appendChild(div(txt(baseResource)));
+				baseResourcesDiv.appendChild(div(txt("x" + beauty(baseResource))));
 			}
 					
 			planetBaseResourcesCell.appendChild(baseResourcesDiv);
