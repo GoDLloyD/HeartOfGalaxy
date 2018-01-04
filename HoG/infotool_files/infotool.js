@@ -315,7 +315,7 @@ document.addEventListener("DOMContentLoaded", function() {
 					var resourceConsumption = building.resourcesProd[resourceCostIndex];
 					resourceConsumption = beauty(resourceConsumption);
 					resourceConsumptionDiv.appendChild(div(txt(resources[resourceCostIndex].name.capitalize() + ":")));
-					resourceConsumptionDiv.appendChild(div(txt("-" + resourceConsumption + "/s")));
+					resourceConsumptionDiv.appendChild(div(txt(resourceConsumption + "/s")));
 				}
 					
 			buildingConsumptionCell.appendChild(resourceConsumptionDiv);
