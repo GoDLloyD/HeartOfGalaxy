@@ -44,6 +44,12 @@ document.addEventListener("DOMContentLoaded", function() {
 		planets.map(function(planet) {
 			if(!planet.x || !planet.y || planet.info["orbit"] == 0)
 				return;
+			for(var pushedPlanetIndex = 0; pushedPlanetIndex < infoTable.planets.length; pushedPlanetIndex++) {
+				if(infoTable.planets[pushedPlanetIndex].name == planet.name) {
+					infoTable.planets[pushedPlanetIndex] = planet;
+					return;
+				}
+			}
 			var planetNameCell = th();
 			setCellWidth(tableWidth, planetNameCell);
 			var planetNameTextNode = label(txt(planet.name));
