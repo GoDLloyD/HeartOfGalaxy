@@ -468,7 +468,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	generateOptions();
 
 	stufflist.statBlock = span();
-	stufflist.statBlock.className = "statblock only";
+	stufflist.statBlock.className = "statblock only storage";
 	stufflist.parentNode.appendChild(stufflist.statBlock);
 	var resourcelosses = span();
 	resourcelosses.className = "statblock combat only";
