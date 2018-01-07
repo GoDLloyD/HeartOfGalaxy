@@ -744,6 +744,9 @@ document.addEventListener("DOMContentLoaded", function() {
 				splitString = artifactDescription.split(new RegExp("<[^>]*>"));
 				var artifactTitle = splitString.join("");
 				input.label.title = artifactTitle;
+			} else if(input.resource) {
+				if(warfleet.maxStorage < warfleet.usedStorage)
+					input.setCustomValidity("Not enough Storage!");
 			}
 		});
 
@@ -757,10 +760,9 @@ document.addEventListener("DOMContentLoaded", function() {
 			return obj;
 		}, {}));
 		writeFleetSummary(shiplist.statBlockCombat, warfleet, enemy);
-		stufflist.statBlock.innerText = beautyObj({
-			"Max Storage": warfleet.maxStorage(),
-			"Used Storage": warfleet.usedStorage(),
-		});
+		var maxStorage = warfleet.maxStorage(),
+			usedStorage = warfleet.usedStorage(),
+			survivingStorage = 0;
 		enemylist.statBlock.innerText = beautyObj(enemy.ships.reduce(function(obj, n, k) {
 			if(n === 0) return obj;
 			ships[k].cost.map(function(v, i) {
@@ -811,9 +813,24 @@ document.addEventListener("DOMContentLoaded", function() {
 		});
 		enemylist.dataset.weightRemaining = enemy.combatWeight();
 
-		stufflist.statBlock.innerText += "\n" + beautyObj({
-			"Surviving Storage": warfleet.maxStorage(),
-		});
+		survivingStorage = warfleet.maxStorage();
+		stufflist.statBlock.innerHTML = "";
+		if(maxStorage < usedStorage) {
+			stufflist.statBlock.innerHTML += "<b><font color=\"red\">Max Storage: " + beauty(maxStorage) + "</color></b>";
+		} else {
+			stufflist.statBlock.innerHTML += "Max Storage: " + beauty(maxStorage);
+		}
+		if(maxStorage < usedStorage || survivingStorage < usedStorage) {
+			stufflist.statBlock.innerHTML += "<br><b><font color=\"red\">Used Storage: " + beauty(usedStorage) + "</color></b>";
+		} else {
+			stufflist.statBlock.innerHTML += "<br>Used Storage: " + beauty(usedStorage);
+		}
+		if(survivingStorage < usedStorage) {
+			stufflist.statBlock.innerHTML += "<br><b><font color=\"red\">Surviving Storage: " + beauty(survivingStorage) + "</color></b>";
+		} else {
+			stufflist.statBlock.innerHTML += "<br>Surviving Storage: " + beauty(survivingStorage);
+		}
+			
 
 		var warfleetRemainingNetWorth = warfleet.ships.reduce(function(arr, n, k) {
 			if(n === 0) return arr;
