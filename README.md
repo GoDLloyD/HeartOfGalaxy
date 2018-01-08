@@ -2,6 +2,7 @@
 
 Heart of Galaxy:
 <a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/Battlecalc.html">Battle Calculator</a>
+<a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/battlecalc_files/tutorial.png">Battle Calculator Tutorial</a>
 
 Heart of Galaxy:
 <a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/Shipcalc.html">Ship Calculator</a>
