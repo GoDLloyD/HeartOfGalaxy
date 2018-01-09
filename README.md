@@ -8,6 +8,9 @@ Heart of Galaxy:
 <a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/Shipcalc.html">Ship Calculator</a>
 
 Heart of Galaxy:
+<a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/Buildingcalc.html">Building Calculator</a>
+
+Heart of Galaxy:
 <a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/Researchcalc.html">Research Calculator</a>
 
 Heart of Galaxy:
