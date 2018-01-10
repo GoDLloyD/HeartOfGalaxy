@@ -24,9 +24,9 @@ th {
 	background-color: #777;
 }
 
-table tr:nth-child(even) {
+table tr:nth-child(odd) {
     background-color: #ddd;
 }
-table tr:nth-child(odd) {
+table tr:nth-child(even) {
     background-color: #ddf;
 }
