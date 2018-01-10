@@ -12,12 +12,6 @@ document.addEventListener("DOMContentLoaded", function() {
 	function td() { return el("TD", arr(arguments)); }
 	function th() { return el("TH", arr(arguments)); }
 	
-	function setCellWidth(tableWidth, cell) {
-		var cellWidth = 150;
-		tableWidth += cellWidth;
-		cell.setAttribute("width", cellWidth);
-	}
-	
 	var saveData;
 	try {
 		saveData = JSON.parse(localStorage.getItem("buildingcalc-persist")) || {};
@@ -27,19 +21,25 @@ document.addEventListener("DOMContentLoaded", function() {
 	};
 	window.history.replaceState(saveData, document.title, window.location.pathname);
 	
-	var tableWidth = 150;
+	var cellWidth = 200;
+	var tableWidth = 200;
     var buildingCalcTable = document.createElement("TABLE");
     buildingCalcTable.setAttribute("id", "buildingCalcTable");
 	buildingCalcTable.planets = [];
 	buildingCalcTable.buildings = [];
     document.getElementById("buildingtable").appendChild(buildingCalcTable);
+	
+	var thead = el("thead");
+    thead.setAttribute("id", "thead");
+    document.getElementById("buildingCalcTable").appendChild(thead);
 
     var headRow = tr();
     headRow.setAttribute("id", "headRow");
-    document.getElementById("buildingCalcTable").appendChild(headRow);
+    document.getElementById("thead").appendChild(headRow);
 
     var tableFirstCell = th();
-	setCellWidth(tableWidth, tableFirstCell);
+	tableFirstCell.setAttribute("width", cellWidth);
+	tableWidth += cellWidth;
     var tableFirstTextNode = txt("Resource/Planet");
     tableFirstCell.appendChild(tableFirstTextNode);
     document.getElementById("headRow").appendChild(tableFirstCell);
@@ -54,12 +54,18 @@ document.addEventListener("DOMContentLoaded", function() {
 			}
 		}
 		var planetNameCell = th();
-		setCellWidth(tableWidth, planetNameCell);
+		planetNameCell.setAttribute("width", cellWidth);
+		tableWidth += cellWidth;
 		var tableFirstTextNode = txt(planet.name);
 		planetNameCell.appendChild(tableFirstTextNode);
 		document.getElementById("headRow").appendChild(planetNameCell);
 		buildingCalcTable.planets.push(planet);
 	})
+	
+	var tbody = el("tbody");
+    tbody.setAttribute("id", "tbody");
+    document.getElementById("buildingCalcTable").appendChild(tbody);
+	
 	buildings.map(function(building) {
 		if(building.displayName == "placeholder")
 			return;
@@ -78,13 +84,15 @@ document.addEventListener("DOMContentLoaded", function() {
 				var resource = resources[resourceIndex];
 				var buildingResourceRow = tr();
 				buildingResourceRow.setAttribute("id", "tr_" + building.id + "_" + resource.id);
-				document.getElementById("buildingCalcTable").appendChild(buildingResourceRow);
+				document.getElementById("tbody").appendChild(buildingResourceRow);
 				var buildingResourceCell = td();
+				buildingResourceCell.setAttribute("width", cellWidth);
 				var buildingResourceNode = txt(building.displayName + "(" + resource.name.capitalize() + ")");
 				buildingResourceCell.appendChild(buildingResourceNode);
 				document.getElementById("tr_" + building.id + "_" + resource.id).appendChild(buildingResourceCell);
 				buildingCalcTable.planets.map(function(planet){
 					var inputCell = td();
+					inputCell.setAttribute("width", cellWidth);
 					if((0<planet.baseResources[resourceIndex])){
 						for(var environmentIndex=0;environmentIndex<building.environment.length;environmentIndex++)
 							if(building.environment[environmentIndex]==planet.type){
@@ -108,13 +116,15 @@ document.addEventListener("DOMContentLoaded", function() {
 		if(building.researchPoint > 0) {
 			var buildingResourceRow = tr();
 			buildingResourceRow.setAttribute("id", "tr_" + building.id);
-			document.getElementById("buildingCalcTable").appendChild(buildingResourceRow);
+			document.getElementById("tbody").appendChild(buildingResourceRow);
 			var buildingResourceCell = td();
+			buildingResourceCell.setAttribute("width", cellWidth);
 			var buildingResourceNode = txt(building.displayName + "(Research Points)");
 			buildingResourceCell.appendChild(buildingResourceNode);
 			document.getElementById("tr_" + building.id).appendChild(buildingResourceCell);
 			buildingCalcTable.planets.map(function(planet){
 				var inputCell = td();
+				inputCell.setAttribute("width", cellWidth);
 				for(var environmentIndex=0;environmentIndex<building.environment.length;environmentIndex++)
 					if(building.environment[environmentIndex]==planet.type){
 						var input = el("input");
@@ -133,7 +143,9 @@ document.addEventListener("DOMContentLoaded", function() {
 			})
 		}
 	})
-
+	
+	buildingCalcTable.setAttribute("width", tableWidth);
+	
 	window.onpopstate = function() {
 		saveData = e.state;
 		if(!saveData) return;

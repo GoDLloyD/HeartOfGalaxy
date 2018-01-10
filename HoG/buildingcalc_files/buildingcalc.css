@@ -4,8 +4,15 @@ table, td, th {
 	border: 1px solid black;
 }
 
-table {
-	table-layout: fixed;
+table tbody, table thead
+{
+    display: block;
+}
+
+table tbody 
+{
+   overflow: auto;
+   height: 700px;
 }
 
 td {
