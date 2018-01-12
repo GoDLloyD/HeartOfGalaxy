@@ -273,7 +273,11 @@ document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById("infotable").appendChild(productionRow);
 		
 		var productionRowFirstCell = td();
-		var productionLabel = label(txt("Resource Production"));
+		if(buildingTypeSelect.value != "research") {
+			var productionLabel = label(txt("Resource Production"));
+		} else {
+			var productionLabel = label(txt("Research Production"));
+		}
 		productionLabel.title = "The amounts and types of Resources produced per second by a Building";
 		productionRowFirstCell.appendChild(productionLabel);
 		document.getElementById("productionRow").appendChild(productionRowFirstCell);
@@ -295,6 +299,10 @@ document.addEventListener("DOMContentLoaded", function() {
 				resourceProduction = beauty(resourceProduction);
 				resourceProductionDiv.appendChild(div(txt("Research Points:")));
 				resourceProductionDiv.appendChild(div(txt(resourceProduction + "/s")));
+				if(building.name == "cryolab")
+					resourceProductionDiv.appendChild(div(txt("Base * Temperature * (-5)")));
+				if(building.name == "lavaresearch")
+					resourceProductionDiv.appendChild(div(txt("Base * Temperature")));
 			}
 					
 			buildingProductionCell.appendChild(resourceProductionDiv);
