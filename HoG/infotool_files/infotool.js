@@ -300,9 +300,9 @@ document.addEventListener("DOMContentLoaded", function() {
 				resourceProductionDiv.appendChild(div(txt("Research Points:")));
 				resourceProductionDiv.appendChild(div(txt(resourceProduction + "/s")));
 				if(building.name == "cryolab")
-					resourceProductionDiv.appendChild(div(txt("Base * Temperature * (-5)")));
+					resourceProductionDiv.appendChild(div(txt("Base*Temperature*(-5)")));
 				if(building.name == "lavaresearch")
-					resourceProductionDiv.appendChild(div(txt("Base * Temperature")));
+					resourceProductionDiv.appendChild(div(txt("Base*Temperature")));
 			}
 					
 			buildingProductionCell.appendChild(resourceProductionDiv);
