@@ -211,8 +211,13 @@ document.addEventListener("DOMContentLoaded", function() {
 							var input = document.getElementById("input_" + planet.id + "_" + building.id);
 							if(resourceFirstPlanet){
 								buildingLevel = input.value;
-								for(var resourceCostIndex = 0; resourceCostIndex<resNum; resourceCostIndex++)
-									resourceCostInput[resourceCostIndex] = Math.floor((building.resourcesCost[resourceCostIndex]*Math.pow(building.resourcesMult[resourceCostIndex],buildingLevel))/planet.baseResources[resourceIndex]);
+								for(var resourceCostIndex = 0; resourceCostIndex<resNum; resourceCostIndex++) {
+									resourceCostInput[resourceCostIndex] = Math.floor(building.resourcesCost[resourceCostIndex]*Math.pow(building.resourcesMult[resourceCostIndex],buildingLevel));
+									if(building.name == "cryolab")
+										resourceCostInput[resourceCostIndex] = resourceCostInput[resourceCostIndex] / (planet.info["temp"] * -5);
+									if(building.name == "lavaresearch")
+										resourceCostInput[resourceCostIndex] = resourceCostInput[resourceCostIndex] / planet.info["temp"];
+								}
 								resourceFirstPlanet = false;
 							} else {
 								var efficientBuildingLevels = [];
@@ -220,7 +225,12 @@ document.addEventListener("DOMContentLoaded", function() {
 									if(resourceCostInput[resourceCostIndex]==0) continue;
 									var efficientBuildingLevel = 0;
 									var resourceCost = Math.floor(building.resourcesCost[resourceCostIndex]*Math.pow(building.resourcesMult[resourceCostIndex],efficientBuildingLevel));
-									while((resourceCostInput[resourceCostIndex]*planet.baseResources[resourceIndex])>resourceCost){
+									var inputResourceCost = resourceCostInput[resourceCostIndex];
+									if(building.name == "cryolab")
+										inputResourceCost = inputResourceCost * planet.info["temp"] * -5;
+									if(building.name == "lavaresearch")
+										inputResourceCost = inputResourceCost * planet.info["temp"];
+									while(inputResourceCost>resourceCost){
 										resourceCost = Math.floor(building.resourcesCost[resourceCostIndex]*Math.pow(building.resourcesMult[resourceCostIndex],efficientBuildingLevel));
 										efficientBuildingLevel++;
 									}
