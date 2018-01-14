@@ -12,6 +12,69 @@ document.addEventListener("DOMContentLoaded", function() {
 	function td() { return el("TD", arr(arguments)); }
 	function th() { return el("TH", arr(arguments)); }
 	
+	function dmgred(armor) {
+		return 1 - 1 / (1 + Math.log(1 + armor / 1E4) / Math.log(2));
+	}
+	function speedred(def, atk, weight) {
+		var a = def / atk * 4.6 / Math.log(weight) - 2;
+		var b = 2 * a / (1 + Math.abs(2 * a));
+		return .5 * (1.1 - .9 * b);
+	}
+	function fleetBonus(fleet) {
+		var bonus = {
+			power: 1,
+			armor: 1,
+			hp: 1,
+			speed: 1,
+			shield: 1,
+		};
+		var exp = fleet.exp;
+		if(isNaN(exp)) exp = 0;
+		else if(exp>MAX_FLEET_EXPERIENCE) exp = MAX_FLEET_EXPERIENCE;
+		var expBonus = 1 + exp / 2000;
+		bonus.power *= expBonus
+		bonus.armor *= expBonus
+		bonus.hp *= expBonus
+		bonus.shield *= expBonus
+		
+		return bonus;
+	}
+	function fleetStats(fleet, enemy) {
+		var power = 0,
+		    armor = 0,
+		    hp = 0,
+		    threat = 0,
+		    toughness = 0,
+		    piercepower = 0,
+		    speedpower = 0,
+		    speedtough = 0,
+		    rawpower = 0,
+		    rawtough = 0;
+		var bonus = fleetBonus(fleet);
+		fleet.ships.map(function(n, k) {
+			if(n == 0) return;
+			var ship = ships[k];
+			power += n * ship.power * bonus.power;
+			piercepower += power * (ship.piercing || 0) / 100,
+			armor += n * ship.armor * bonus.armor;
+			hp += n * ship.hp * bonus.hp;
+			var shiptough = ship.hp * bonus.hp / (1 - dmgred(ship.armor * bonus.armor));
+			var piercingbonus = Math.min(1 + 10 * (ship.piercing || 0) / 100, 10);
+			threat += (n+1) * ship.power * bonus.power;
+			toughness += n * shiptough;
+			speedpower += (n+1) * ship.power * piercingbonus * bonus.power * speedred(1, ship.speed * bonus.speed, 100000);
+			speedtough += n * shiptough / speedred(ship.speed * bonus.speed, 1, ship.combatWeight);
+		});
+		return {
+			Power: power,
+			"Piercing Power": piercepower,
+			Armor: armor,
+			HP: hp,
+			Toughness: toughness,
+			Value: Math.sqrt(speedpower * speedtough),
+		};
+	}
+	
 	var saveData;
 	try {
 		saveData = JSON.parse(localStorage.getItem("buildingcalc-persist")) || {};
@@ -53,13 +116,38 @@ document.addEventListener("DOMContentLoaded", function() {
 				return;
 			}
 		}
+		buildingCalcTable.planets.push(planet);
+	});
+		
+	buildingCalcTable.planets.sort(function(planetA, planetB) {
+		var planetAStrongestFleet;
+		var planetBStrongestFleet;
+		
+		for(var planetIndex in planetA.fleets) {
+			var fleet = planetA.fleets[planetIndex];
+			if(planetAStrongestFleet == null)
+				planetAStrongestFleet = fleet;
+			if(fleetStats(planetAStrongestFleet).Value < fleetStats(fleet).Value)
+				planetAStrongestFleet = fleet;
+		}
+		for(var planetIndex in planetB.fleets) {
+			var fleet = planetB.fleets[planetIndex];
+			if(planetBStrongestFleet == null)
+				planetBStrongestFleet = fleet;
+			if(fleetStats(planetBStrongestFleet).Value < fleetStats(fleet).Value)
+				planetBStrongestFleet = fleet;
+		}
+		
+		return fleetStats(planetAStrongestFleet).Value - fleetStats(planetBStrongestFleet).Value; 
+	});
+	
+	buildingCalcTable.planets.map(function(planet){
 		var planetNameCell = th();
 		planetNameCell.setAttribute("width", cellWidth);
 		tableWidth += cellWidth;
 		var tableFirstTextNode = txt(planet.name);
 		planetNameCell.appendChild(tableFirstTextNode);
 		document.getElementById("headRow").appendChild(planetNameCell);
-		buildingCalcTable.planets.push(planet);
 	})
 	
 	var tbody = el("tbody");
