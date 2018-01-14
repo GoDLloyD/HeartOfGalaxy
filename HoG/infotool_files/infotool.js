@@ -12,6 +12,69 @@ document.addEventListener("DOMContentLoaded", function() {
 	function td() { return el("TD", arr(arguments)); }
 	function th() { return el("TH", arr(arguments)); }
 	
+	function dmgred(armor) {
+		return 1 - 1 / (1 + Math.log(1 + armor / 1E4) / Math.log(2));
+	}
+	function speedred(def, atk, weight) {
+		var a = def / atk * 4.6 / Math.log(weight) - 2;
+		var b = 2 * a / (1 + Math.abs(2 * a));
+		return .5 * (1.1 - .9 * b);
+	}
+	function fleetBonus(fleet) {
+		var bonus = {
+			power: 1,
+			armor: 1,
+			hp: 1,
+			speed: 1,
+			shield: 1,
+		};
+		var exp = fleet.exp;
+		if(isNaN(exp)) exp = 0;
+		else if(exp>MAX_FLEET_EXPERIENCE) exp = MAX_FLEET_EXPERIENCE;
+		var expBonus = 1 + exp / 2000;
+		bonus.power *= expBonus
+		bonus.armor *= expBonus
+		bonus.hp *= expBonus
+		bonus.shield *= expBonus
+		
+		return bonus;
+	}
+	function fleetStats(fleet, enemy) {
+		var power = 0,
+		    armor = 0,
+		    hp = 0,
+		    threat = 0,
+		    toughness = 0,
+		    piercepower = 0,
+		    speedpower = 0,
+		    speedtough = 0,
+		    rawpower = 0,
+		    rawtough = 0;
+		var bonus = fleetBonus(fleet);
+		fleet.ships.map(function(n, k) {
+			if(n == 0) return;
+			var ship = ships[k];
+			power += n * ship.power * bonus.power;
+			piercepower += power * (ship.piercing || 0) / 100,
+			armor += n * ship.armor * bonus.armor;
+			hp += n * ship.hp * bonus.hp;
+			var shiptough = ship.hp * bonus.hp / (1 - dmgred(ship.armor * bonus.armor));
+			var piercingbonus = Math.min(1 + 10 * (ship.piercing || 0) / 100, 10);
+			threat += (n+1) * ship.power * bonus.power;
+			toughness += n * shiptough;
+			speedpower += (n+1) * ship.power * piercingbonus * bonus.power * speedred(1, ship.speed * bonus.speed, 100000);
+			speedtough += n * shiptough / speedred(ship.speed * bonus.speed, 1, ship.combatWeight);
+		});
+		return {
+			Power: power,
+			"Piercing Power": piercepower,
+			Armor: armor,
+			HP: hp,
+			Toughness: toughness,
+			Value: Math.sqrt(speedpower * speedtough),
+		};
+	}
+	
 	function deleteTable() {
 		var infoTableDiv = document.getElementById("infotablediv");
 		while(infoTableDiv.lastChild)
@@ -22,7 +85,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		tableWidth += cellWidth;
 		cell.setAttribute("width", cellWidth);
 	}
-	function dmgred(armor) {
+	function dmgredPercent(armor) {
 		return (1 - 1 / (1 + Math.log(1 + armor / 1E4) / Math.log(2))) * 100;
 	}
 	function createPlanetTable() {
@@ -50,14 +113,39 @@ document.addEventListener("DOMContentLoaded", function() {
 					return;
 				}
 			}
+			infoTable.planets.push(planet);
+		});
+		
+		infoTable.planets.sort(function(planetA, planetB) {
+			var planetAStrongestFleet;
+			var planetBStrongestFleet;
+			
+			for(var planetIndex in planetA.fleets) {
+				var fleet = planetA.fleets[planetIndex];
+				if(planetAStrongestFleet == null)
+					planetAStrongestFleet = fleet;
+				if(fleetStats(planetAStrongestFleet).Value < fleetStats(fleet).Value)
+					planetAStrongestFleet = fleet;
+			}
+			for(var planetIndex in planetB.fleets) {
+				var fleet = planetB.fleets[planetIndex];
+				if(planetBStrongestFleet == null)
+					planetBStrongestFleet = fleet;
+				if(fleetStats(planetBStrongestFleet).Value < fleetStats(fleet).Value)
+					planetBStrongestFleet = fleet;
+			}
+			
+			return fleetStats(planetAStrongestFleet).Value - fleetStats(planetBStrongestFleet).Value; 
+		});
+		
+		infoTable.planets.map(function(planet) {
 			var planetNameCell = th();
 			setCellWidth(tableWidth, planetNameCell);
 			var planetNameTextNode = label(txt(planet.name));
 			planetNameTextNode.title = "Well, that's a Planet, what did you expect?";
 			planetNameCell.appendChild(planetNameTextNode);
 			document.getElementById("headRow").appendChild(planetNameCell);
-			infoTable.planets.push(planet);
-		})
+		});
 		
 		infoTable.setAttribute("width", tableWidth);
 		
@@ -80,7 +168,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			planetInfluenceCell.appendChild(influenceDiv);
 			
 			document.getElementById("influenceRow").appendChild(planetInfluenceCell);
-		})
+		});
 		
 		var unlocksRow = tr();
 		unlocksRow.setAttribute("id", "unlocksRow");
@@ -102,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			planetUnlocksCell.appendChild(unlocksDiv);
 			
 			document.getElementById("unlocksRow").appendChild(planetUnlocksCell);
-		})
+		});
 		
 		var environmentRow = tr();
 		environmentRow.setAttribute("id", "environmentRow");
@@ -123,7 +211,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			planetEnvironmentCell.appendChild(environmentDiv);
 			
 			document.getElementById("environmentRow").appendChild(planetEnvironmentCell);
-		})
+		});
 		
 		var orbitalDistanceRow = tr();
 		orbitalDistanceRow.setAttribute("id", "orbitalDistanceRow");
@@ -144,7 +232,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			planetOrbitalDistanceCell.appendChild(orbitalDistanceDiv);
 			
 			document.getElementById("orbitalDistanceRow").appendChild(planetOrbitalDistanceCell);
-		})
+		});
 		
 		var temperatureRow = tr();
 		temperatureRow.setAttribute("id", "temperatureRow");
@@ -165,7 +253,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			planetTemperatureCell.appendChild(temperatureDiv);
 			
 			document.getElementById("temperatureRow").appendChild(planetTemperatureCell);
-		})
+		});
 		
 		var baseResourcesRow = tr();
 		baseResourcesRow.setAttribute("id", "baseResourcesRow");
@@ -192,7 +280,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			planetBaseResourcesCell.appendChild(baseResourcesDiv);
 			
 			document.getElementById("baseResourcesRow").appendChild(planetBaseResourcesCell);
-		})
+		});
 	}
 	function createBuildingTable() {
 		var buildingTypeSelect = document.getElementById("buildingtypeselect");
@@ -232,7 +320,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			buildingNameCell.appendChild(buildingNameTextNode);
 			document.getElementById("headRow").appendChild(buildingNameCell);
 			infoTable.buildings.push(building);
-		})
+		});
 		
 		infoTable.setAttribute("width", tableWidth);
 		
@@ -266,7 +354,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			buildingEnergyProductionCell.appendChild(energyProductionDiv);
 			
 			document.getElementById("energyProductionRow").appendChild(buildingEnergyProductionCell);
-		})
+		});
 		
 		var productionRow = tr();
 		productionRow.setAttribute("id", "productionRow");
@@ -308,7 +396,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			buildingProductionCell.appendChild(resourceProductionDiv);
 			
 			document.getElementById("productionRow").appendChild(buildingProductionCell);
-		})
+		});
 		
 		var consumptionRow = tr();
 		consumptionRow.setAttribute("id", "consumptionRow");
@@ -335,7 +423,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			buildingConsumptionCell.appendChild(resourceConsumptionDiv);
 			
 			document.getElementById("consumptionRow").appendChild(buildingConsumptionCell);
-		})
+		});
 		
 		var costRow = tr();
 		costRow.setAttribute("id", "costRow");
@@ -365,7 +453,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			buildingCostCell.appendChild(resourceCostDiv);
 			
 			document.getElementById("costRow").appendChild(buildingCostCell);
-		})
+		});
 		
 		var costMultiplierRow = tr();
 		costMultiplierRow.setAttribute("id", "costMultiplierRow");
@@ -390,7 +478,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			buildingcostMultiplierCell.appendChild(resourcecostMultiplierDiv);
 			
 			document.getElementById("costMultiplierRow").appendChild(buildingcostMultiplierCell);
-		})
+		});
 		
 		var environmentRow = tr();
 		environmentRow.setAttribute("id", "environmentRow");
@@ -412,7 +500,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			buildingEnvironmentCell.appendChild(environmentDiv);
 			
 			document.getElementById("environmentRow").appendChild(buildingEnvironmentCell);
-		})
+		});
 		
 		var requirementsRow = tr();
 		requirementsRow.setAttribute("id", "requirementsRow");
@@ -439,7 +527,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			buildingRequirementsCell.appendChild(requirementsDiv);
 			
 			document.getElementById("requirementsRow").appendChild(buildingRequirementsCell);
-		})
+		});
 	}
 	function createResearchTable() {
 		var tableWidth = 150;
@@ -474,7 +562,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			researchNameCell.appendChild(researchNameTextNode);
 			document.getElementById("headRow").appendChild(researchNameCell);
 			infoTable.researches.push(research);
-		})
+		});
 		
 		infoTable.setAttribute("width", tableWidth);
 		
@@ -497,7 +585,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			researchDescriptionCell.appendChild(descriptionDiv);
 			
 			document.getElementById("descriptionRow").appendChild(researchDescriptionCell);
-		})
+		});
 		
 		var bonusRow = tr();
 		bonusRow.setAttribute("id", "bonusRow");
@@ -524,7 +612,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			researchBonusCell.appendChild(bonusDiv);
 			
 			document.getElementById("bonusRow").appendChild(researchBonusCell);
-		})
+		});
 		
 		var researchPointsCostRow = tr();
 		researchPointsCostRow.setAttribute("id", "researchPointsCostRow");
@@ -545,7 +633,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			researchResearchPointsCostCell.appendChild(researchPointsCostDiv);
 			
 			document.getElementById("researchPointsCostRow").appendChild(researchResearchPointsCostCell);
-		})
+		});
 		
 		var researchPointsMultRow = tr();
 		researchPointsMultRow.setAttribute("id", "researchPointsMultRow");
@@ -566,7 +654,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			researchResearchPointsMultCell.appendChild(researchPointsMultDiv);
 			
 			document.getElementById("researchPointsMultRow").appendChild(researchResearchPointsMultCell);
-		})
+		});
 		
 		var techPointsCostRow = tr();
 		techPointsCostRow.setAttribute("id", "techPointsCostRow");
@@ -587,7 +675,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			researchTechPointsCostCell.appendChild(techPointsCostDiv);
 			
 			document.getElementById("techPointsCostRow").appendChild(researchTechPointsCostCell);
-		})
+		});
 		
 		var techPointsMultRow = tr();
 		techPointsMultRow.setAttribute("id", "techPointsMultRow");
@@ -608,7 +696,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			researchTechPointsMultCell.appendChild(techPointsMultDiv);
 			
 			document.getElementById("techPointsMultRow").appendChild(researchTechPointsMultCell);
-		})
+		});
 		
 		var maxLevelRow = tr();
 		maxLevelRow.setAttribute("id", "maxLevelRow");
@@ -629,7 +717,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			researchMaxLevelCell.appendChild(maxLevelDiv);
 			
 			document.getElementById("maxLevelRow").appendChild(researchMaxLevelCell);
-		})
+		});
 		
 		var requirementsRow = tr();
 		requirementsRow.setAttribute("id", "requirementsRow");
@@ -653,7 +741,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			researchRequirementsCell.appendChild(requirementsDiv);
 			
 			document.getElementById("requirementsRow").appendChild(researchRequirementsCell);
-		})
+		});
 	}
 	function createShipTable() {
 		var tableWidth = 150;
@@ -682,7 +770,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			shipNameCell.appendChild(shipNameTextNode);
 			document.getElementById("headRow").appendChild(shipNameCell);
 			infoTable.ships.push(ship);
-		})
+		});
 		
 		infoTable.setAttribute("width", tableWidth);
 		
@@ -705,7 +793,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			shipTypeCell.appendChild(typeDiv);
 			
 			document.getElementById("typeRow").appendChild(shipTypeCell);
-		})
+		});
 		
 		var hpRow = tr();
 		hpRow.setAttribute("id", "hpRow");
@@ -726,7 +814,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			shipHpCell.appendChild(hpDiv);
 			
 			document.getElementById("hpRow").appendChild(shipHpCell);
-		})
+		});
 		
 		var powerRow = tr();
 		powerRow.setAttribute("id", "powerRow");
@@ -747,7 +835,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			shipPowerCell.appendChild(powerDiv);
 			
 			document.getElementById("powerRow").appendChild(shipPowerCell);
-		})
+		});
 		
 		var weaponRow = tr();
 		weaponRow.setAttribute("id", "weaponRow");
@@ -769,7 +857,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			shipWeaponCell.appendChild(weaponDiv);
 			
 			document.getElementById("weaponRow").appendChild(shipWeaponCell);
-		})
+		});
 		
 		var piercingPowerRow = tr();
 		piercingPowerRow.setAttribute("id", "piercingPowerRow");
@@ -791,7 +879,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			shipPiercingPowerCell.appendChild(piercingPowerDiv);
 			
 			document.getElementById("piercingPowerRow").appendChild(shipPiercingPowerCell);
-		})
+		});
 		
 		var shieldsRow = tr();
 		shieldsRow.setAttribute("id", "shieldsRow");
@@ -813,7 +901,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			shipShieldsCell.appendChild(shieldsDiv);
 			
 			document.getElementById("shieldsRow").appendChild(shipShieldsCell);
-		})
+		});
 		
 		var armorRow = tr();
 		armorRow.setAttribute("id", "armorRow");
@@ -834,7 +922,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			shipArmorCell.appendChild(armorDiv);
 			
 			document.getElementById("armorRow").appendChild(shipArmorCell);
-		})
+		});
 		
 		var damageReductionRow = tr();
 		damageReductionRow.setAttribute("id", "damageReductionRow");
@@ -850,12 +938,12 @@ document.addEventListener("DOMContentLoaded", function() {
 			var shipDamageReductionCell = td();
 			var damageReductionDiv = div();
 			
-			damageReductionDiv.appendChild(div(txt(beauty(dmgred(ship.armor)) + "%")));
+			damageReductionDiv.appendChild(div(txt(beauty(dmgredPercent(ship.armor)) + "%")));
 					
 			shipDamageReductionCell.appendChild(damageReductionDiv);
 			
 			document.getElementById("damageReductionRow").appendChild(shipDamageReductionCell);
-		})
+		});
 		
 		var speedRow = tr();
 		speedRow.setAttribute("id", "speedRow");
@@ -876,7 +964,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			shipSpeedCell.appendChild(speedDiv);
 			
 			document.getElementById("speedRow").appendChild(shipSpeedCell);
-		})
+		});
 		
 		var weightRow = tr();
 		weightRow.setAttribute("id", "weightRow");
@@ -897,7 +985,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			shipWeightCell.appendChild(weightDiv);
 			
 			document.getElementById("weightRow").appendChild(shipWeightCell);
-		})
+		});
 		
 		var combatWeightRow = tr();
 		combatWeightRow.setAttribute("id", "combatWeightRow");
@@ -918,7 +1006,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			shipCombatWeightCell.appendChild(combatWeightDiv);
 			
 			document.getElementById("combatWeightRow").appendChild(shipCombatWeightCell);
-		})
+		});
 		
 		var storageRow = tr();
 		storageRow.setAttribute("id", "storageRow");
@@ -939,7 +1027,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			shipStorageCell.appendChild(storageDiv);
 			
 			document.getElementById("storageRow").appendChild(shipStorageCell);
-		})
+		});
 		
 		var specialEffectRow = tr();
 		specialEffectRow.setAttribute("id", "specialEffectRow");
@@ -962,7 +1050,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			shipSpecialEffectCell.appendChild(specialEffectDiv);
 			
 			document.getElementById("specialEffectRow").appendChild(shipSpecialEffectCell);
-		})
+		});
 		
 		var costRow = tr();
 		costRow.setAttribute("id", "costRow");
@@ -988,7 +1076,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			shipCostCell.appendChild(costDiv);
 			
 			document.getElementById("costRow").appendChild(shipCostCell);
-		})
+		});
 		
 		var requirementsRow = tr();
 		requirementsRow.setAttribute("id", "requirementsRow");
@@ -1015,7 +1103,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			shipRequirementsCell.appendChild(requirementsDiv);
 			
 			document.getElementById("requirementsRow").appendChild(shipRequirementsCell);
-		})
+		});
 	}
 	function createinfoSelectionList() {
 		var infoSelect = el("select");
