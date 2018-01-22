@@ -342,10 +342,14 @@ document.addEventListener("DOMContentLoaded", function() {
 		}).map(appendTo(optionslist));
 	}
 	function inputval(input) {
+		if(input.type != "text")
+			return;
+		
 		delete input.title;
 		input.setCustomValidity("");
 
-		var value = input.value;
+		var value = input.value;//parseInputNumber(input);
+		
 		if(input.type=="checkbox")
 			if(input.checked)
 				value=1;
@@ -357,6 +361,8 @@ document.addEventListener("DOMContentLoaded", function() {
 			input.title = e.message;
 			input.setCustomValidity(e.message);
 		}
+		if(value)
+			input.value = value;
 			
 		return parseInt(value) || 0;
 	}

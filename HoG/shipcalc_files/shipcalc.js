@@ -181,6 +181,8 @@ document.addEventListener("DOMContentLoaded", function() {
 			input.title = e.message;
 			input.setCustomValidity(e.message);
 		}
+		if(value)
+			input.value = value;
 			
 		return parseInt(value) || 0;
 	}
