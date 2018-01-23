@@ -342,13 +342,10 @@ document.addEventListener("DOMContentLoaded", function() {
 		}).map(appendTo(optionslist));
 	}
 	function inputval(input) {
-		if(input.type != "text")
-			return;
-		
 		delete input.title;
 		input.setCustomValidity("");
 
-		var value = input.value;//parseInputNumber(input);
+		var value = input.value;
 		
 		if(input.type=="checkbox")
 			if(input.checked)
