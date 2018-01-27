@@ -560,7 +560,8 @@ document.addEventListener("DOMContentLoaded", function() {
 		if(o.fleet.name=="Tournament Fleet" && !feelinlucky.lastChild)
 			feelinlucky.appendChild(feelin_lucky(o, enemypicker));
 		if(o.fleet.name!="Tournament Fleet")
-			feelinlucky.removeChild(feelinlucky.lastChild);
+			while(feelinlucky.lastChild)
+				feelinlucky.removeChild(feelinlucky.lastChild);
 		enemy_available_tournament_ships = ships.slice();
 		civis[0].ships.map(function(ship){
 			delete enemy_available_tournament_ships[ship.id]
