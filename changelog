@@ -1,5 +1,6 @@
 Changelog
-* Added Buildingcalc
+* Battlecalc: experimental Feature - Tournament Fleet generation
+* Battlecalc: Scientific Notations work, the input is now replaced by the numeric value, aswell
 * InfoTool: Added Ships
 * InfoTool: Added Tooltips
 * InfoTool: Added Researches
