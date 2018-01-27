@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<!-- saved from url=(0053)https://godlloyd.github.io/HeartOfGalaxy/HoG/Battlecalc.html -->
+<!-- Note most of the original code is made by brilliand. This is merely a bandaid fix to new features introduced -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>HoG Tools - Battlecalc</title>
+	<link rel="stylesheet" href="battlecalc_files/battlecalc.css">
+	<script>$ = function() { return { ready: $ }; };</script>
+	<script src="https://game288398.konggames.com/gamez/0028/8398/live/core/script/sall.js"></script>
+	<script src="https://game274411.konggames.com/gamez/0027/4411/live/core/script/jquery.min.js"></script>
+	<script src="battlecalc_files/battlecalc.js"></script>
+</head>
+<body>
+	<form id="battlecalc">
+		<div>
+			<h2>Your Fleet</h2>
+			<div class="tablelike" id="shiplist"></div>
+		</div>
+		<div>
+			<h2>Bonuses</h2>
+			<div><button class="button " href="javascript:void(0);" onclick="javascript:save_fleet(0);" title="Save Fleet">Save Fleet 1</button>
+			<button class="button " href="javascript:void(0);" onclick="javascript:load_fleet(0);" title="Load Fleet">Load Fleet 1</button></div>
+			<div><button class="button " href="javascript:void(0);" onclick="javascript:save_fleet(1);" title="Save Fleet">Save Fleet 2</button>
+			<button class="button " href="javascript:void(0);" onclick="javascript:load_fleet(1);" title="Load Fleet">Load Fleet 2</button></div>
+			<div><button class="button " href="javascript:void(0);" onclick="javascript:save_fleet(2);" title="Save Fleet">Save Fleet 3</button>
+			<button class="button " href="javascript:void(0);" onclick="javascript:load_fleet(2);" title="Load Fleet">Load Fleet 3</button></div>
+			<h3> Your Bonus</h3>
+			<div class="tablelike" id="stufflist"></div>
+			<h3> Enemy Bonus</h3>
+			<div class="tablelike" id="enemystufflist"></div>
+			<h3> Options</h3>
+			<div class="tablelike" id="optionslist"></div>
+		</div>
+		<div>
+			<h2>Enemy Fleet</h2>
+			<div class="tablelike" id="enemylist"></div>
+		</div>
+		<a id="exporter" title="Share Link"><img src="https://game274411.konggames.com/gamez/0027/4411/live/ui/export.png"></a>
+		<a id="nextrun" title="Next Run" target="nextrun"><img src="https://game274411.konggames.com/gamez/0027/4411/live/ui/export.png"></a>
+	</form>
+	<div id="battlereport"></div>
+</body></html>
