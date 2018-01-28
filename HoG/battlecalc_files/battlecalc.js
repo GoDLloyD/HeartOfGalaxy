@@ -174,6 +174,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			"Adjusted Toughness": 0,
 			Weight: 0,
 			"Killing Power": 0,
+			"Military Value": friend.value(),
 		});
 	}
 	function writeFleetSummary(container, friend, foe) {
@@ -189,6 +190,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			"Adjusted Toughness": "Total amount of raw Power this fleet can absorb before dying",
 			Weight: "Total mass of ships damage is spread across (helps to keep weaker ships alive)",
 			"Killing Power": "Progress toward killing the enemy outright (opposes enemy Toughness)",
+			"Military Value": "The Military Value of the Fleet (really only used for sorting)",
 		};
 		for(var k in fleetData) {
 			if(!tooltips[k]) continue;
@@ -517,7 +519,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 	});
 	arr(enemypicker.options)
-		.sort(function(a, b) { return fleetStats(a.fleet).Value - fleetStats(b.fleet).Value; })
+		.sort(function(a, b) { return a.fleet.value() - b.fleet.value(); })
 		.map(appendTo(enemypicker));
 	enemylist.parentNode.insertBefore(div(span(txt("Enemy Fleet")), enemypicker), enemylist);
 	if(isFinite(saveData.enemySelected)) enemypicker.selectedIndex = saveData.enemySelected;
