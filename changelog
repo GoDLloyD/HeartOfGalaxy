@@ -1,4 +1,5 @@
 Changelog
+* Buildingcalc: Every Input can now be used as base.
 * Battlecalc: experimental Feature - Tournament Fleet generation
 * Battlecalc: Scientific Notations work, the input is now replaced by the numeric value, aswell
 * InfoTool: Added Ships
