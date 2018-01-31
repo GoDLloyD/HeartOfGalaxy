@@ -12,6 +12,8 @@ document.addEventListener("DOMContentLoaded", function() {
 	function td() { return el("TD", arr(arguments)); }
 	function th() { return el("TH", arr(arguments)); }
 	
+	var activeInput;
+	
 	function dmgred(armor) {
 		return 1 - 1 / (1 + Math.log(1 + armor / 1E4) / Math.log(2));
 	}
@@ -167,7 +169,6 @@ document.addEventListener("DOMContentLoaded", function() {
 	})
 	buildingCalcTable.buildings.map(function(building){
 		for(var resourceIndex=0;resourceIndex<resNum;resourceIndex++){
-			var resourceFirstPlanet = true;
 			if(0!=building.resourcesProd[resourceIndex]&&(0<building.resourcesProd[resourceIndex])){
 				var resource = resources[resourceIndex];
 				var buildingResourceRow = tr();
@@ -187,11 +188,14 @@ document.addEventListener("DOMContentLoaded", function() {
 								var input = el("input");
 								input.setAttribute("id", "input_" + planet.id + "_" + building.id + "_" + resource.id);
 								input.type = "text";
-								input.disabled = !resourceFirstPlanet;
-								input.required = resourceFirstPlanet;
 								input.value = 0;
+								input.planet = planet;
+								input.building = building;
+								input.resource = resource;
+								input.onfocus = function() {
+									activeInput = input;
+								}
 								if(saveData.buildingLevels && saveData.buildingLevels["input_" + planet.id + "_" + building.id + "_" + resource.id]) input.value = saveData.buildingLevels["input_" + planet.id + "_" + building.id + "_" + resource.id];
-								resourceFirstPlanet = false;
 								var planetInput = input;
 								inputCell.setAttribute("id", "td_" + planet.id + "_" + building.id + "_" + resource.id);
 								inputCell.appendChild(planetInput);
@@ -218,11 +222,13 @@ document.addEventListener("DOMContentLoaded", function() {
 						var input = el("input");
 						input.setAttribute("id", "input_" + planet.id + "_" + building.id);
 						input.type = "text";
-						input.disabled = !resourceFirstPlanet;
-						input.required = resourceFirstPlanet;
 						input.value = 0;
+						input.planet = planet;
+						input.building = building;
+						input.onfocus = function() {
+							activeInput = input;
+						}
 						if(saveData.buildingLevels && saveData.buildingLevels["input_" + planet.id + "_" + building.id]) input.value = saveData.buildingLevels["input_" + planet.id + "_" + building.id];
-						resourceFirstPlanet = false;
 						var planetInput = input;
 						inputCell.setAttribute("id", "td_" + planet.id + "_" + building.id);
 						inputCell.appendChild(planetInput);
@@ -254,30 +260,27 @@ document.addEventListener("DOMContentLoaded", function() {
 		saveData = {
 			buildingLevels: {},
 		};
-		buildingCalcTable.buildings.map(function(building){
-			for(var resourceIndex=0;resourceIndex<resNum;resourceIndex++){
-				var resourceFirstPlanet = true;
+		if(activeInput) {
+			var building = activeInput.building;
+			var buildingLevel = activeInput.value;
+			if(activeInput.resource){
 				var resourceCostInput = Array(resNum);
-				var buildingLevel;
-				if(0!=building.resourcesProd[resourceIndex]&&(0<building.resourcesProd[resourceIndex])){
-					var resource = resources[resourceIndex];
+				var resource = activeInput.resource;
+				if(0!=building.resourcesProd[resource.id]&&(0<building.resourcesProd[resource.id])){
 					buildingCalcTable.planets.map(function(planet){
-						if((0<planet.baseResources[resourceIndex])){
+						if((0<planet.baseResources[resource.id])){
 							for(var environmentIndex=0;environmentIndex<building.environment.length;environmentIndex++)
 								if(building.environment[environmentIndex]==planet.type){
+									for(var resourceCostIndex = 0; resourceCostIndex<resNum; resourceCostIndex++)
+										resourceCostInput[resourceCostIndex] = Math.floor((building.resourcesCost[resourceCostIndex]*Math.pow(building.resourcesMult[resourceCostIndex],buildingLevel))/activeInput.planet.baseResources[resource.id]);
 									var input = document.getElementById("input_" + planet.id + "_" + building.id + "_" + resource.id);
-									if(resourceFirstPlanet){
-										buildingLevel = input.value;
-										for(var resourceCostIndex = 0; resourceCostIndex<resNum; resourceCostIndex++)
-											resourceCostInput[resourceCostIndex] = Math.floor((building.resourcesCost[resourceCostIndex]*Math.pow(building.resourcesMult[resourceCostIndex],buildingLevel))/planet.baseResources[resourceIndex]);
-										resourceFirstPlanet = false;
-									} else {
+									if(planet != activeInput.planet) {
 										var efficientBuildingLevels = [];
 										for(var resourceCostIndex = 0; resourceCostIndex<resNum; resourceCostIndex++){
 											if(resourceCostInput[resourceCostIndex]==0) continue;
 											var efficientBuildingLevel = 0;
 											var resourceCost = Math.floor(building.resourcesCost[resourceCostIndex]*Math.pow(building.resourcesMult[resourceCostIndex],efficientBuildingLevel));
-											while((resourceCostInput[resourceCostIndex]*planet.baseResources[resourceIndex])>resourceCost){
+											while((resourceCostInput[resourceCostIndex]*planet.baseResources[resource.id])>resourceCost){
 												resourceCost = Math.floor(building.resourcesCost[resourceCostIndex]*Math.pow(building.resourcesMult[resourceCostIndex],efficientBuildingLevel));
 												efficientBuildingLevel++;
 											}
@@ -296,18 +299,15 @@ document.addEventListener("DOMContentLoaded", function() {
 				buildingCalcTable.planets.map(function(planet){
 					for(var environmentIndex=0;environmentIndex<building.environment.length;environmentIndex++)
 						if(building.environment[environmentIndex]==planet.type){
+							for(var resourceCostIndex = 0; resourceCostIndex<resNum; resourceCostIndex++) {
+								resourceCostInput[resourceCostIndex] = Math.floor(building.resourcesCost[resourceCostIndex]*Math.pow(building.resourcesMult[resourceCostIndex],buildingLevel));
+								if(building.name == "cryolab")
+									resourceCostInput[resourceCostIndex] = resourceCostInput[resourceCostIndex] / (activeInput.planet.info["temp"] * -5);
+								if(building.name == "lavaresearch")
+									resourceCostInput[resourceCostIndex] = resourceCostInput[resourceCostIndex] / activeInput.planet.info["temp"];
+							}
 							var input = document.getElementById("input_" + planet.id + "_" + building.id);
-							if(resourceFirstPlanet){
-								buildingLevel = input.value;
-								for(var resourceCostIndex = 0; resourceCostIndex<resNum; resourceCostIndex++) {
-									resourceCostInput[resourceCostIndex] = Math.floor(building.resourcesCost[resourceCostIndex]*Math.pow(building.resourcesMult[resourceCostIndex],buildingLevel));
-									if(building.name == "cryolab")
-										resourceCostInput[resourceCostIndex] = resourceCostInput[resourceCostIndex] / (planet.info["temp"] * -5);
-									if(building.name == "lavaresearch")
-										resourceCostInput[resourceCostIndex] = resourceCostInput[resourceCostIndex] / planet.info["temp"];
-								}
-								resourceFirstPlanet = false;
-							} else {
+							if(input != activeInput)  {
 								var efficientBuildingLevels = [];
 								for(var resourceCostIndex = 0; resourceCostIndex<resNum; resourceCostIndex++){
 									if(resourceCostInput[resourceCostIndex]==0) continue;
@@ -331,10 +331,9 @@ document.addEventListener("DOMContentLoaded", function() {
 						}
 				})
 			}
-		})
+		}
 		
 		arr(document.getElementsByTagName("input")).map(function(input) {
-			if(input.disabled) return;
 			var val = input.value;
 			if(val > 0) saveData.buildingLevels[input.id] = val;
 		});
