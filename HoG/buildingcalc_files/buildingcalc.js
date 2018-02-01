@@ -263,8 +263,8 @@ document.addEventListener("DOMContentLoaded", function() {
 		if(activeInput) {
 			var building = activeInput.building;
 			var buildingLevel = activeInput.value;
+			var resourceCostInput = Array(resNum);
 			if(activeInput.resource){
-				var resourceCostInput = Array(resNum);
 				var resource = activeInput.resource;
 				if(0!=building.resourcesProd[resource.id]&&(0<building.resourcesProd[resource.id])){
 					buildingCalcTable.planets.map(function(planet){
@@ -272,19 +272,21 @@ document.addEventListener("DOMContentLoaded", function() {
 							for(var environmentIndex=0;environmentIndex<building.environment.length;environmentIndex++)
 								if(building.environment[environmentIndex]==planet.type){
 									for(var resourceCostIndex = 0; resourceCostIndex<resNum; resourceCostIndex++)
-										resourceCostInput[resourceCostIndex] = Math.floor((building.resourcesCost[resourceCostIndex]*Math.pow(building.resourcesMult[resourceCostIndex],buildingLevel))/activeInput.planet.baseResources[resource.id]);
+										resourceCostInput[resourceCostIndex] = Math.floor(building.resourcesCost[resourceCostIndex]*Math.pow(building.resourcesMult[resourceCostIndex],buildingLevel));
 									var input = document.getElementById("input_" + planet.id + "_" + building.id + "_" + resource.id);
 									if(planet != activeInput.planet) {
 										var efficientBuildingLevels = [];
 										for(var resourceCostIndex = 0; resourceCostIndex<resNum; resourceCostIndex++){
 											if(resourceCostInput[resourceCostIndex]==0) continue;
 											var efficientBuildingLevel = 0;
-											var resourceCost = Math.floor(building.resourcesCost[resourceCostIndex]*Math.pow(building.resourcesMult[resourceCostIndex],efficientBuildingLevel));
-											while((resourceCostInput[resourceCostIndex]*planet.baseResources[resource.id])>resourceCost){
-												resourceCost = Math.floor(building.resourcesCost[resourceCostIndex]*Math.pow(building.resourcesMult[resourceCostIndex],efficientBuildingLevel));
+											var resourceCost = function(level) { return Math.floor(building.resourcesCost[resourceCostIndex]*Math.pow(building.resourcesMult[resourceCostIndex],level)); };
+											var effectiveResourceCostInput = function() { return (resourceCostInput[resourceCostIndex]/activeInput.planet.baseResources[resource.id]); };
+											var effectiveResourceCost = function(level) { return resourceCost(level)/planet.baseResources[resource.id]; };
+											while(effectiveResourceCostInput()>effectiveResourceCost(efficientBuildingLevel)){
 												efficientBuildingLevel++;
 											}
-											if(efficientBuildingLevel>0) efficientBuildingLevel -= 1;
+											if(effectiveResourceCost(efficientBuildingLevel)-effectiveResourceCostInput()>effectiveResourceCostInput()-effectiveResourceCost(efficientBuildingLevel-1))
+												efficientBuildingLevel -= 1;
 											efficientBuildingLevels.push(efficientBuildingLevel);
 										}
 										var newBuildingLevel = Math.min.apply(null, efficientBuildingLevels);
