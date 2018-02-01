@@ -16,3 +16,8 @@ Heart of Galaxy:
 
 Heart of Galaxy:
 <a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/InfoTool.html">Info Tool</a>
+
+
+#Userscripts (require Tampermonkey addon)
+
+* [Link to Battle Calculator in Tournament](https://godlloyd.github.io/HeartOfGalaxy/HoG/gamescripts/simulate_tournament.user.js)
