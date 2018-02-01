@@ -519,7 +519,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		for(var k in planet.fleets) {
 			var fleet = planet.fleets[k];
 			if(!fleet.combatWeight()&&fleet.name!="Customizable Fleet"&&fleet.name!="Tournament Fleet") continue;
-			var text = planet.name + " - " + fleet.name;
+			var text = planet.name + " - " + k;
 			var option = el("option");
 			option.innerText = text;
 			option.value = planet.id + "_" + fleet.civis;

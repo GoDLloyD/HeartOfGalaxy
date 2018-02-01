@@ -507,7 +507,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			var text = planet.name + " - " + fleet.name;
 			var option = el("option");
 			option.innerText = text;
-			option.value = planet.id + "_" + fleet.civis;
+			option.value = planet.id + "_" + k;
 			option.fleet = fleet;
 			if(fleet.name == "Customizable Fleet" || fleet.name == "Tournament Fleet"){
 				option.innerText = "Free Battle" + " - " + fleet.name;
