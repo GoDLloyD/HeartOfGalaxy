@@ -504,7 +504,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		freeBattleFleet.exp=0;
 		planets[planetsName.teleras].fleetPush(freeBattleFleet);
 	}
-	freeBattleFleet=new Fleet(1,"Customizable Fleet");
+	freeBattleFleet=new Fleet(civis.length,"Customizable Fleet");
 	for(var enemyTournamentShipIndex=0;enemyTournamentShipIndex<97;enemyTournamentShipIndex++){
 		freeBattleFleet.ships[enemyTournamentShipIndex]=0;
 	};
@@ -522,13 +522,13 @@ document.addEventListener("DOMContentLoaded", function() {
 			var text = planet.name + " - " + fleet.name;
 			var option = el("option");
 			option.innerText = text;
-			option.value = planet.id + "_" + k;
+			option.value = planet.id + "_" + fleet.civis;
 			option.fleet = fleet;
 			if(fleet.name == "Customizable Fleet" || fleet.name == "Tournament Fleet"){
 				option.innerText = "Free Battle" + " - " + fleet.name;
 				if(fleet.name == "Tournament Fleet")
 					option.innerText += ": " + civis[fleet.civis].name;
-				option.value = "free_battle" + "_" + k;
+				option.value = "free_battle" + "_" + fleet.civis;
 			}
 			enemypicker.appendChild(option);
 		}

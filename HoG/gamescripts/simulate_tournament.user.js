@@ -11,42 +11,84 @@
 (function() {
 	'use strict';
 
-	// Hook into game interface
-	$("#icon_cont").append(function() {
-		var simulate_tournament_button = $("<img>", {
-			id: "simulate_tournament_button",
-			height: 30,
-			width: 30,
-		}).css({
-			position: "absolute",
-			top: "90px",
-			left: "44%",
-			cursor: "pointer",
-		}).click(function(e) {
-		}).attr("title", "SIMULATE");
-		return simulate_tournament_button;
-	});
+	function serialize(obj) {
+		return Object.keys(obj).map(function(k) {
+			var v;
+			if(typeof obj[k] === "object") {
+				var section = obj[k];
+				v = Object.keys(obj[k]).map(function(k) {
+					return k+":"+section[k];
+				}).join(",");
+			} else {
+				v = obj[k];
+			}
+			return k+"="+v;
+		}).join("&");
+	}
+
 	var observer = new MutationObserver(function(mutation) {
-		var base_style = {
-			float: "left",
-			margin: "0 2px",
-			width: "1em",
-			height: "1em",
-			"text-align": "center",
-			cursor: "pointer",
+		var fleetIndex=$("#orbit_fleet_list").val();
+		if(document.getElementById("tournament_battlecalc_button")) {
+			if(!planets[tournamentPlanet].fleets[fleetIndex]) 
+				$("#tournament_battlecalc_button").hide();
+			else
+				$("#tournament_battlecalc_button").show();
+			return;
+		} 
+		if(!planets[tournamentPlanet].fleets[fleetIndex]) return;
+		var fleet = planets[tournamentPlanet].fleets[fleetIndex];
+		var enemyFleet = qurisTournament.fleet;
+
+		var calcData = {
+			ships: fleet.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
+			bonuses: ["ammunition", "u-ammunition", "t-ammunition", "armor", "engine", "exp", "enemy_exp"].reduce(function(obj, name) {
+				var resource = resourcesName[name];
+				if(name!="enemy_exp") {
+					if(name!="exp") {
+						var v = fleet.storage[resource.id];
+						if(v > 0) 
+							obj[name] = v;
+					}
+					else {
+						obj[name] = fleet.exp;
+					}
+				}
+				return obj;
+			}, ["artofwar", "karan_artofwar"].reduce(function(obj, name) {
+				var research = researches[researchesName[name]];
+				if(!research.requirement()) return obj;
+				obj[name] = research.level;
+				return obj;
+			}, ["thoroid", "quris_value", "quris_honor", "quris_glory"].reduce(function(obj, name) {
+				var artifact = artifacts[artifactsName[name]];
+				obj[name] = artifact.possessed;
+				return obj;
+			},
+			{}))),
+			enemySelected: "free_battle_" + enemyFleet.civis,
+			enemies: enemyFleet.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
 		};
-		var active_style = {
-			"background-color": "#80c0ff",
-			"border-radius": "1em",
-		};
-		var inactive_style = {
-			"background-color": "",
-			"border-radius": "",
-		};
+		var url = "https://godlloyd.github.io/HeartOfGalaxy/HoG/Battlecalc.html#"+serialize(calcData);
+		var attackButton = document.getElementById("fight_button");
+		if(!attackButton) return;
+		var calcButton = document.createElement(attackButton.tagName);
+		calcButton.id = "tournament_battlecalc_button";
+		calcButton.className = attackButton.className;
+		calcButton.style.position = "absolute";
+		calcButton.style.top = "88px";
+		calcButton.style.left = "44%";
+		var a = document.createElement("a");
+		a.innerText = "Calculate Battle";
+		a.style.color = "blue";
+		a.className = attackButton.firstChild.className;
+		a.href = url;
+		a.target = "battlecalc";
+		calcButton.appendChild(a);
+		attackButton.parentNode.appendChild(calcButton);
 	});
 	var options = {
 		childList: true,
 		subtree: true,
 	};
-	observer.observe(document.getElementById("tournamentInterface"), options);
+	observer.observe(document.getElementById("profile_interface"), options);
 })();
