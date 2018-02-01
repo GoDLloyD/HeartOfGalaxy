@@ -67,7 +67,7 @@
 				}
 				return obj;
 			}, {}))),
-			enemySelected: "free_battle_" + enemyFleet.civis,
+			enemySelected: planet.id + "_" + enemyFleetId,
 			enemies: enemyFleet.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
 		};
 		var url = "https://godlloyd.github.io/HeartOfGalaxy/HoG/Battlecalc.html#"+serialize(calcData);
