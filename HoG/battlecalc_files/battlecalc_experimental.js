@@ -457,7 +457,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		input.label = label;
 		input.name = name;
 		input.value = artifact.description;
-		if(saveData.bonuses && saveData.bonuses[name]) input.checked = saveData.bonuses[name];
+		if(saveData.bonuses && saveData.bonuses[name]) input.checked = saveData.bonuses[name]>0;
 		input.artifact = artifact;
 		return div(label, input);
 	}).map(appendTo(stufflist));

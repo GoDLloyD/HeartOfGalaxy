@@ -41,7 +41,19 @@
 
 		var calcData = {
 			ships: fleet.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
-			bonuses: ["ammunition", "u-ammunition", "t-ammunition", "armor", "engine", "exp", "enemy_exp"].reduce(function(obj, name) {
+			bonuses: ["thoroid", "quris_value", "quris_honor", "quris_glory"].reduce(function(obj, name) {
+				var artifact = artifacts[artifactsName[name]];
+				if(artifact.possessed)
+					obj[name] = 1;
+				else
+					obj[name] = 0;
+				return obj;
+			}, ["artofwar", "karan_artofwar"].reduce(function(obj, name) {
+				var research = researches[researchesName[name]];
+				if(!research.requirement()) return obj;
+				obj[name] = research.level;
+				return obj;
+			}, ["ammunition", "u-ammunition", "t-ammunition", "armor", "engine", "exp", "enemy_exp"].reduce(function(obj, name) {
 				var resource = resourcesName[name];
 				if(name!="enemy_exp") {
 					if(name!="exp") {
@@ -54,17 +66,7 @@
 					}
 				}
 				return obj;
-			}, ["artofwar", "karan_artofwar"].reduce(function(obj, name) {
-				var research = researches[researchesName[name]];
-				if(!research.requirement()) return obj;
-				obj[name] = research.level;
-				return obj;
-			}, ["thoroid", "quris_value", "quris_honor", "quris_glory"].reduce(function(obj, name) {
-				var artifact = artifacts[artifactsName[name]];
-				obj[name] = artifact.possessed;
-				return obj;
-			},
-			{}))),
+			}, {}))),
 			enemySelected: "free_battle_" + enemyFleet.civis,
 			enemies: enemyFleet.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
 		};
