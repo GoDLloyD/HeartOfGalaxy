@@ -20,4 +20,5 @@ Heart of Galaxy:
 
 # Userscripts (require Tampermonkey addon)
 
-* [Link to Battle Calculator in Tournament](https://godlloyd.github.io/HeartOfGalaxy/HoG/gamescripts/simulate_tournament.user.js)
+* [Link to Battle Calculator in Tournament](https://godlloyd.github.io/HeartOfGalaxy/HoG/gamescripts/simulate_tournament.user.js) (based on Brilliands battlecalc.user.js)
+* [Link to Battle Calculator for attacking planets](https://godlloyd.github.io/HeartOfGalaxy/HoG/gamescripts/simulate_attack.user.js) (based on Brilliands battlecalc.user.js)
