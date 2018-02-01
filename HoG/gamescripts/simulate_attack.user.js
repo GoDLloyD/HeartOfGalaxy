@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         HoG Tools - Tournament Simulation
+// @name         HoG Tools - Planet Attack Simulation
 // @namespace    https://github.com/GoDLloyD/HeartOfGalaxy/HoG/gamescripts
 // @version      1.0
-// @description  Adds a link to the battle calculator to the Tournament
+// @description  Adds a link to the battle calculator on each player fleet near an enemy fleet
 // @author       GoDLloyD
 // @match        https://game288398.konggames.com/gamez/0028/8398/live/*
 // @grant        none
@@ -27,17 +27,17 @@
 	}
 
 	var observer = new MutationObserver(function(mutation) {
-		var fleetIndex=$("#orbit_fleet_list").val();
-		if(document.getElementById("tournament_battlecalc_button")) {
-			if(!planets[tournamentPlanet].fleets[fleetIndex]) 
-				$("#tournament_battlecalc_button").hide();
-			else
-				$("#tournament_battlecalc_button").show();
-			return;
-		} 
-		if(!planets[tournamentPlanet].fleets[fleetIndex]) return;
-		var fleet = planets[tournamentPlanet].fleets[fleetIndex];
-		var enemyFleet = qurisTournament.fleet;
+		if(document.getElementById("battlecalc_button")) return;
+		if(typeof currentFleetId === "undefined") return;
+		var parts = currentFleetId.split("_");
+		var planet = planets[parts[0]];
+		var fleet = planet.fleets[parts[1]];
+		var enemyFleetId = Object.keys(planet.fleets).filter(function(k) {
+			var fleet = planet.fleets[k];
+			return fleet.weight() && fleet.civis != game.id;
+		})[0];
+		var enemyFleet = planet.fleets[enemyFleetId];
+		if(!fleet || !enemyFleet || fleet.civis != game.id) return;
 
 		var calcData = {
 			ships: fleet.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
@@ -71,26 +71,22 @@
 			enemies: enemyFleet.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
 		};
 		var url = "https://godlloyd.github.io/HeartOfGalaxy/HoG/Battlecalc.html#"+serialize(calcData);
-		var attackButton = document.getElementById("fight_button");
+		var attackButton = document.getElementById("attack_button");
 		if(!attackButton) return;
 		var calcButton = document.createElement(attackButton.tagName);
-		calcButton.id = "tournament_battlecalc_button";
+		calcButton.id = "battlecalc_button";
 		calcButton.className = attackButton.className;
-		calcButton.style.position = "absolute";
-		calcButton.style.top = "88px";
-		calcButton.style.left = "44%";
 		var a = document.createElement("a");
-		a.innerText = "Calculate Battle";
-		a.style.color = "blue";
+		a.innerText = "Calculate Attack";
 		a.className = attackButton.firstChild.className;
 		a.href = url;
 		a.target = "battlecalc";
 		calcButton.appendChild(a);
-		attackButton.parentNode.appendChild(calcButton);
+		attackButton.parentNode.insertBefore(calcButton, attackButton.nextSibling);
 	});
 	var options = {
 		childList: true,
 		subtree: true,
 	};
-	observer.observe(document.getElementById("profile_interface"), options);
+	observer.observe(document.getElementById("ship_info"), options);
 })();
