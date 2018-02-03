@@ -144,11 +144,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		input.setCustomValidity("");
 
 		var value = input.value;
-		if(input.type=="checkbox")
-			if(input.checked)
-				value=1;
-			else
-				value=0;
 		try {
 			value = eval(value);
 		} catch(e) {
@@ -400,15 +395,21 @@ document.addEventListener("DOMContentLoaded", function() {
 			if(val > 0) saveData.resources[input.resource.name] = val;
 		});
 		arr(stufflist.getElementsByTagName("input")).map(function(input) {
-			var val = inputval(input);
+			var val = 0;
 			if(input.research) {
+				val = inputval(input);
 				var newLevel = val;
 				while(input.research.level > newLevel) { input.research.level--; input.research.unbonus(); }
 				while(input.research.level < newLevel) { input.research.level++; input.research.bonus(); }
 			} else if(input.artifact) {
-				var newLevel = val;
-				while(input.artifact.possessed > newLevel) { input.artifact.possessed--; input.artifact.unaction(); }
-				while(input.artifact.possessed < newLevel) { input.artifact.possessed++; input.artifact.action(); }
+				if(input.checked) { 
+					input.artifact.possessed=true;
+					input.artifact.action();
+				} else {
+					input.artifact.possessed=false;
+					input.artifact.unaction();
+				}
+				saveData.bonuses[input.name] = input.checked;
 			}
 			if(val > 0) saveData.bonuses[input.name] = val;
 		});
