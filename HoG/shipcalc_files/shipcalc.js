@@ -278,7 +278,7 @@ document.addEventListener("DOMContentLoaded", function() {
 						});
 						["thoroid", "quris_value", "quris_honor", "quris_glory"].map(function(name) {
 							var artifact = artifacts[artifactsName[name]];
-							document.getElementById("artifact_" + artifact.id).checked = artifacts[artifactsName[name]].possessed;
+							document.getElementById("artifact_" + artifact.id).checked = artifacts[artifactsName[name]].possessed===true;
 						});
 					}
 					else document.getElementById("impsave")&&(document.getElementById("impsave").innerHTML="Import Save: <span class='red_text'>Corrupted data</span>")
