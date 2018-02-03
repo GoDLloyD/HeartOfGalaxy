@@ -251,12 +251,15 @@ document.addEventListener("DOMContentLoaded", function() {
 							
 						var savefileCivilizations=w,savefilePlanets=n,savefileExtras=t;
 						["iron", "steel", "titanium", "silicon", "technetium", "rhodium", "plastic", "circuit", "nanotubes", "ammunition", "robots", "armor", "engine", "full battery", "u-ammunition", "t-ammunition", "antimatter", "mK Embryo"].map(function(name) {
+							var da_nebulas = nebulas;
+							var da_gameplanets = game.planets;
+							var da_planets = planets;
 							var resource = resourcesName[name];
 							var b = resource.id
 							for(var e=52,g=Array(game.buildings.length),h=0;h<game.buildings.length;h++)
 								g[h]=0;
 							for(var l=0;l<game.planets.length;l++)
-								if(galaxyChooser.value == "all" || galaxyChooser.value == planets[l].map)
+								if(galaxyChooser.value == "all" || nebulas[galaxyChooser.value].planets.includes(game.planets[l]))
 									for(h=0;h<game.buildings.length;h++)
 										0!=game.buildings[h].resourcesProd[b]&&(g[h]+=planets[game.planets[l]].structure[h].number);
 							var m=0;
@@ -264,7 +267,7 @@ document.addEventListener("DOMContentLoaded", function() {
 								if(0<g[h]){
 									e+=20;
 									for(l=0;l<game.planets.length;l++)
-										if(galaxyChooser.value == "all" || galaxyChooser.value == planets[l].map)
+										if(galaxyChooser.value == "all" || nebulas[galaxyChooser.value].planets.includes(game.planets[l]))
 											m+=game.buildings[h].production(planets[game.planets[l]])[b];
 								}
 							document.getElementById("resource_" + resource.id).value = Math.floor(m*100)/100;
@@ -337,7 +340,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	game.ships.map(function(ship) {
 		var n;
 		if(ship.type === "Colonial Ship" || ship.type === "Cargoship") return;
-		if(ship.name === "Koroleva" || ship.name === "Augustus" || ship.name === "Leonidas" || ship.name === "Alexander" || ship.name === "Cerberus" || ship.name === "Charon") return;
+		if(ship.name === "Koroleva" || ship.name === "Augustus" || ship.name === "Leonidas" || ship.name === "Alexander" || ship.name === "Cerberus" || ship.name === "Charon" || ship.name === "Munya") return;
 		shiplist.appendChild(shipinput(ship, n));
 		shipIndexList.push(ship.id);
 	});
