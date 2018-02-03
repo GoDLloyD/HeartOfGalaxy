@@ -1,4 +1,6 @@
 Changelog
+* Shipcalc: Resources from save import can be chosen from Galaxy
+* Shipcalc: Added save import
 * Userscripts: added a script which adds a link to the Battlecalc when attacking a planet, automatically filling all fields
 * Userscripts: added a script which adds a link to the Battlecalc in the Tournament, automatically filling all fields
 * Buildingcalc: Every Input can now be used as base.
