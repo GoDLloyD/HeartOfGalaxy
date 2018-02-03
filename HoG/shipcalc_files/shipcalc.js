@@ -83,33 +83,6 @@ document.addEventListener("DOMContentLoaded", function() {
 			speed: 1,
 			shield: 1,
 		};
-		if(fleet.civis==0) {
-			["ammunition", "u-ammunition", "t-ammunition"].map(function(name) {
-				var resource = resourcesName[name];
-				bonus.power += calcBonus[name](fleet.storage[resource.id]);
-			});
-			bonus.power *= (1 + .1 * Math.log(1 + fleet.ships[14]) / Math.log(2));
-			["armor"].map(function(name) {
-				var resource = resourcesName[name];
-				bonus.armor += calcBonus[name](fleet.storage[resource.id]);
-			});
-			["engine"].map(function(name) {
-				var resource = resourcesName[name];
-				bonus.speed += calcBonus[name](fleet.storage[resource.id]);
-			});
-			
-			/*edits start*/
-			["exp"].map(function(name) {
-				var exp = fleet.exp;
-				if(isNaN(exp)) exp = 0;
-				else if(exp>MAX_FLEET_EXPERIENCE) exp = MAX_FLEET_EXPERIENCE;
-				bonus.power += calcBonus[name](exp);
-				bonus.armor += calcBonus[name](exp);
-				bonus.hp += calcBonus[name](exp);
-				bonus.shield += calcBonus[name](exp);
-			});
-			/*edits end*/
-		}
 		
 		return bonus;
 	}
@@ -162,6 +135,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		input.type = "text";
 		input.label = label;
 		input.resource = resource;
+		input.setAttribute("id", "resource_" + resource.id);
 		if(typeof n !== "undefined") input.value = n;
 		return div(label, input);
 	}
@@ -186,6 +160,132 @@ document.addEventListener("DOMContentLoaded", function() {
 			
 		return parseInt(value) || 0;
 	}
+	function createImport() {
+		var input = el("input");
+		input.type = "text";
+		input.value = "paste savefile here"
+		input.setAttribute("id", "saveimport");
+		input.onclick = function(){
+			input.setSelectionRange(0, input.value.length);
+		}
+		
+		var galaxyChooser = el("select");
+		var resourcesOption = el("option");
+		resourcesOption.value = -1;
+		resourcesOption.innerText = "Select a galaxy";
+		var totalOption = el("option");
+		totalOption.value = "all";
+		totalOption.innerText = "All Galaxies";
+		galaxyChooser.appendChild(resourcesOption);
+		galaxyChooser.appendChild(totalOption);
+		var addedMaps = [];
+		for(var planetIndex=0; planetIndex < planets.length; planetIndex++) {
+			var map = planets[planetIndex].map;
+			if(!addedMaps.includes(map)) {
+				var mapOption = el("option");
+				mapOption.value = map;
+				mapOption.innerText = nebulas[map].name;
+				galaxyChooser.appendChild(mapOption);
+				
+				addedMaps.push(map);
+			}
+		}
+			
+		var importButton = el("input");
+		importButton.type = "button";
+		importButton.value = "Import Save";
+		importButton.setAttribute("id", "impsave");
+		
+		document.getElementById("importlist").appendChild(input);
+		document.getElementById("importlist").appendChild(div(galaxyChooser, importButton));
+		
+		document.getElementById("impsave").onclick = function(){
+			var d=document.getElementById("saveimport").value;
+			d=d.split("@")[0];
+			var g;
+			(g="hg"==d.substring(0,2)?decodeURIComponent(LZString.decompressFromUTF16(LZString.decompressFromBase64(d.substring(2)))):LZString.decompressFromUTF16(LZString.decompressFromBase64(d)))||(g="hg"==d.substring(0,2)?decodeURIComponent(LZString.decompressFromUTF16(atob(d.substring(2)))):LZString.decompressFromUTF16(atob(d)));
+			if(g)
+				try {
+					var h=g.split("@DIVIDER@");
+					console.log(h[2]);
+					if(3<=h.length){
+						for(d=0;d<game.researches.length;d++)
+							for(var l=game.researches[d].level,m=0;	m<l;m++)
+								game.researches[d].unbonus(),
+								game.researches[d].level--;
+						firstTime=!1;
+						var w=JSON.parse(h[1]),n=JSON.parse(h[0]),t=JSON.parse(h[2]);
+						console.log("iMPORT");
+						clearTimeout(idleTimeout);
+						idleBon=1;
+						for(d=0;d<w.length;d++)
+							civisLoader(civis[d],w[d],civis[d].name);
+						fleetSchedule.count=t.count;
+						m=0;
+						for(var v in t.fleets)
+							m++;
+						console.log(m);
+						console.log(t.fleets);
+						fleetSchedule.load(t.schedule,t.fleets,m);
+						t.m&&market.load(t.m);
+						t.st&&settingsLoader(t.st);
+						t.qur&&(t.qur.points&&(qurisTournament.points=t.qur.points||0),t.qur.lose&&(qurisTournament.lose=t.qur.lose||0));
+						if(t.art)
+							for(var y in t.art)
+								artifacts[artifactsName[y]].collect();
+						if(t.qst)
+							for(var x in t.qst)
+								quests[questNames[x]].done=!0;
+						if(t.plc)
+							for(x in t.plc)
+								places[placesNames[x]].done=!0;
+						if(t.tuts)
+							for(x in t.tuts)
+								tutorials[tutorialsNames[x]].done=!0;
+						game=civis[gameSettings.civis];
+						for(d=0;d<n.length;d++)
+							n[d]&&planetLoader(planets[d],n[d]);
+						game.searchPlanet(planetsName.virgo)||(planets[planetsName.virgo].setCivis(8),civis[8].capital=planetsName.virgo);
+						game.searchPlanet(planetsName.nassaus)||
+							(planets[planetsName.nassaus].setCivis(7),civis[7].capital=planetsName.nassaus);
+							
+						var savefileCivilizations=w,savefilePlanets=n,savefileExtras=t;
+						["iron", "steel", "titanium", "silicon", "technetium", "rhodium", "plastic", "circuit", "nanotubes", "ammunition", "robots", "armor", "engine", "full battery", "u-ammunition", "t-ammunition", "antimatter", "mK Embryo"].map(function(name) {
+							var resource = resourcesName[name];
+							var b = resource.id
+							for(var e=52,g=Array(game.buildings.length),h=0;h<game.buildings.length;h++)
+								g[h]=0;
+							for(var l=0;l<game.planets.length;l++)
+								if(galaxyChooser.value == "all" || galaxyChooser.value == planets[l].map)
+									for(h=0;h<game.buildings.length;h++)
+										0!=game.buildings[h].resourcesProd[b]&&(g[h]+=planets[game.planets[l]].structure[h].number);
+							var m=0;
+							for(h=0;h<game.buildings.length;h++)
+								if(0<g[h]){
+									e+=20;
+									for(l=0;l<game.planets.length;l++)
+										if(galaxyChooser.value == "all" || galaxyChooser.value == planets[l].map)
+											m+=game.buildings[h].production(planets[game.planets[l]])[b];
+								}
+							document.getElementById("resource_" + resource.id).value = Math.floor(m*100)/100;
+						});
+						["artofwar", "karan_artofwar"].map(function(name) {
+							var research = researches[researchesName[name]];
+							document.getElementById("research_" + research.id).value = game.researches[researchesName[name]].level;
+						});
+						["thoroid", "quris_value", "quris_honor", "quris_glory"].map(function(name) {
+							var artifact = artifacts[artifactsName[name]];
+							document.getElementById("artifact_" + artifact.id).checked = artifacts[artifactsName[name]].possessed;
+						});
+					}
+					else document.getElementById("impsave")&&(document.getElementById("impsave").innerHTML="Import Save: <span class='red_text'>Corrupted data</span>")
+				} catch(qa){
+					console.log(qa.message),document.getElementById("impsave")&&(document.getElementById("impsave").innerHTML="Import Save: <span class='red_text'>Error</span>")
+				}
+			else document.getElementById("impsave")&&(document.getElementById("impsave").innerHTML="Import Save: <span class='red_text'>Invalid data</span>")
+			update();
+		};
+	}
 
 	var saveData;
 	try {
@@ -205,49 +305,31 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	var stufflist = document.getElementById("stufflist");
 
-	["ammunition", "u-ammunition", "t-ammunition", "armor", "engine","exp"].map(function(name) {
-		var resource = resourcesName[name];
-		var label = span(txt(name.capitalize()));
-		var input = el("input");
-		input.type = "text";
-		input.label = label;
-		input.name = name;
-		if(saveData.bonuses && saveData.bonuses[name]) input.value = saveData.bonuses[name];
-		input.resource = resource;
-		input.showValue = span();
-		return div(label, input, input.showValue);
-	}).map(appendTo(stufflist));
 	["artofwar", "karan_artofwar"].map(function(name) {
 		var research = researches[researchesName[name]];
 		var label = span(txt(research.name));
 		var input = el("input");
 		input.type = "text";
 		input.name = name;
+		input.setAttribute("id", "research_" + research.id);
 		if(saveData.bonuses && saveData.bonuses[name]) input.value = saveData.bonuses[name];
 		input.research = research;
 		return div(label, input);
 	}).map(appendTo(stufflist));
-	["thoroid", "quris_value", "quris_honor"].map(function(name) {
+	["thoroid", "quris_value", "quris_honor", "quris_glory"].map(function(name) {
 		var artifact = artifacts[artifactsName[name]];
 		var label = span(txt(artifact.name));
 		var input = el("input");
 		input.type = "checkbox";
 		input.name = name;
+		input.setAttribute("id", "artifact_" + artifact.id);
 		input.value = artifact.description;
 		if(saveData.bonuses && saveData.bonuses[name]) input.checked = saveData.bonuses[name];
 		input.artifact = artifact;
 		return div(label, input);
 	}).map(appendTo(stufflist));
 	
-	var calcBonus = {
-		"ammunition": function(v) { return 10 * Math.log(1 + v / 1E7)/Math.log(2); },
-		"u-ammunition": function(v) { return 20 * Math.log(1 + v / 1E7)/Math.log(2); },
-		"t-ammunition": function(v) { return 60 * Math.log(1 + v / 2E7)/Math.log(2); },
-		"armor": function(v) { return v / 2e6; },
-		"engine": function(v) { return v / 5e6; },
-		"exp": function(v) { return v/2000;},
-		"enemy_exp": function(v) { return v/2000;},
-	};
+	createImport();
 
 	var shipIndexList = [];
 	var shiplist = document.getElementById("shiplist");
@@ -303,22 +385,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		var warfleet = new Fleet(0, "Simulation");
 		
-		/*edit start*/
-		var exp = parseInt(document.getElementsByName("exp")[0].value);
-		if(isNaN(exp)) exp = 0;
- 		warfleet.exp = exp;
-		/*edit end*/
-		
 		arr(resourcelist.getElementsByTagName("input")).map(function(input) {
 			var val = inputval(input);
 			if(val > 0) saveData.resources[input.resource.name] = val;
 		});
 		arr(stufflist.getElementsByTagName("input")).map(function(input) {
 			var val = inputval(input);
-			if(input.resource) {
-				warfleet.storage[input.resource.id] = val;
-				input.showValue.innerText = "+"+beauty(calcBonus[input.resource.name](warfleet.storage[input.resource.id])) + "x";
-			} else if(input.research) {
+			if(input.research) {
 				var newLevel = val;
 				while(input.research.level > newLevel) { input.research.level--; input.research.unbonus(); }
 				while(input.research.level < newLevel) { input.research.level++; input.research.bonus(); }
@@ -326,9 +399,6 @@ document.addEventListener("DOMContentLoaded", function() {
 				var newLevel = val;
 				while(input.artifact.possessed > newLevel) { input.artifact.possessed--; input.artifact.unaction(); }
 				while(input.artifact.possessed < newLevel) { input.artifact.possessed++; input.artifact.action(); }
-			} else {
-				var exp = parseInt(document.getElementsByName("exp")[0].value);
-				warfleet.exp = exp;
 			}
 			if(val > 0) saveData.bonuses[input.name] = val;
 		});
