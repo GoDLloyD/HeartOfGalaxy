@@ -155,10 +155,17 @@ document.addEventListener("DOMContentLoaded", function() {
 			input.title = e.message;
 			input.setCustomValidity(e.message);
 		}
-		if(value)
-			input.value = value;
-			
-		return parseInt(value) || 0;
+		if(value) {
+			if(input.resource)
+				input.value = value;
+			else
+				input.value = parseInt(value);
+		}
+		
+		if(input.resource)
+			return parseFloat(value) || 0;
+		else
+			return parseInt(value) || 0;
 	}
 	function createImport() {
 		var input = el("input");
