@@ -17,6 +17,9 @@ Heart of Galaxy:
 Heart of Galaxy:
 <a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/InfoTool.html">Info Tool</a>
 
+Heart of Galaxy:
+<a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/tp_check.html">TP Checker</a>
+
 
 # Userscripts (require Tampermonkey addon)
 
