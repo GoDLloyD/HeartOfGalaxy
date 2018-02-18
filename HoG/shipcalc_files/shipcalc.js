@@ -102,14 +102,6 @@ document.addEventListener("DOMContentLoaded", function() {
 			return parseInt(value) || 0;
 	}
 	function createImport() {
-		var input = el("input");
-		input.type = "text";
-		input.value = "paste savefile here"
-		input.setAttribute("id", "saveimport");
-		input.onclick = function(){
-			input.setSelectionRange(0, input.value.length);
-		}
-		
 		var galaxyChooser = el("select");
 		var resourcesOption = el("option");
 		resourcesOption.value = -1;
@@ -137,7 +129,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		importButton.value = "Import Save";
 		importButton.setAttribute("id", "impsave");
 		
-		document.getElementById("importlist").appendChild(input);
 		document.getElementById("importlist").appendChild(div(galaxyChooser, importButton));
 		
 		document.getElementById("impsave").onclick = function(){
