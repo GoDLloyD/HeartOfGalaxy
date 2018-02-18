@@ -25,67 +25,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 	}
 
-	function serialize(obj) {
-		return Object.keys(obj).map(function(k) {
-			var v;
-			if(typeof obj[k] === "object") {
-				var section = obj[k];
-				v = Object.keys(obj[k]).map(function(k) {
-					return k+":"+section[k];
-				}).join(",");
-			} else {
-				v = obj[k];
-			}
-			return k+"="+v;
-		}).join("&");
-	}
-	function deserialize(str) {
-		if(!str) return null;
-		var data = str.split("&").map(function(str) {
-			var parts = str.split("=", 2);
-			if(parts[1] && parts[1].indexOf(":") != -1) {
-				parts[1] = parts[1].split(",").map(function(str) {
-					return str.split(":", 2);
-				}).reduce(function(obj, add) {
-					obj[add[0]] = add[1];
-					return obj;
-				}, {})
-			}
-			return parts;
-		}).reduce(function(obj, add) {
-			obj[add[0]] = add[1];
-			return obj;
-		}, {});
-		if(data.resources) return data;
-		return null;
-	}
-	function beautyObj(obj) {
-		var a = [];
-		for(var k in obj) {
-			var v = obj[k];
-			a.push(k + ": " + (typeof v === "number" ? beauty(v) : v));
-		}
-		return a.join("\n");
-	}
-	function dmgred(armor) {
-		return 1 - 1 / (1 + Math.log(1 + armor / 1E4) / Math.log(2));
-	}
-	function speedred(def, atk, weight) {
-		var a = def / atk * 4.6 / Math.log(weight) - 2;
-		var b = 2 * a / (1 + Math.abs(2 * a));
-		return .5 * (1.1 - .9 * b);
-	}
-	function fleetBonus(fleet) {
-		var bonus = {
-			power: 1,
-			armor: 1,
-			hp: 1,
-			speed: 1,
-			shield: 1,
-		};
-		
-		return bonus;
-	}
 	function shipStats(fleet, shipIndex, shipAmount) {
 		var power = 0,
 		    armor = 0,
@@ -202,92 +141,37 @@ document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById("importlist").appendChild(div(galaxyChooser, importButton));
 		
 		document.getElementById("impsave").onclick = function(){
-			var d=document.getElementById("saveimport").value;
-			d=d.split("@")[0];
-			var g;
-			(g="hg"==d.substring(0,2)?decodeURIComponent(LZString.decompressFromUTF16(LZString.decompressFromBase64(d.substring(2)))):LZString.decompressFromUTF16(LZString.decompressFromBase64(d)))||(g="hg"==d.substring(0,2)?decodeURIComponent(LZString.decompressFromUTF16(atob(d.substring(2)))):LZString.decompressFromUTF16(atob(d)));
-			if(g)
-				try {
-					var h=g.split("@DIVIDER@");
-					console.log(h[2]);
-					if(3<=h.length){
-						for(d=0;d<game.researches.length;d++)
-							for(var l=game.researches[d].level,m=0;	m<l;m++)
-								game.researches[d].unbonus(),
-								game.researches[d].level--;
-						firstTime=!1;
-						var w=JSON.parse(h[1]),n=JSON.parse(h[0]),t=JSON.parse(h[2]);
-						console.log("iMPORT");
-						clearTimeout(idleTimeout);
-						idleBon=1;
-						for(d=0;d<w.length;d++)
-							civisLoader(civis[d],w[d],civis[d].name);
-						fleetSchedule.count=t.count;
-						m=0;
-						for(var v in t.fleets)
-							m++;
-						console.log(m);
-						console.log(t.fleets);
-						fleetSchedule.load(t.schedule,t.fleets,m);
-						t.m&&market.load(t.m);
-						t.st&&settingsLoader(t.st);
-						t.qur&&(t.qur.points&&(qurisTournament.points=t.qur.points||0),t.qur.lose&&(qurisTournament.lose=t.qur.lose||0));
-						if(t.art)
-							for(var y in t.art)
-								artifacts[artifactsName[y]].collect();
-						if(t.qst)
-							for(var x in t.qst)
-								quests[questNames[x]].done=!0;
-						if(t.plc)
-							for(x in t.plc)
-								places[placesNames[x]].done=!0;
-						if(t.tuts)
-							for(x in t.tuts)
-								tutorials[tutorialsNames[x]].done=!0;
-						game=civis[gameSettings.civis];
-						for(d=0;d<n.length;d++)
-							n[d]&&planetLoader(planets[d],n[d]);
-						game.searchPlanet(planetsName.virgo)||(planets[planetsName.virgo].setCivis(8),civis[8].capital=planetsName.virgo);
-						game.searchPlanet(planetsName.nassaus)||
-							(planets[planetsName.nassaus].setCivis(7),civis[7].capital=planetsName.nassaus);
-							
-						var savefileCivilizations=w,savefilePlanets=n,savefileExtras=t;
-						["iron", "steel", "titanium", "silicon", "technetium", "rhodium", "plastic", "circuit", "nanotubes", "ammunition", "robots", "armor", "engine", "full battery", "u-ammunition", "t-ammunition", "antimatter", "mK Embryo"].map(function(name) {
-							var da_nebulas = nebulas;
-							var da_gameplanets = game.planets;
-							var da_planets = planets;
-							var resource = resourcesName[name];
-							var b = resource.id
-							for(var e=52,g=Array(game.buildings.length),h=0;h<game.buildings.length;h++)
-								g[h]=0;
-							for(var l=0;l<game.planets.length;l++)
-								if(galaxyChooser.value == "all" || nebulas[galaxyChooser.value].planets.includes(game.planets[l]))
-									for(h=0;h<game.buildings.length;h++)
-										0!=game.buildings[h].resourcesProd[b]&&(g[h]+=planets[game.planets[l]].structure[h].number);
-							var m=0;
+			importSave(document.getElementById("importError"));
+				["iron", "steel", "titanium", "silicon", "technetium", "rhodium", "plastic", "circuit", "nanotubes", "ammunition", "robots", "armor", "engine", "full battery", "u-ammunition", "t-ammunition", "antimatter", "mK Embryo"].map(function(name) {
+					var da_nebulas = nebulas;
+					var da_gameplanets = game.planets;
+					var da_planets = planets;
+					var resource = resourcesName[name];
+					var b = resource.id
+					for(var e=52,g=Array(game.buildings.length),h=0;h<game.buildings.length;h++)
+						g[h]=0;
+					for(var l=0;l<game.planets.length;l++)
+						if(galaxyChooser.value == "all" || nebulas[galaxyChooser.value].planets.includes(game.planets[l]))
 							for(h=0;h<game.buildings.length;h++)
-								if(0<g[h]){
-									e+=20;
-									for(l=0;l<game.planets.length;l++)
-										if(galaxyChooser.value == "all" || nebulas[galaxyChooser.value].planets.includes(game.planets[l]))
-											m+=game.buildings[h].production(planets[game.planets[l]])[b];
-								}
-							document.getElementById("resource_" + resource.id).value = Math.floor(m*100)/100;
-						});
-						["artofwar", "karan_artofwar"].map(function(name) {
-							var research = researches[researchesName[name]];
-							document.getElementById("research_" + research.id).value = game.researches[researchesName[name]].level;
-						});
-						["thoroid", "quris_value", "quris_honor", "quris_glory"].map(function(name) {
-							var artifact = artifacts[artifactsName[name]];
-							document.getElementById("artifact_" + artifact.id).checked = artifacts[artifactsName[name]].possessed===true;
-						});
-					}
-					else document.getElementById("impsave")&&(document.getElementById("impsave").innerHTML="Import Save: <span class='red_text'>Corrupted data</span>")
-				} catch(qa){
-					console.log(qa.message),document.getElementById("impsave")&&(document.getElementById("impsave").innerHTML="Import Save: <span class='red_text'>Error</span>")
-				}
-			else document.getElementById("impsave")&&(document.getElementById("impsave").innerHTML="Import Save: <span class='red_text'>Invalid data</span>")
+								0!=game.buildings[h].resourcesProd[b]&&(g[h]+=planets[game.planets[l]].structure[h].number);
+					var m=0;
+					for(h=0;h<game.buildings.length;h++)
+						if(0<g[h]){
+							e+=20;
+							for(l=0;l<game.planets.length;l++)
+								if(galaxyChooser.value == "all" || nebulas[galaxyChooser.value].planets.includes(game.planets[l]))
+									m+=game.buildings[h].production(planets[game.planets[l]])[b];
+						}
+					document.getElementById("resource_" + resource.id).value = Math.floor(m*100)/100;
+				});
+				["artofwar", "karan_artofwar"].map(function(name) {
+					var research = researches[researchesName[name]];
+					document.getElementById("research_" + research.id).value = game.researches[researchesName[name]].level;
+				});
+				["thoroid", "quris_value", "quris_honor", "quris_glory"].map(function(name) {
+					var artifact = artifacts[artifactsName[name]];
+					document.getElementById("artifact_" + artifact.id).checked = artifacts[artifactsName[name]].possessed===true;
+				});
 			update();
 		};
 	}

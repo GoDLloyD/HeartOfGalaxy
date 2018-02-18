@@ -2,7 +2,8 @@ document.addEventListener("DOMContentLoaded", function() {
 	'use strict';
 	
 	document.getElementById("impsave").onclick = function(){
-		importSave();
+		var errorMessageDiv = document.getElementById("importError");
+		importSave(errorMessageDiv);
 		update();
 	};
 	

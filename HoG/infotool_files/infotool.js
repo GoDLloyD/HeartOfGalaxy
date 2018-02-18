@@ -1,85 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
 	'use strict';
 	
-	function arr(v) { return Array.prototype.slice.call(v); }
-	function appendTo(a) { return function(b) { return a.appendChild(b); }; }
-	function el(tag, contents) { var el = document.createElement(tag); if(contents) contents.map(appendTo(el)); return el; }
-	function txt() { return document.createTextNode(arr(arguments).join()); }
-	function div() { return el("div", arr(arguments)); }
-	function span() { return el("span", arr(arguments)); }
-	function label() { return el("label", arr(arguments)); }
-	function tr() { return el("TR", arr(arguments)); }
-	function td() { return el("TD", arr(arguments)); }
-	function th() { return el("TH", arr(arguments)); }
-	
-	function dmgred(armor) {
-		return 1 - 1 / (1 + Math.log(1 + armor / 1E4) / Math.log(2));
-	}
-	function speedred(def, atk, weight) {
-		var a = def / atk * 4.6 / Math.log(weight) - 2;
-		var b = 2 * a / (1 + Math.abs(2 * a));
-		return .5 * (1.1 - .9 * b);
-	}
-	function fleetBonus(fleet) {
-		var bonus = {
-			power: 1,
-			armor: 1,
-			hp: 1,
-			speed: 1,
-			shield: 1,
-		};
-		var exp = fleet.exp;
-		if(isNaN(exp)) exp = 0;
-		else if(exp>MAX_FLEET_EXPERIENCE) exp = MAX_FLEET_EXPERIENCE;
-		var expBonus = 1 + exp / 2000;
-		bonus.power *= expBonus
-		bonus.armor *= expBonus
-		bonus.hp *= expBonus
-		bonus.shield *= expBonus
-		
-		return bonus;
-	}
-	function fleetStats(fleet, enemy) {
-		var power = 0,
-		    armor = 0,
-		    hp = 0,
-		    threat = 0,
-		    toughness = 0,
-		    piercepower = 0,
-		    speedpower = 0,
-		    speedtough = 0,
-		    rawpower = 0,
-		    rawtough = 0;
-		var bonus = fleetBonus(fleet);
-		fleet.ships.map(function(n, k) {
-			if(n == 0) return;
-			var ship = ships[k];
-			power += n * ship.power * bonus.power;
-			piercepower += power * (ship.piercing || 0) / 100,
-			armor += n * ship.armor * bonus.armor;
-			hp += n * ship.hp * bonus.hp;
-			var shiptough = ship.hp * bonus.hp / (1 - dmgred(ship.armor * bonus.armor));
-			var piercingbonus = Math.min(1 + 10 * (ship.piercing || 0) / 100, 10);
-			threat += (n+1) * ship.power * bonus.power;
-			toughness += n * shiptough;
-			speedpower += (n+1) * ship.power * piercingbonus * bonus.power * speedred(1, ship.speed * bonus.speed, 100000);
-			speedtough += n * shiptough / speedred(ship.speed * bonus.speed, 1, ship.combatWeight);
-		});
-		return {
-			Power: power,
-			"Piercing Power": piercepower,
-			Armor: armor,
-			HP: hp,
-			Toughness: toughness,
-			Value: Math.sqrt(speedpower * speedtough),
-		};
-	}
-	
-	function deleteTable() {
-		var infoTableDiv = document.getElementById("infotablediv");
-		while(infoTableDiv.lastChild)
-			infoTableDiv.removeChild(infoTableDiv.lastChild);
-	}
 	function setCellWidth(tableWidth, cell) {
 		var cellWidth = 150;
 		tableWidth += cellWidth;
@@ -1157,27 +1078,27 @@ document.addEventListener("DOMContentLoaded", function() {
 		if(infoSelected == "planets") {
 			if(checkbuildingtypeselect(infoSelect))
 				removebuildingtypeselect();
-			deleteTable();
+			deleteTable(document.getElementById("infotablediv"));
 			createPlanetTable();
 		}
 		if(infoSelected == "buildings") {
 			if(infoSelect.lastSelected != infoSelect.value)
 				createbuildingtypeselect();
-			deleteTable();
+			deleteTable(document.getElementById("infotablediv"));
 			createBuildingTable();
 			
 		}
 		if(infoSelected == "researches") {
 			if(checkbuildingtypeselect(infoSelect))
 				removebuildingtypeselect();
-			deleteTable();
+			deleteTable(document.getElementById("infotablediv"));
 			createResearchTable();
 			
 		}
 		if(infoSelected == "ships") {
 			if(checkbuildingtypeselect(infoSelect))
 				removebuildingtypeselect();
-			deleteTable();
+			deleteTable(document.getElementById("infotablediv"));
 			createShipTable();
 			
 		}
