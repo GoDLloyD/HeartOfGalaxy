@@ -53,6 +53,7 @@ function beautyObj(obj) {
 }
 
 function importSave(errorMessageDiv) {
+	var isImportSuccesful = false;
 	var d=document.getElementById("saveimport").value;
 	d=d.split("@")[0];
 	var g;
@@ -101,17 +102,20 @@ function importSave(errorMessageDiv) {
 				game.searchPlanet(planetsName.virgo)||(planets[planetsName.virgo].setCivis(8),civis[8].capital=planetsName.virgo);
 				game.searchPlanet(planetsName.nassaus)||
 					(planets[planetsName.nassaus].setCivis(7),civis[7].capital=planetsName.nassaus);
+				isImportSuccesful = true;
 			}
 			else errorMessageDiv.innerHTML="Import Save: <font color=\"red\">Corrupted data</font>";
 		} catch(qa){
 			console.log(qa.message),errorMessageDiv.innerHTML="Import Save: <font color=\"red\">Error</font>";
 		}
 	else errorMessageDiv.innerHTML="Import Save: <font color=\"red\">Invalid data</font>";
+	
+	return isImportSuccesful;
 };
 
-function deleteTable(tableDiv) {
-	while(tableDiv.lastChild)
-		tableDiv.removeChild(tableDiv.lastChild);
+function deleteChildElements(parentElement) {
+	while(parentElement.lastChild)
+		parentElement.removeChild(parentElement.lastChild);
 }
 
 //Ship stats stuff

@@ -1,4 +1,6 @@
 Changelog
+* Shipcalc: Fixed the import lag for Chrome users
+* New Tool: Added TP Checker to see your total TP, current TP and TP after time travel as a full number without notations
 * Shipcalc: Resources from save import can be chosen from Galaxy
 * Shipcalc: Added save import
 * Userscripts: added a script which adds a link to the Battlecalc when attacking a planet, automatically filling all fields

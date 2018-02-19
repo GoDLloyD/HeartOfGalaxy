@@ -103,13 +103,13 @@ document.addEventListener("DOMContentLoaded", function() {
 	}
 	function createImport() {
 		var galaxyChooser = el("select");
-		var resourcesOption = el("option");
-		resourcesOption.value = -1;
-		resourcesOption.innerText = "Select a galaxy";
+		var galaxyOption = el("option");
+		galaxyOption.value = -1;
+		galaxyOption.innerText = "Select a galaxy";
 		var totalOption = el("option");
 		totalOption.value = "all";
 		totalOption.innerText = "All Galaxies";
-		galaxyChooser.appendChild(resourcesOption);
+		galaxyChooser.appendChild(galaxyOption);
 		galaxyChooser.appendChild(totalOption);
 		var addedMaps = [];
 		for(var planetIndex=0; planetIndex < planets.length; planetIndex++) {

@@ -1078,27 +1078,27 @@ document.addEventListener("DOMContentLoaded", function() {
 		if(infoSelected == "planets") {
 			if(checkbuildingtypeselect(infoSelect))
 				removebuildingtypeselect();
-			deleteTable(document.getElementById("infotablediv"));
+			deleteChildElements(document.getElementById("infotablediv"));
 			createPlanetTable();
 		}
 		if(infoSelected == "buildings") {
 			if(infoSelect.lastSelected != infoSelect.value)
 				createbuildingtypeselect();
-			deleteTable(document.getElementById("infotablediv"));
+			deleteChildElements(document.getElementById("infotablediv"));
 			createBuildingTable();
 			
 		}
 		if(infoSelected == "researches") {
 			if(checkbuildingtypeselect(infoSelect))
 				removebuildingtypeselect();
-			deleteTable(document.getElementById("infotablediv"));
+			deleteChildElements(document.getElementById("infotablediv"));
 			createResearchTable();
 			
 		}
 		if(infoSelected == "ships") {
 			if(checkbuildingtypeselect(infoSelect))
 				removebuildingtypeselect();
-			deleteTable(document.getElementById("infotablediv"));
+			deleteChildElements(document.getElementById("infotablediv"));
 			createShipTable();
 			
 		}
