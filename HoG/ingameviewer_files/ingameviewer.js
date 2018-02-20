@@ -40,11 +40,24 @@ document.addEventListener("DOMContentLoaded", function() {
 			} else if(val == "tp") {
 				tpCheck();
 			} else if(val == "queue") {
+				var hidePlanetsCheckbox = el("input");
+				hidePlanetsCheckbox.setAttribute("id", "hidePlanetsCheckbox");
+				hidePlanetsCheckbox.type = "Checkbox";
+				hidePlanetsCheckbox.onchange = function() {
+					deleteChildElements(document.getElementById("result"));
+					queueCheck();
+				}
+				var checkboxSpan = span(hidePlanetsCheckbox, label(txt("Hide planets without queues")));
+				checkboxSpan.setAttribute("id", "checkboxSpan");
+				selectionList.appendChild(checkboxSpan);
 				queueCheck();
 			}
 			var galaxySelect = document.getElementById("galaxyselect");
 			if(val != "overview" && galaxySelect)
 				galaxySelect.parentNode.removeChild(galaxySelect);
+			var checkboxSpan = document.getElementById("checkboxSpan");
+			if(val != "queue" && checkboxSpan)
+				checkboxSpan.parentNode.removeChild(checkboxSpan);
 		}
 		
 		return categoryChooser;
@@ -85,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	function overview() {
 	
 		var cellWidth = 200;
-		var tableWidth = 200;
+		var tableWidth = 0;
 		
 		var overviewTable = document.createElement("TABLE");
 		overviewTable.setAttribute("id", "overviewTable");
@@ -183,7 +196,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	function queueCheck() {
 	
 		var cellWidth = 200;
-		var tableWidth = 200;
+		var tableWidth = 0;
 		
 		var queueTable = document.createElement("TABLE");
 		queueTable.setAttribute("id", "queueTable");
@@ -202,12 +215,25 @@ document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById("headRow").appendChild(headerCell);
 		
 		game.planets.map(function(planetIndex) {
-			var headerCell = th();
-			headerCell.setAttribute("width", cellWidth);
-			tableWidth += cellWidth;
-			var headerTextNode = label(txt(planets[planetIndex].name));
-			headerCell.appendChild(headerTextNode);
-			document.getElementById("headRow").appendChild(headerCell);
+			var planet = planets[planetIndex];
+			if(document.getElementById("hidePlanetsCheckbox").checked) {
+				for(var queueIndex in planet.queue) {
+					var headerCell = th();
+					headerCell.setAttribute("width", cellWidth);
+					tableWidth += cellWidth;
+					var headerTextNode = label(txt(planets[planetIndex].name));
+					headerCell.appendChild(headerTextNode);
+					document.getElementById("headRow").appendChild(headerCell);
+					break;
+				}
+			} else {
+				var headerCell = th();
+				headerCell.setAttribute("width", cellWidth);
+				tableWidth += cellWidth;
+				var headerTextNode = label(txt(planets[planetIndex].name));
+				headerCell.appendChild(headerTextNode);
+				document.getElementById("headRow").appendChild(headerCell);
+			}
 		});
 		
 		var queuesRow = tr();
@@ -220,13 +246,25 @@ document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById("queuesRow").appendChild(headerCell);
 		
 		game.planets.map(function(planetIndex) {
-			var queueCell = td();
 			var planet = planets[planetIndex];
-			for(var queueIndex in planet.queue) {
-				var queueTextNode = div(label(txt(buildings[planet.queue[queueIndex].b].displayName + ": " + planet.queue[queueIndex].n)));
-				queueCell.appendChild(queueTextNode);
+			if(document.getElementById("hidePlanetsCheckbox").checked) {
+				for(var queueIndex in planet.queue) {
+					var queueCell = td();
+					for(var queueIndex in planet.queue) {
+						var queueTextNode = div(label(txt(buildings[planet.queue[queueIndex].b].displayName + ": " + planet.queue[queueIndex].n)));
+						queueCell.appendChild(queueTextNode);
+					}
+					document.getElementById("queuesRow").appendChild(queueCell);
+					break;
+				}
+			} else {
+				var queueCell = td();
+				for(var queueIndex in planet.queue) {
+					var queueTextNode = div(label(txt(buildings[planet.queue[queueIndex].b].displayName + ": " + planet.queue[queueIndex].n)));
+					queueCell.appendChild(queueTextNode);
+				}
+				document.getElementById("queuesRow").appendChild(queueCell);
 			}
-			document.getElementById("queuesRow").appendChild(queueCell);
 		});
 	
 		queueTable.setAttribute("width", tableWidth);
