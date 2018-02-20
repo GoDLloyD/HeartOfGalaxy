@@ -223,7 +223,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			var queueCell = td();
 			var planet = planets[planetIndex];
 			for(var queueIndex in planet.queue) {
-				var queueTextNode = div(label(txt(buildings[queueIndex].displayName + ": " + planet.queue[queueIndex].n)));
+				var queueTextNode = div(label(txt(buildings[planet.queue[queueIndex].b].displayName + ": " + planet.queue[queueIndex].n)));
 				queueCell.appendChild(queueTextNode);
 			}
 			document.getElementById("queuesRow").appendChild(queueCell);
