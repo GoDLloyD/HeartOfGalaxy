@@ -331,7 +331,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	}
 	function generateOptions() {
 		var showShipsLeftOrShipsLostRadioName = "showShipsLeftOrShipsLost";
-		["Show ships left", "Show ships lost"].map(function(name) {
+		["Show ships left", "Show ships lost", "Show % ships left", "Show % ships lost"].map(function(name) {
 			var label = span(txt(name));
 			var input = el("input");
 			input.type = "radio";
@@ -804,24 +804,48 @@ document.addEventListener("DOMContentLoaded", function() {
 		arr(shiplist.getElementsByTagName("input")).map(function(input) {
 			if(input.type === "button") return;
 			if(saveData.options["showShipsLeftOrShipsLost"] == "Show ships left") {
-				var percentLeft = Math.floor((((warfleet.ships[input.ship.id] / playerShipsBeforeFight[input.ship.id]) || 0) * 100) * 100) / 100;
-				input.showShipsLeftOrShipsLost.innerText = warfleet.ships[input.ship.id] + " (" + percentLeft + "%)";
+				var shipsLeft = warfleet.ships[input.ship.id]
+				var shipsLeftText = shipsLeft >= 1000 ? beauty(shipsLeft) : shipsLeft;
+				input.showShipsLeftOrShipsLost.innerText = shipsLeftText;
 			}
 			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show ships lost") {
-				var percentLost = Math.floor((((playerShipsBeforeFight[input.ship.id] - warfleet.ships[input.ship.id]) / playerShipsBeforeFight[input.ship.id] || 0) * 100) * 100) / 100;
-				input.showShipsLeftOrShipsLost.innerText = "-" + (playerShipsBeforeFight[input.ship.id] - warfleet.ships[input.ship.id]) + " (-" + percentLost + "%)";
+				var shipsLost = playerShipsBeforeFight[input.ship.id] - warfleet.ships[input.ship.id];
+				var shipsLostText = shipsLost >= 1000 ? beauty(shipsLost) : shipsLost;
+				input.showShipsLeftOrShipsLost.innerText = "-" + shipsLostText;
+			}
+			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show % ships left") {
+				var shipsLeft = warfleet.ships[input.ship.id]
+				var percentLeft = Math.floor((((shipsLeft / playerShipsBeforeFight[input.ship.id]) || 0) * 100) * 100) / 100;
+				input.showShipsLeftOrShipsLost.innerText = percentLeft + "%";
+			}
+			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show % ships lost") {
+				var shipsLost = playerShipsBeforeFight[input.ship.id] - warfleet.ships[input.ship.id];
+				var percentLost = Math.floor(((shipsLost / playerShipsBeforeFight[input.ship.id] || 0) * 100) * 100) / 100;
+				input.showShipsLeftOrShipsLost.innerText = "-" + percentLost + "%";
 			}
 		});
 		shiplist.dataset.weightRemaining = warfleet.combatWeight();
 		arr(enemylist.getElementsByTagName("input")).map(function(input) {
 			if(input.type === "button") return;
 			if(saveData.options["showShipsLeftOrShipsLost"] == "Show ships left") {
-				var percentLeft = Math.floor((((enemy.ships[input.ship.id] / enemyShipsBeforeFight[input.ship.id]) || 0) * 100) * 100) / 100;
-				input.showShipsLeftOrShipsLost.innerText = enemy.ships[input.ship.id] + " (" + percentLeft + "%)";
+				var shipsLeft = enemy.ships[input.ship.id]
+				var shipsLeftText = shipsLeft >= 1000 ? beauty(shipsLeft) : shipsLeft;
+				input.showShipsLeftOrShipsLost.innerText = shipsLeftText;
 			}
 			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show ships lost") {
-				var percentLost = Math.floor((((enemyShipsBeforeFight[input.ship.id] - enemy.ships[input.ship.id]) / enemyShipsBeforeFight[input.ship.id] || 0) * 100) * 100) / 100;
-				input.showShipsLeftOrShipsLost.innerText = "-" + (enemyShipsBeforeFight[input.ship.id] - enemy.ships[input.ship.id]) + " (-" + percentLost + "%)";
+				var shipsLost = enemyShipsBeforeFight[input.ship.id] - enemy.ships[input.ship.id];
+				var shipsLostText = shipsLost >= 1000 ? beauty(shipsLost) : shipsLost;
+				input.showShipsLeftOrShipsLost.innerText = "-" + shipsLostText;
+			}
+			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show % ships left") {
+				var shipsLeft = enemy.ships[input.ship.id]
+				var percentLeft = Math.floor((((shipsLeft / enemyShipsBeforeFight[input.ship.id]) || 0) * 100) * 100) / 100;
+				input.showShipsLeftOrShipsLost.innerText = percentLeft + "%";
+			}
+			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show % ships lost") {
+				var shipsLost = enemyShipsBeforeFight[input.ship.id] - enemy.ships[input.ship.id];
+				var percentLost = Math.floor(((shipsLost / enemyShipsBeforeFight[input.ship.id] || 0) * 100) * 100) / 100;
+				input.showShipsLeftOrShipsLost.innerText = "-" + percentLost + "%";
 			}
 		});
 		enemylist.dataset.weightRemaining = enemy.combatWeight();
