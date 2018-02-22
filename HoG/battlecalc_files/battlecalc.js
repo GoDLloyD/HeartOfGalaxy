@@ -342,6 +342,20 @@ document.addEventListener("DOMContentLoaded", function() {
 			if(saveData.options && saveData.options[showShipsLeftOrShipsLostRadioName] && saveData.options[showShipsLeftOrShipsLostRadioName] == input.value) input.defaultChecked = true;
 			return div(label, input);
 		}).map(appendTo(optionslist));
+		["Show HP left in battle report"].map(function(name) {
+			var label = span(txt(name));
+			var input = el("input");
+			input.type = "checkbox";
+			input.label = label;
+			input.name = name;
+			input.value = name;
+			if(saveData.options && saveData.options[name] && saveData.options[name] == input.value) input.defaultChecked = true;
+			gameSettings.hpreport = input.checked;
+			input.onchange = function() {
+				gameSettings.hpreport = input.checked;
+			}
+			return div(label, input);
+		}).map(appendTo(optionslist));
 	}
 	function inputval(input) {
 		delete input.title;
