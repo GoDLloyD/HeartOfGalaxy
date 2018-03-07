@@ -366,7 +366,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		delete input.title;
 
 		if(input.autoNumeric)
-			var value = input.autoNumeric.getNumericString();
+			var value = input.autoNumeric.getNumericString() || 0;
 		else
 			var value = input.value;
 		
@@ -736,8 +736,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			if(val > 0) enemy.ships[input.ship.id] = saveData.enemies[input.ship.id] = val;
 		});
 		
-		var enemyexp = parseInt(document.getElementsByName("enemy_exp")[0].value);
-		if(isNaN(enemyexp)) enemyexp = 0;
+		var enemyexp = inputval(document.getElementsByName("enemy_exp")[0]);
  		enemy.exp = enemyexp;
 
 		arr(stufflist.getElementsByTagName("input")).filter(function(input) {
