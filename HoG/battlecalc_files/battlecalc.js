@@ -11,8 +11,6 @@ document.addEventListener("DOMContentLoaded", function() {
 	function span() { return el("span", arr(arguments)); }
 	function label() { return el("label", arr(arguments)); }
 
-	var maxInputValue = 9e20;
-	
 	function selectElementContents(el) {
 		if (window.getSelection && document.createRange) {
 			var sel = window.getSelection();
@@ -293,10 +291,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		input.ship = ship;
 		if(typeof n !== "undefined") input.value = n;
 		input.showShipsLeftOrShipsLost = span();
-		var autoNumericInput = new AutoNumeric(input, "integerPos");
-		autoNumericInput.options.maximumValue(maxInputValue);
-		input.autoNumeric = autoNumericInput;
-		return div(label, autoNumericInput.node(), input.showShipsLeftOrShipsLost);
+		return div(label, input, input.showShipsLeftOrShipsLost);
 	}
 	function shipselector(available_ships) {
 		var pick_new_ship = el("select");
@@ -364,19 +359,25 @@ document.addEventListener("DOMContentLoaded", function() {
 	}
 	function inputval(input) {
 		delete input.title;
+		input.setCustomValidity("");
 
-		if(input.autoNumeric)
-			var value = input.autoNumeric.getNumericString() || 0;
-		else
-			var value = input.value;
+		var value = input.value;
 		
 		if(input.type=="checkbox")
 			if(input.checked)
 				value=1;
 			else
 				value=0;
+		try {
+			value = eval(value);
+		} catch(e) {
+			input.title = e.message;
+			input.setCustomValidity(e.message);
+		}
+		if(value)
+			input.value = value;
 			
-		return parseInt(value);
+		return parseInt(value) || 0;
 	}
 
 	var saveData;
@@ -419,43 +420,34 @@ document.addEventListener("DOMContentLoaded", function() {
 		var resource = resourcesName[name];
 		var label = span(txt(name.capitalize()));
 		var input = el("input");
-		var autoNumericInput = new AutoNumeric(input, "integerPos");
-		autoNumericInput.options.maximumValue(maxInputValue);
-		input.autoNumeric = autoNumericInput;
 		input.type = "text";
 		input.label = label;
 		input.name = name;
-		if(saveData.bonuses && saveData.bonuses[name]) input.autoNumeric.set(saveData.bonuses[name]);
+		if(saveData.bonuses && saveData.bonuses[name]) input.value = saveData.bonuses[name];
 		input.resource = resource;
 		input.showValue = span();
-		return div(label, autoNumericInput.node(), input.showValue);
+		return div(label, input, input.showValue);
 	}).map(appendTo(stufflist));
 	["exp"].map(function(name) {
 		var label = span(txt(name.capitalize()));
 		var input = el("input");
-		var autoNumericInput = new AutoNumeric(input, "integerPos");
-		autoNumericInput.options.maximumValue(5000);
-		input.autoNumeric = autoNumericInput;
 		input.type = "text";
 		input.label = label;
 		input.name = name;
-		if(saveData.bonuses && saveData.bonuses[name]) input.autoNumeric.set(saveData.bonuses[name]);
+		if(saveData.bonuses && saveData.bonuses[name]) input.value = saveData.bonuses[name];
 		input.showValue = span();
-		return div(label, autoNumericInput.node(), input.showValue);
+		return div(label, input, input.showValue);
 	}).map(appendTo(stufflist));
 	["artofwar", "karan_artofwar"].map(function(name) {
 		var research = researches[researchesName[name]];
 		var label = span(txt(research.name));
 		var input = el("input");
-		var autoNumericInput = new AutoNumeric(input, "integerPos");
-		autoNumericInput.options.maximumValue(maxInputValue);
-		input.autoNumeric = autoNumericInput;
 		input.type = "text";
 		input.label = label;
 		input.name = name;
-		if(saveData.bonuses && saveData.bonuses[name]) input.autoNumeric.set(saveData.bonuses[name]);
+		if(saveData.bonuses && saveData.bonuses[name]) input.value = saveData.bonuses[name];
 		input.research = research;
-		return div(label, autoNumericInput.node());
+		return div(label, input);
 	}).map(appendTo(stufflist));
 	["thoroid", "quris_value", "quris_honor", "quris_glory"].map(function(name) {
 		var artifact = artifacts[artifactsName[name]];
@@ -474,15 +466,12 @@ document.addEventListener("DOMContentLoaded", function() {
 	["enemy_exp"].map(function(name) {
 		var label = span(txt("Enemy Exp"));
 		var input = el("input");
-		var autoNumericInput = new AutoNumeric(input, "integerPos");
-		autoNumericInput.options.maximumValue(maxInputValue);
-		input.autoNumeric = autoNumericInput;
 		input.type = "text";
 		input.label = label;
 		input.name = name;
-		if(saveData.bonuses && saveData.bonuses[name]) input.autoNumeric.set(saveData.bonuses[name]);
+		if(saveData.bonuses && saveData.bonuses[name]) input.value = saveData.bonuses[name];
 		input.showValue = span();
-		return div(label, autoNumericInput.node(), input.showValue);
+		return div(label, input, input.showValue);
 	}).map(appendTo(enemystufflist));
 	var calcBonus = {
 		"ammunition": function(v) { return 10 * Math.log(1 + v / 1E7)/Math.log(2); },
@@ -582,7 +571,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		
 		arr(enemystufflist.getElementsByTagName("input")).map(function(input) {
 			if(input.name == "enemy_exp")
-				input.autoNumeric.set(o.fleet.exp);
+				input.value = o.fleet.exp;
 		});
 	};
 	enemypicker.onchange();
@@ -590,7 +579,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	if(saveData.enemies) {
 		arr(enemylist.getElementsByTagName("input")).map(function(input) {
 			if(input.type === "button") return;
-			input.autoNumeric.set(saveData.enemies[input.ship.id]);
+			input.value = saveData.enemies[input.ship.id] || "";
 			delete saveData.enemies[input.ship.id];
 			delete enemy_available_ships[input.ship.id];
 		});
@@ -617,7 +606,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	function loadSaveData(saveData) {
 		saveData.ships && arr(shiplist.getElementsByTagName("input")).map(function(input) {
 			if(!input.ship) return;
-			input.autoNumeric.set(saveData.ships[input.ship.id]);
+			input.value = saveData.ships[input.ship.id] || "";
 		});
 		saveData.ships && Object.keys(saveData.ships).map(function(k) {
 			if(!available_ships[k]) return;
@@ -626,16 +615,10 @@ document.addEventListener("DOMContentLoaded", function() {
 			delete available_ships[k];
 		});
 		saveData.bonuses && arr(stufflist.getElementsByTagName("input")).map(function(input) {
-			if(input.autoNumeric)
-				input.autoNumeric.set(saveData.bonuses[input.name]);
-			else
-				input.value = saveData.bonuses[input.name] || "";
+			input.value = saveData.bonuses[input.name] || "";
 		});
 		saveData.bonuses && arr(enemystufflist.getElementsByTagName("input")).map(function(input) {
-			if(input.autoNumeric)
-				input.autoNumeric.set(saveData.bonuses[input.name]);
-			else
-				input.value = saveData.bonuses[input.name] || "";
+			input.value = saveData.bonuses[input.name] || "";
 		});
 		if(saveData.enemySelected) {
 			if(isFinite(saveData.enemySelected)) enemypicker.selectedIndex = saveData.enemySelected;
@@ -644,7 +627,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 		saveData.enemies && arr(enemylist.getElementsByTagName("input")).map(function(input) {
 			if(!input.ship) return;
-			input.autoNumeric.set(saveData.enemies[input.ship.id]);
+			input.value = saveData.enemies[input.ship.id] || "";
 			delete saveData.enemies[input.ship.id];
 		});
 		saveData.enemies && Object.keys(saveData.enemies).map(function(k) {
@@ -716,8 +699,9 @@ document.addEventListener("DOMContentLoaded", function() {
 				while(input.artifact.possessed < newLevel) { input.artifact.possessed++; input.artifact.action(); }
 			}
 			if(input.name == "exp") {
-				if(val > MAX_FLEET_EXPERIENCE) {
-					input.autoNumeric.set(MAX_FLEET_EXPERIENCE);
+				if(input.value > MAX_FLEET_EXPERIENCE) {
+					val = MAX_FLEET_EXPERIENCE;
+					input.value = MAX_FLEET_EXPERIENCE;
 				}
 				warfleet.exp = val;
 			}
@@ -736,7 +720,8 @@ document.addEventListener("DOMContentLoaded", function() {
 			if(val > 0) enemy.ships[input.ship.id] = saveData.enemies[input.ship.id] = val;
 		});
 		
-		var enemyexp = inputval(document.getElementsByName("enemy_exp")[0]);
+		var enemyexp = parseInt(document.getElementsByName("enemy_exp")[0].value);
+		if(isNaN(enemyexp)) enemyexp = 0;
  		enemy.exp = enemyexp;
 
 		arr(stufflist.getElementsByTagName("input")).filter(function(input) {
