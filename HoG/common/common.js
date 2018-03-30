@@ -40,7 +40,7 @@ function deserialize(str) {
 		obj[add[0]] = add[1];
 		return obj;
 	}, {});
-	if(data.resources) return data;
+	if(data.ships || data.enemies) return data;
 	return null;
 }
 function beautyObj(obj) {
@@ -181,3 +181,8 @@ function fleetStats(fleet, enemy) {
 		Value: Math.sqrt(speedpower * speedtough),
 	};
 }
+
+function aprilFoolize() {
+	ships[72].name = "Doom Snail";
+}
+aprilFoolize();
