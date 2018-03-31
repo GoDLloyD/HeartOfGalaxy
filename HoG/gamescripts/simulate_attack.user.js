@@ -1,11 +1,13 @@
 // ==UserScript==
 // @name         HoG Tools - Planet Attack Simulation
 // @namespace    https://github.com/GoDLloyD/HeartOfGalaxy/HoG/gamescripts
-// @version      1.0
+// @version      1.2
 // @description  Adds a link to the battle calculator on each player fleet near an enemy fleet
 // @author       GoDLloyD
 // @match        https://game288398.konggames.com/gamez/0028/8398/live/*
 // @grant        none
+// @downloadURL  https://github.com/GoDLloyD/HeartOfGalaxy/HoG/gamescripts/simulate_attack.user.js
+// @updateURL    https://github.com/GoDLloyD/HeartOfGalaxy/HoG/gamescripts/simulate_attack.user.js
 // ==/UserScript==
 
 function loadScript(url, callback)

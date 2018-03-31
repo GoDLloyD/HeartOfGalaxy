@@ -1,11 +1,13 @@
 // ==UserScript==
 // @name         HoG Tools - Tournament Simulation
 // @namespace    https://github.com/GoDLloyD/HeartOfGalaxy/HoG/gamescripts
-// @version      1.0
+// @version      1.2
 // @description  Adds a link to the battle calculator to the Tournament
 // @author       GoDLloyD
 // @match        https://game288398.konggames.com/gamez/0028/8398/live/*
 // @grant        none
+// @downloadURL  https://github.com/GoDLloyD/HeartOfGalaxy/HoG/gamescripts/simulate_tournament.user.js
+// @updateURL    https://github.com/GoDLloyD/HeartOfGalaxy/HoG/gamescripts/simulate_tournament.user.js
 // ==/UserScript==
 
 function loadScript(url, callback)
