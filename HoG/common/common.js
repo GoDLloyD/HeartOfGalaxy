@@ -185,4 +185,3 @@ function fleetStats(fleet, enemy) {
 function aprilFoolize() {
 	ships[72].name = "Doom Snail";
 }
-aprilFoolize();
