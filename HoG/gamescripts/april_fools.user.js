@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HoG Tools - April Fools
 // @namespace    https://github.com/GoDLloyD/HeartOfGalaxy/HoG/gamescripts
-// @version      1.0
+// @version      1.1
 // @description  Changes the name of "Anger of Perseus" to "Doom Snail"
 // @author       GoDLloyD
 // @match        https://game288398.konggames.com/gamez/0028/8398/live/*
@@ -28,6 +28,9 @@ function loadScript(url, callback)
     head.appendChild(script);
 }
 
-loadScript("https://godlloyd.github.io/HeartOfGalaxy/HoG/common/common.js", userScript);
+var userScript = function() {
+	aprilFoolize();
+};
 
-aprilFoolize();
+
+loadScript("https://godlloyd.github.io/HeartOfGalaxy/HoG/common/common.js", userScript);
