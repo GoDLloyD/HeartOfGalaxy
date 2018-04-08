@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HoG Tools - Planet Attack Simulation
 // @namespace    https://github.com/GoDLloyD/HeartOfGalaxy/HoG/gamescripts
-// @version      1.2
+// @version      1.3
 // @description  Adds a link to the battle calculator on each player fleet near an enemy fleet
 // @author       GoDLloyD
 // @match        https://game288398.konggames.com/gamez/0028/8398/live/*
@@ -57,7 +57,15 @@ var userScript = function() {
 				return fleet.weight() && fleet.civis != game.id;
 			})[0];
 			var enemyFleet = planet.fleets[enemyFleetId];
-			if(!fleet || !enemyFleet || fleet.civis != game.id) return;
+			if(!fleet || fleet.civis != game.id) return;
+			var varEnemySelected = "";
+			var varEnemies = "";
+			if(!enemyFleet) {
+				varEnemySelected = "free_battle" + "_" + civis.length;
+			} else {
+				varEnemySelected = planet.id + "_" + enemyFleetId;
+				varEnemies = enemyFleet.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {});
+			}
 
 			var calcData = {
 				ships: fleet.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
@@ -87,8 +95,8 @@ var userScript = function() {
 					}
 					return obj;
 				}, {}))),
-				enemySelected: planet.id + "_" + enemyFleetId,
-				enemies: enemyFleet.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
+				enemySelected: varEnemySelected,
+				enemies: varEnemies,
 			};
 			var url = "https://godlloyd.github.io/HeartOfGalaxy/HoG/Battlecalc.html#"+serialize(calcData);
 			var attackButton = document.getElementById("attack_button");
