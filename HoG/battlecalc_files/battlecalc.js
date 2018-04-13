@@ -357,6 +357,12 @@ document.addEventListener("DOMContentLoaded", function() {
 		input.type = "text";
 		input.label = label;
 		input.name = name;
+		input.onfocus = function() {
+			parseSeperatedInput(input);
+		};
+		input.onblur = function() {
+			input.value = getSeperatedString(input.value);
+		};
 		if(saveData.bonuses && saveData.bonuses[name]) input.value = saveData.bonuses[name];
 		input.showValue = span();
 		return div(label, input, input.showValue);
