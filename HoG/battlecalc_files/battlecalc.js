@@ -196,7 +196,16 @@ document.addEventListener("DOMContentLoaded", function() {
 		input.type = "text";
 		input.label = label;
 		input.ship = ship;
-		if(typeof n !== "undefined") input.value = n;
+		input.onfocus = function() {
+			parseSeperatedInput(input);
+		};
+		input.onblur = function() {
+			input.value = getSeperatedString(input.value);
+		};
+		if(typeof n !== "undefined") {
+			input.number = n;
+			input.value = getSeperatedString(n);
+		}
 		input.showShipsLeftOrShipsLost = span();
 		return div(label, input, input.showShipsLeftOrShipsLost);
 	}
@@ -268,7 +277,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		delete input.title;
 		input.setCustomValidity("");
 
-		var value = input.value;
+		var value = getNumberFromSeperatedString(input.value);
 		
 		if(input.type=="checkbox")
 			if(input.checked)
@@ -281,10 +290,11 @@ document.addEventListener("DOMContentLoaded", function() {
 			input.title = e.message;
 			input.setCustomValidity(e.message);
 		}
-		if(value)
-			input.value = value;
+		
+		if(parseInt(value, 10))
+			value = BigInteger.toJSValue(value);
 			
-		return parseInt(value) || 0;
+		return value || 0;
 	}
 
 	var saveData;
@@ -330,6 +340,12 @@ document.addEventListener("DOMContentLoaded", function() {
 		input.type = "text";
 		input.label = label;
 		input.name = name;
+		input.onfocus = function() {
+			parseSeperatedInput(input);
+		};
+		input.onblur = function() {
+			input.value = getSeperatedString(input.value);
+		};
 		if(saveData.bonuses && saveData.bonuses[name]) input.value = saveData.bonuses[name];
 		input.resource = resource;
 		input.showValue = span();
@@ -835,6 +851,11 @@ document.addEventListener("DOMContentLoaded", function() {
 			}, {}),
 			enemySelected: enemypicker.selectedIndex + (enemy.combatWeight() ? 0 : 1),
 			enemies: enemy.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
+		});
+		
+		arr(document.getElementsByTagName("input")).map(function(input) {
+			if(input.type == "text")
+				input.value = getSeperatedString(input.value);
 		});
 	};
 	update();

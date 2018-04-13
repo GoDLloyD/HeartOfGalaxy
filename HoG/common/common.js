@@ -181,6 +181,52 @@ function fleetStats(fleet, enemy) {
 		Value: Math.sqrt(speedpower * speedtough),
 	};
 }
+function getSeperatedString(number) {
+	if(!number || number.toString().includes(","))
+		return number;
+	var numberString = BigInteger(number).toString();
+	var splitArray = numberString.split("");
+	var counter = 1;
+	var seperatedString = "";
+	for(var index = splitArray.length - 1; index >= 0; index--) {
+		seperatedString = splitArray[index] + seperatedString;
+		if(counter == 3 && index > 0) {
+			seperatedString = "," + seperatedString;
+			counter = 1;
+		} else {
+			counter++;
+		}
+	}
+	return seperatedString;
+}
+function getNumberFromSeperatedString(seperatedString) {
+	if(!seperatedString.includes(","))
+		return seperatedString;
+	var splitArray = seperatedString.split(",");
+	var numberString = "";
+	for(var index = 0; index < splitArray.length; index++) {
+		numberString += splitArray[index];
+	}
+	var number = BigInteger.toJSValue(numberString);
+	return number;
+}
+function parseSeperatedInput(input) {
+	if(!input.value || !input.value.includes(","))
+		return;
+	var seperatedString = input.value;
+	var caretPosition = input.selectionStart;
+	var splitArray = seperatedString.split(",");
+	var numberString = "";
+	for(var index = 0; index < splitArray.length; index++) {
+		numberString += splitArray[index];
+		if(input.selectionStart > numberString.length + index)
+			caretPosition--;
+	}
+	var number = BigInteger.toJSValue(numberString);
+	input.value = number;
+	input.selectionStart = caretPosition;
+	input.selectionEnd = caretPosition;
+}
 
 function aprilFoolize() {
 	ships[72].name = "Doom Snail";
