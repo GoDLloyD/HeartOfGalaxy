@@ -181,9 +181,10 @@ function fleetStats(fleet, enemy) {
 		Value: Math.sqrt(speedpower * speedtough),
 	};
 }
-function getSeperatedString(number) {
+function addSeperatorsToInput(input) {
+	var number = input.value;
 	if(!number || number.toString().includes(","))
-		return number;
+		return;
 	var numberString = BigInteger(number).toString();
 	var splitArray = numberString.split("");
 	var counter = 1;
@@ -197,7 +198,7 @@ function getSeperatedString(number) {
 			counter++;
 		}
 	}
-	return seperatedString;
+	input.value = seperatedString;
 }
 function getNumberFromSeperatedString(seperatedString) {
 	if(!seperatedString.includes(","))

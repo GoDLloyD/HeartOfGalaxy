@@ -3,6 +3,18 @@ battlecalc_save_name=['HoG_Battlecalc','HoG_Battlecalc1','HoG_Battlecalc2'];
 document.addEventListener("DOMContentLoaded", function() {
 	'use strict';
 
+	var lastChangedInput;
+	
+	$("body").keydown(function(e){
+		var yKey = 89;
+		var zKey = 90;
+		if ((e.ctrlKey || e.metaKey) && (e.keyCode == zKey || e.keyCode == yKey)) {
+			if(!lastChangedInput)
+				return;
+			lastChangedInput.focus();
+		}
+	});
+
 	function selectElementContents(el) {
 		if (window.getSelection && document.createRange) {
 			var sel = window.getSelection();
@@ -200,12 +212,9 @@ document.addEventListener("DOMContentLoaded", function() {
 			parseSeperatedInput(input);
 		};
 		input.onblur = function() {
-			input.value = getSeperatedString(input.value);
+			addSeperatorsToInput(input)
 		};
-		if(typeof n !== "undefined") {
-			input.number = n;
-			input.value = getSeperatedString(n);
-		}
+		if(typeof n !== "undefined") input.value = n;
 		input.showShipsLeftOrShipsLost = span();
 		return div(label, input, input.showShipsLeftOrShipsLost);
 	}
@@ -344,7 +353,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			parseSeperatedInput(input);
 		};
 		input.onblur = function() {
-			input.value = getSeperatedString(input.value);
+			addSeperatorsToInput(input)
 		};
 		if(saveData.bonuses && saveData.bonuses[name]) input.value = saveData.bonuses[name];
 		input.resource = resource;
@@ -361,7 +370,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			parseSeperatedInput(input);
 		};
 		input.onblur = function() {
-			input.value = getSeperatedString(input.value);
+			addSeperatorsToInput(input)
 		};
 		if(saveData.bonuses && saveData.bonuses[name]) input.value = saveData.bonuses[name];
 		input.showValue = span();
@@ -861,7 +870,10 @@ document.addEventListener("DOMContentLoaded", function() {
 		
 		arr(document.getElementsByTagName("input")).map(function(input) {
 			if(input.type == "text")
-				input.value = getSeperatedString(input.value);
+				addSeperatorsToInput(input)
+			input.onchange = function() {
+				lastChangedInput = input;
+			}
 		});
 	};
 	update();
