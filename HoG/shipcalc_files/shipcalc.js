@@ -155,7 +155,7 @@ document.addEventListener("DOMContentLoaded", function() {
 						}
 					document.getElementById("resource_" + resource.id).value = Math.floor(m*100)/100;
 				});
-				["artofwar", "karan_artofwar"].map(function(name) {
+				["artofwar", "karan_artofwar", "protohalean_science", "mk_tech"].map(function(name) {
 					var research = researches[researchesName[name]];
 					document.getElementById("research_" + research.id).value = game.researches[researchesName[name]].level;
 				});
@@ -185,7 +185,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	var stufflist = document.getElementById("stufflist");
 
-	["artofwar", "karan_artofwar"].map(function(name) {
+	["artofwar", "karan_artofwar", "protohalean_science", "mk_tech"].map(function(name) {
 		var research = researches[researchesName[name]];
 		var label = span(txt(research.name));
 		var input = el("input");
