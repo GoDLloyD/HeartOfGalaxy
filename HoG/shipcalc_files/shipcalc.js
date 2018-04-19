@@ -1,5 +1,3 @@
-shipcalc_save_name=['HoG_Shipcalc','HoG_Shipcalc1','HoG_Shipcalc2'];
-
 document.addEventListener("DOMContentLoaded", function() {
 	'use strict';
 
@@ -35,16 +33,15 @@ document.addEventListener("DOMContentLoaded", function() {
 		    speedtough = 0,
 		    rawpower = 0,
 		    rawtough = 0;
-		var bonus = fleetBonus(fleet);
 		var ship = ships[shipIndex];
-		power += shipAmount * ship.power * bonus.power;
+		power += shipAmount * ship.power;
 		piercepower += power * (ship.piercing || 0) / 100,
-		armor += shipAmount * ship.armor * bonus.armor;
-		hp += shipAmount * ship.hp * bonus.hp;
-		var shiptough = ship.hp / (1 - dmgred(ship.armor * bonus.armor));
+		armor += shipAmount * ship.armor;
+		hp += shipAmount * ship.hp;
+		var shiptough = ship.hp / (1 - dmgred(ship.armor));
 		var piercingbonus = Math.min(1 + 10 * (ship.piercing || 0) / 100, 10);
 		toughness += shipAmount * shiptough;
-		speedpower += (shipAmount+1) * ship.power * piercingbonus * bonus.power;
+		speedpower += (shipAmount+1) * ship.power * piercingbonus;
 		speedtough += shipAmount * shiptough;
 		return {
 			Power: power,
@@ -133,11 +130,11 @@ document.addEventListener("DOMContentLoaded", function() {
 		
 		document.getElementById("impsave").onclick = function(){
 			importSave(document.getElementById("importError"));
-				["iron", "steel", "titanium", "silicon", "technetium", "rhodium", "plastic", "circuit", "nanotubes", "ammunition", "robots", "armor", "engine", "full battery", "u-ammunition", "t-ammunition", "antimatter", "mK Embryo"].map(function(name) {
+				resourcesIdList.map(function(resourceId) {
 					var da_nebulas = nebulas;
 					var da_gameplanets = game.planets;
 					var da_planets = planets;
-					var resource = resourcesName[name];
+					var resource = resources[resourceId];
 					var b = resource.id
 					for(var e=52,g=Array(game.buildings.length),h=0;h<game.buildings.length;h++)
 						g[h]=0;
@@ -176,11 +173,28 @@ document.addEventListener("DOMContentLoaded", function() {
 	};
 	window.history.replaceState(saveData, document.title, window.location.pathname);
 
-	var resourcelist = document.getElementById("resourcelist");
-	["iron", "steel", "titanium", "silicon", "technetium", "rhodium", "plastic", "circuit", "nanotubes", "ammunition", "robots", "armor", "engine", "full battery", "u-ammunition", "t-ammunition", "antimatter", "mK Embryo"].map(function(name) {
+	var shipIndexList = [];
+	var resourcesIdList = [];
+	var shiplist = document.getElementById("shiplist");
+	shiplist.appendChild(div(span(txt("Shiptype")), span(txt("Ships/day")), span(txt("Rank")), span(txt("Limit"))));
+	game.ships.map(function(ship) {
 		var n;
-		if(saveData.resources && saveData.resources[name]) n = saveData.resources[name];
-		resourcelist.appendChild(resourceinput(resourcesName[name], n));
+		if(ship.type === "Colonial Ship" || ship.type === "Cargoship") return;
+		if(ship.name === "Koroleva" || ship.name === "Augustus" || ship.name === "Leonidas" || ship.name === "Alexander" || ship.name === "Cerberus" || ship.name === "Charon") return;
+		shiplist.appendChild(shipinput(ship, n));
+		shipIndexList.push(ship.id);
+		for(var resId = 0; resId < ship.cost.length; resId++) {
+			if(ship.cost[resId] > 0 && !resourcesIdList.includes(resId))
+				resourcesIdList.push(resId);
+		}
+	});
+	resourcesIdList.sort();
+
+	var resourcelist = document.getElementById("resourcelist");
+	resourcesIdList.map(function(resourceId) {
+		var n;
+		if(saveData.resources && saveData.resources[resourceId]) n = saveData.resources[resourceId];
+		resourcelist.appendChild(resourceinput(resources[resourceId], n));
 	});
 
 	var stufflist = document.getElementById("stufflist");
@@ -210,17 +224,6 @@ document.addEventListener("DOMContentLoaded", function() {
 	}).map(appendTo(stufflist));
 	
 	createImport();
-
-	var shipIndexList = [];
-	var shiplist = document.getElementById("shiplist");
-	shiplist.appendChild(div(span(txt("Shiptype")), span(txt("Ships/day")), span(txt("Rank")), span(txt("Limit"))));
-	game.ships.map(function(ship) {
-		var n;
-		if(ship.type === "Colonial Ship" || ship.type === "Cargoship") return;
-		if(ship.name === "Koroleva" || ship.name === "Augustus" || ship.name === "Leonidas" || ship.name === "Alexander" || ship.name === "Cerberus" || ship.name === "Charon" || ship.name === "Munya") return;
-		shiplist.appendChild(shipinput(ship, n));
-		shipIndexList.push(ship.id);
-	});
 
 	function loadSaveData(saveData) {
 		saveData.resources && arr(resourcelist.getElementsByTagName("input")).map(function(input) {
@@ -267,7 +270,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		
 		arr(resourcelist.getElementsByTagName("input")).map(function(input) {
 			var val = inputval(input);
-			if(val > 0) saveData.resources[input.resource.name] = val;
+			if(val > 0) saveData.resources[input.resource.id] = val;
 		});
 		arr(stufflist.getElementsByTagName("input")).map(function(input) {
 			var val = 0;
@@ -316,7 +319,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			};
 			ships[input.ship.id].cost.map(function(resourceCost, resourceIndex) {
 				if(!resourceCost) return;
-				var availableResourcesPerDay = saveData.resources[resources[resourceIndex].name] * 60 * 60 * 24 || 0;
+				var availableResourcesPerDay = saveData.resources[resources[resourceIndex].id] * 60 * 60 * 24 || 0;
 				var shipsPerDay = Math.round(availableResourcesPerDay / resourceCost * 100) / 100;
 				if(limitingResource.shipsPerDay == -1 || limitingResource.shipsPerDay > shipsPerDay) {
 					limitingResource.resourceName = resources[resourceIndex].name;
@@ -332,7 +335,10 @@ document.addEventListener("DOMContentLoaded", function() {
 			input.resourceLimit.innerText = limitingResource.resourceName.capitalize();
 		});
 		shipIndexList.sort(function(shipIndex2, shipIndex1) {
-			return shipStats(warfleet, shipIndex1, warfleet.ships[shipIndex1]).Value - shipStats(warfleet, shipIndex2, warfleet.ships[shipIndex2]).Value;
+			var val1, val2;
+			val1 = shipStats(warfleet, shipIndex1, warfleet.ships[shipIndex1]).Value;
+			val2 = shipStats(warfleet, shipIndex2, warfleet.ships[shipIndex2]).Value;
+			return val1 - val2;
 		})
 		
 		var ranking = [];
@@ -354,11 +360,3 @@ document.addEventListener("DOMContentLoaded", function() {
 	update();
 	
 });
-
-function load_fleet (datano) {
-	localStorage.setItem("shipcalc-persist", localStorage.getItem(shipcalc_save_name[datano]));
-}
-
-function save_fleet (datano) {
-	localStorage.setItem(shipcalc_save_name[datano], localStorage.getItem("shipcalc-persist"));
-}
