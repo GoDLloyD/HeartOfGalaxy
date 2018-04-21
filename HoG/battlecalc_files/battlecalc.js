@@ -13,7 +13,16 @@ document.addEventListener("DOMContentLoaded", function() {
 				return;
 			lastChangedInput.focus();
 		}
+		
 	});
+	$("body").keyup(function(e){
+		var tabKey = 9;
+		if(e.keyCode == tabKey) {
+			var activeElement = document.activeElement;
+			activeElement.setSelectionRange(0, activeElement.value.length);
+		}
+		
+	})
 
 	function selectElementContents(el) {
 		if (window.getSelection && document.createRange) {
