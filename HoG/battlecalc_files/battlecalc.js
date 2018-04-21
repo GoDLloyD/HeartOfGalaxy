@@ -351,7 +351,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	var stufflist = document.getElementById("stufflist");
 
-	["ammunition", "u-ammunition", "t-ammunition", "armor", "engine"].map(function(name) {
+	["ammunition", "u-ammunition", "t-ammunition", "dark matter", "armor", "engine"].map(function(name) {
 		var resource = resourcesName[name];
 		var label = span(txt(name.capitalize()));
 		var input = el("input");
@@ -635,7 +635,8 @@ document.addEventListener("DOMContentLoaded", function() {
 			var val = inputval(input);
 			if(input.resource) {
 				warfleet.storage[input.resource.id] = val;
-				input.showValue.innerText = "+"+beauty(calcBonus[input.resource.name](warfleet.storage[input.resource.id])) + "x";
+				if(input.resource.name != "dark matter")
+					input.showValue.innerText = "+"+beauty(calcBonus[input.resource.name](warfleet.storage[input.resource.id])) + "x";
 			} else if(input.research) {
 				var newLevel = val;
 				while(input.research.level > newLevel) { input.research.level--; input.research.unbonus(); }
@@ -852,7 +853,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		nextrun.href = basePath+"#"+serialize({
 			ships: warfleet.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
-			bonuses: ["ammunition", "u-ammunition", "t-ammunition", "armor", "engine", "exp", "enemy_exp"].reduce(function(obj, name) {
+			bonuses: ["ammunition", "u-ammunition", "t-ammunition", "dark matter", "armor", "engine", "exp", "enemy_exp"].reduce(function(obj, name) {
 				var resource = resourcesName[name];
 				if(name!="enemy_exp") {
 					if(name!="exp") {
