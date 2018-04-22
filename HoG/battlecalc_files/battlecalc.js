@@ -285,9 +285,9 @@ document.addEventListener("DOMContentLoaded", function() {
 			input.value = name;
 			if(saveData.options && saveData.options[name] && saveData.options[name] == input.value) input.defaultChecked = true;
 			gameSettings.hpreport = input.checked;
-			input.onchange = function() {
+			input.onclick = function() {
 				gameSettings.hpreport = input.checked;
-			}
+			};
 			return div(label, input);
 		}).map(appendTo(optionslist));
 	}
