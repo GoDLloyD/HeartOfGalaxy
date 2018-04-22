@@ -674,7 +674,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			if(val > 0) enemy.ships[input.ship.id] = saveData.enemies[input.ship.id] = val;
 		});
 		
-		var enemyexp = parseInt(document.getElementsByName("enemy_exp")[0].value);
+		var enemyexp = inputval(document.getElementsByName("enemy_exp")[0]);
 		if(isNaN(enemyexp)) enemyexp = 0;
  		enemy.exp = enemyexp;
 
