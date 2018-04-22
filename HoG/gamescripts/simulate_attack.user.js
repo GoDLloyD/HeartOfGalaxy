@@ -76,12 +76,12 @@ var userScript = function() {
 					else
 						obj[name] = 0;
 					return obj;
-				}, ["artofwar", "karan_artofwar"].reduce(function(obj, name) {
+				}, ["artofwar", "karan_artofwar", "protohalean_science", "mk_tech"].reduce(function(obj, name) {
 					var research = researches[researchesName[name]];
 					if(!research.requirement()) return obj;
 					obj[name] = research.level;
 					return obj;
-				}, ["ammunition", "u-ammunition", "t-ammunition", "armor", "engine", "exp", "enemy_exp"].reduce(function(obj, name) {
+				}, ["ammunition", "u-ammunition", "t-ammunition", "dark matter", "armor", "engine", "exp", "enemy_exp"].reduce(function(obj, name) {
 					var resource = resourcesName[name];
 					if(name!="enemy_exp") {
 						if(name!="exp") {
