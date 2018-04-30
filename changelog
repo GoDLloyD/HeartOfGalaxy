@@ -1,4 +1,5 @@
 Changelog
+* Battlecalc: fixed export and next run for objects with white-space strings
 * Shipcalc: Added Protohalean Science and Metallokopta's Tech
 * Battlecalc: Added Protohalean Science and Metallokopta's Tech
 * (New) Tool: TP Checker extended to "Ingame-Viewer" with queue Checker and resource overview

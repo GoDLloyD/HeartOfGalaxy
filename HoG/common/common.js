@@ -21,11 +21,11 @@ function serialize(obj) {
 			v = obj[k];
 		}
 		return k+"="+v;
-	}).join("&");
+	}).join("&").split(" ").join("%");
 }
 function deserialize(str) {
 	if(!str) return null;
-	var data = str.split("&").map(function(str) {
+	var data = str.split("%").join(" ").split("&").map(function(str) {
 		var parts = str.split("=", 2);
 		if(parts[1] && parts[1].indexOf(":") != -1) {
 			parts[1] = parts[1].split(",").map(function(str) {
