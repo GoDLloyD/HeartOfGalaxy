@@ -189,7 +189,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			["exp"].map(function(name) {
 				var exp = fleet.exp || parseInt(document.getElementsByName(name)[0].value);
 				if(isNaN(exp)) exp = 0;
-				else if(exp>MAX_FLEET_EXPERIENCE) exp = MAX_FLEET_EXPERIENCE;
+				// else if(exp>MAX_FLEET_EXPERIENCE) exp = MAX_FLEET_EXPERIENCE;
 				bonus.power *= calcBonus[name](exp);
 				bonus.armor *= calcBonus[name](exp);
 				bonus.hp *= calcBonus[name](exp);
@@ -200,7 +200,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			["enemy_exp"].map(function(name) {
 				var enemyExp = fleet.exp || parseInt(document.getElementsByName(name)[0].value);
 				if(isNaN(enemyExp)) enemyExp = 0;
-				else if(enemyExp>MAX_FLEET_EXPERIENCE) enemyExp = MAX_FLEET_EXPERIENCE;
+				// else if(enemyExp>MAX_FLEET_EXPERIENCE) enemyExp = MAX_FLEET_EXPERIENCE;
 				bonus.power *= calcBonus[name](enemyExp);
 				bonus.armor *= calcBonus[name](enemyExp);
 				bonus.hp *= calcBonus[name](enemyExp);
@@ -637,21 +637,42 @@ document.addEventListener("DOMContentLoaded", function() {
 			var val = inputval(input);
 			if(val > 0) warfleet.ships[input.ship.id] = saveData.ships[input.ship.id] = val;
 		});
+		// apply artifacts
+		arr(stufflist.getElementsByTagName("input")).map(function(input) {
+			var val = inputval(input);
+			if(input.artifact) {
+				var newLevel = val;
+				while(input.artifact.possessed > newLevel) { input.artifact.possessed--; input.artifact.unaction(); }
+				while(input.artifact.possessed < newLevel) { input.artifact.possessed++; input.artifact.action(); }
+			}
+			
+			if(val > 0) saveData.bonuses[input.name] = val;
+		});
+		// apply researches
+		arr(stufflist.getElementsByTagName("input")).map(function(input) {
+			var val = inputval(input);
+			if(input.research) {
+				var newLevel = val;
+				while(input.research.level > newLevel) { input.research.level--; input.research.unbonus(); }
+				while(input.research.level < newLevel) { input.research.level++; input.research.bonus(); }
+			}
+			
+			if(val > 0) saveData.bonuses[input.name] = val;
+		});
+		// apply resources
 		arr(stufflist.getElementsByTagName("input")).map(function(input) {
 			var val = inputval(input);
 			if(input.resource) {
 				warfleet.storage[input.resource.id] = val;
 				if(input.resource.name != "dark matter")
 					input.showValue.innerText = "+"+beauty(calcBonus[input.resource.name](warfleet.storage[input.resource.id])) + "x";
-			} else if(input.research) {
-				var newLevel = val;
-				while(input.research.level > newLevel) { input.research.level--; input.research.unbonus(); }
-				while(input.research.level < newLevel) { input.research.level++; input.research.bonus(); }
-			} else if(input.artifact) {
-				var newLevel = val;
-				while(input.artifact.possessed > newLevel) { input.artifact.possessed--; input.artifact.unaction(); }
-				while(input.artifact.possessed < newLevel) { input.artifact.possessed++; input.artifact.action(); }
 			}
+			
+			if(val > 0) saveData.bonuses[input.name] = val;
+		});
+		// apply others
+		arr(stufflist.getElementsByTagName("input")).map(function(input) {
+			var val = inputval(input);
 			if(input.name == "exp") {
 				if(input.value > MAX_FLEET_EXPERIENCE) {
 					val = MAX_FLEET_EXPERIENCE;
@@ -659,6 +680,11 @@ document.addEventListener("DOMContentLoaded", function() {
 				}
 				warfleet.exp = val;
 			}
+			
+			if(val > 0) saveData.bonuses[input.name] = val;
+		});
+		arr(stufflist.getElementsByTagName("input")).map(function(input) {
+			var val = inputval(input);
 			
 			if(val > 0) saveData.bonuses[input.name] = val;
 		});

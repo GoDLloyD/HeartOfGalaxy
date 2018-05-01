@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HoG Tools - Tournament Simulation
 // @namespace    https://github.com/GoDLloyD/HeartOfGalaxy/HoG/gamescripts
-// @version      1.3
+// @version      1.4
 // @description  Adds a link to the battle calculator to the Tournament
 // @author       GoDLloyD
 // @match        https://game288398.konggames.com/gamez/0028/8398/live/*
@@ -30,21 +30,6 @@ function loadScript(url, callback)
 var userScript = function() {
 	(function() {
 		'use strict';
-
-		function serialize(obj) {
-			return Object.keys(obj).map(function(k) {
-				var v;
-				if(typeof obj[k] === "object") {
-					var section = obj[k];
-					v = Object.keys(obj[k]).map(function(k) {
-						return k+":"+section[k];
-					}).join(",");
-				} else {
-					v = obj[k];
-				}
-				return k+"="+v;
-			}).join("&");
-		}
 
 		var observer = new MutationObserver(function(mutation) {
 			var fleetIndex=$("#orbit_fleet_list").val();
