@@ -351,7 +351,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	var stufflist = document.getElementById("stufflist");
 
-	["ammunition", "u-ammunition", "t-ammunition", "dark matter", "armor", "engine"].map(function(name) {
+	["ammunition", "u-ammunition", "t-ammunition", "dark matter", "armor", "shield capsule", "engine"].map(function(name) {
 		var resource = resourcesName[name];
 		var label = span(txt(name.capitalize()));
 		var input = el("input");
@@ -385,7 +385,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		input.showValue = span();
 		return div(label, input, input.showValue);
 	}).map(appendTo(stufflist));
-	["artofwar", "karan_artofwar", "protohalean_science", "mk_tech"].map(function(name) {
+	["artofwar", "karan_artofwar", "protohalean_science"].map(function(name) {
 		var research = researches[researchesName[name]];
 		var label = span(txt(research.name));
 		var input = el("input");
@@ -664,7 +664,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			var val = inputval(input);
 			if(input.resource) {
 				warfleet.storage[input.resource.id] = val;
-				if(input.resource.name != "dark matter")
+				if(input.resource.name != "dark matter" && input.resource.name != "shield capsule")
 					input.showValue.innerText = "+"+beauty(calcBonus[input.resource.name](warfleet.storage[input.resource.id])) + "x";
 			}
 			
@@ -885,7 +885,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		nextrun.href = basePath+"#"+serialize({
 			ships: warfleet.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
-			bonuses: ["ammunition", "u-ammunition", "t-ammunition", "dark matter", "armor", "engine", "exp", "enemy_exp"].reduce(function(obj, name) {
+			bonuses: ["ammunition", "u-ammunition", "t-ammunition", "dark matter", "armor", "shield capsule", "engine", "exp", "enemy_exp"].reduce(function(obj, name) {
 				var resource = resourcesName[name];
 				if(name!="enemy_exp") {
 					if(name!="exp") {
