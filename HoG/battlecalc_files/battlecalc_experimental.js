@@ -712,11 +712,11 @@ document.addEventListener("DOMContentLoaded", function() {
 				input.showValue.innerText = "+"+beauty(calcBonus[input.resource.name](warfleet.storage[input.resource.id])) + "x";
 			} else if(input.research) {
 				var newLevel = val;
-				while(input.research.level > newLevel) { input.research.level--; input.research.unbonus(); }
+				while(input.research.level > newLevel) { input.research.unbonus(); input.research.level--; }
 				while(input.research.level < newLevel) { input.research.level++; input.research.bonus(); }
 			} else if(input.artifact) {
 				var newLevel = val;
-				while(input.artifact.possessed > newLevel) { input.artifact.possessed--; input.artifact.unaction(); }
+				while(input.artifact.possessed > newLevel) { input.artifact.unaction(); input.artifact.possessed--; }
 				while(input.artifact.possessed < newLevel) { input.artifact.possessed++; input.artifact.action(); }
 			}
 			if(input.name == "exp") {

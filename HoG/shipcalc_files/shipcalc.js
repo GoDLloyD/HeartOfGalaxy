@@ -277,7 +277,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			if(input.research) {
 				val = inputval(input);
 				var newLevel = val;
-				while(input.research.level > newLevel) { input.research.level--; input.research.unbonus(); }
+				while(input.research.level > newLevel) { input.research.unbonus(); input.research.level--; }
 				while(input.research.level < newLevel) { input.research.level++; input.research.bonus(); }
 			} else if(input.artifact) {
 				if(input.checked) { 
