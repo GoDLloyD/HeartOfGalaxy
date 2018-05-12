@@ -280,13 +280,9 @@ document.addEventListener("DOMContentLoaded", function() {
 				while(input.research.level > newLevel) { input.research.unbonus(); input.research.level--; }
 				while(input.research.level < newLevel) { input.research.level++; input.research.bonus(); }
 			} else if(input.artifact) {
-				if(input.checked) { 
-					input.artifact.possessed=true;
-					input.artifact.action();
-				} else {
-					input.artifact.possessed=false;
-					input.artifact.unaction();
-				}
+				var newLevel = input.checked ? 1 : 0;
+				while(input.artifact.possessed > newLevel) { input.artifact.unaction(); input.artifact.possessed--; }
+				while(input.artifact.possessed < newLevel) { input.artifact.possessed++; input.artifact.action(); }
 				saveData.bonuses[input.name] = input.checked;
 			}
 			if(val > 0) saveData.bonuses[input.name] = val;
