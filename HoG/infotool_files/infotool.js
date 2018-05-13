@@ -312,6 +312,8 @@ document.addEventListener("DOMContentLoaded", function() {
 					resourceProductionDiv.appendChild(div(txt("Base*Temperature*(-5)")));
 				if(building.name == "lavaresearch")
 					resourceProductionDiv.appendChild(div(txt("Base*Temperature")));
+				if(building.name == "ammonia_airship")
+					resourceProductionDiv.appendChild(div(txt("Base*Radius")));
 			}
 					
 			buildingProductionCell.appendChild(resourceProductionDiv);
