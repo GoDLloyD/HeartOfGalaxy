@@ -396,7 +396,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		input.research = research;
 		return div(label, input);
 	}).map(appendTo(stufflist));
-	["thoroid", "quris_value", "quris_honor", "quris_glory"].map(function(name) {
+	["quris_value", "quris_honor", "quris_glory", "thoroid", "scepter"].map(function(name) {
 		var artifact = artifacts[artifactsName[name]];
 		var label = span(txt(artifact.name));
 		var input = el("input");
