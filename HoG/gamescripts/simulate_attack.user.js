@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HoG Tools - Planet Attack Simulation
 // @namespace    https://github.com/GoDLloyD/HeartOfGalaxy/HoG/gamescripts
-// @version      1.5
+// @version      1.6
 // @description  Adds a link to the battle calculator on each player fleet near an enemy fleet
 // @author       GoDLloyD
 // @match        https://game288398.konggames.com/gamez/0028/8398/live/*
@@ -54,19 +54,19 @@ var userScript = function() {
 
 			var calcData = {
 				ships: fleet.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
-				bonuses: ["thoroid", "quris_value", "quris_honor", "quris_glory"].reduce(function(obj, name) {
+				bonuses: ["quris_value", "quris_honor", "quris_glory", "thoroid", "scepter"].reduce(function(obj, name) {
 					var artifact = artifacts[artifactsName[name]];
 					if(artifact.possessed)
 						obj[name] = 1;
 					else
 						obj[name] = 0;
 					return obj;
-				}, ["artofwar", "karan_artofwar", "protohalean_science", "mk_tech"].reduce(function(obj, name) {
+				}, ["artofwar", "karan_artofwar", "protohalean_science"].reduce(function(obj, name) {
 					var research = researches[researchesName[name]];
 					if(!research.requirement()) return obj;
 					obj[name] = research.level;
 					return obj;
-				}, ["ammunition", "u-ammunition", "t-ammunition", "dark matter", "armor", "engine", "exp", "enemy_exp"].reduce(function(obj, name) {
+				}, ["ammunition", "u-ammunition", "t-ammunition", "dark matter", "armor", "shield capsule", "engine", "exp", "enemy_exp"].reduce(function(obj, name) {
 					var resource = resourcesName[name];
 					if(name!="enemy_exp") {
 						if(name!="exp") {

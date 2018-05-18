@@ -41,6 +41,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	function shipSummaryData(ship, friend, foe) {
 		var shipStats = {
 			Power: ship.power,
+			Damage: 0,
 			Piercing: (ship.piercing || 0),
 			Shield: ship.shield,
 			Armor: ship.armor,
@@ -54,6 +55,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			var bonus = fleetBonus(friend);
 			var fleetWeight = friend.combatWeight();
 			shipStats.Power *= bonus.power;
+			shipStats.Damage = shipStats.Power * bonus.damage;
 			shipStats.Armor *= bonus.armor;
 			shipStats.Shield *= bonus.shield;
 			shipStats.HP *= bonus.hp;
@@ -71,11 +73,11 @@ document.addEventListener("DOMContentLoaded", function() {
 				var result = {};
 				var shipDR = Math.min(shipStats.HP / shipStats.Toughness + (enemyShip.piercing || 0) / 100, 1);
 				var enemyDR = Math.min(1 - dmgred(enemyShip.armor * bonus.armor) + (shipStats.Piercing) / 100, 1);
-				result.power = n * enemyShip.power * bonus.power;
+				result.power = n * enemyShip.power * bonus.power * bonus.damage;
 				result.harm = speedred(shipStats.Speed, enemyShip.speed * bonus.speed, shipStats.Weight) * result.power * shipDR / shipStats.HP;
 				result.toughness = n * enemyShip.hp / (1 - dmgred(enemyShip.armor * bonus.armor));
 				var piercingBonus = result.toughness * enemyDR / (n * enemyShip.hp);
-				var modifiedPower = speedred(enemyShip.speed * bonus.speed, shipStats.Speed, enemyShip.combatWeight) * piercingBonus * shipStats.Power;
+				var modifiedPower = speedred(enemyShip.speed * bonus.speed, shipStats.Speed, enemyShip.combatWeight) * piercingBonus * shipStats.Damage;
 				result.effect = result.toughness / modifiedPower;
 				if(isNaN(result.harm)) result.harm = Infinity;
 				if(isNaN(result.effect)) result.effect = 0;
@@ -166,6 +168,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	function fleetBonus(fleet) {
 		var bonus = {
 			power: 1,
+			damage: 1,
 			armor: 1,
 			hp: 1,
 			speed: 1,
@@ -174,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		if(fleet.civis==0) {
 			["ammunition", "u-ammunition", "t-ammunition"].map(function(name) {
 				var resource = resourcesName[name];
-				bonus.power += calcBonus[name](fleet.storage[resource.id]);
+				bonus.damage += calcBonus[name](fleet.storage[resource.id]);
 			});
 			bonus.power *= (1 + .1 * Math.log(1 + fleet.ships[14]) / Math.log(2));
 			["armor"].map(function(name) {
@@ -349,6 +352,16 @@ document.addEventListener("DOMContentLoaded", function() {
 	shiplist.statBlockCombat.className = "statblock combat";
 	shiplist.parentNode.appendChild(shiplist.statBlockCombat);
 
+	var misclist = document.getElementById("misclist");
+	misclist.resultLabels = [];
+	["turns", "berserk", "gamma ray bursts"].map(function(name) {
+		var label = span(txt(name.capitalize() + ":"));
+		var resultLabel = span();
+		misclist.resultLabels[name] = resultLabel;
+		return div(label, resultLabel);
+	}).map(appendTo(misclist));
+	
+	
 	var stufflist = document.getElementById("stufflist");
 
 	["ammunition", "u-ammunition", "t-ammunition", "dark matter", "armor", "shield capsule", "engine"].map(function(name) {
@@ -794,7 +807,22 @@ document.addEventListener("DOMContentLoaded", function() {
 		var enemyShipsBeforeFight = enemy.ships.slice();
 		
 		enemy.battle(warfleet, !0);
-		battlereport.innerHTML = enemy.battle(warfleet).r;
+		var battle = enemy.battle(warfleet);
+		battlereport.innerHTML = battle.r;
+		
+		
+		["turns", "berserk", "gamma ray bursts"].map(function(name) {
+			var report = battle.r;
+			if(name != "turns") {
+				if(!report.includes(name)) {
+					misclist.resultLabels[name].innerHTML = "false";
+					return;
+				}
+			}
+			var reportArray = report.split(name)[0].split("TURN");
+			misclist.resultLabels[name].innerHTML = reportArray.length - 1;
+		});
+		
 		arr(shiplist.getElementsByTagName("input")).map(function(input) {
 			if(input.type === "button") return;
 			if(saveData.options["showShipsLeftOrShipsLost"] == "Show ships left") {

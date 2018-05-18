@@ -1,4 +1,8 @@
 Changelog
+* Battlecalc: Added labels for turns, berserk trigger and gamma ray burst trigger
+* Updated Userscripts
+* Shipcalc: Added Scepter of the Councilor
+* Battlecalc: Added Scepter of the Councilor
 * Shipcalc: Removed MK Tech  (since it's a placeholder right now)
 * Battlecalc: Added Shield Capsules, removed MK Tech (since it's a placeholder right now)
 * Battlecalc: Fixed export and next run for objects with white-space strings

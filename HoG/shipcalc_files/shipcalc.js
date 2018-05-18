@@ -156,7 +156,7 @@ document.addEventListener("DOMContentLoaded", function() {
 					var research = researches[researchesName[name]];
 					document.getElementById("research_" + research.id).value = game.researches[researchesName[name]].level;
 				});
-				["thoroid", "quris_value", "quris_honor", "quris_glory"].map(function(name) {
+				["quris_value", "quris_honor", "quris_glory", "thoroid", "scepter"].map(function(name) {
 					var artifact = artifacts[artifactsName[name]];
 					document.getElementById("artifact_" + artifact.id).checked = artifacts[artifactsName[name]].possessed===true;
 				});

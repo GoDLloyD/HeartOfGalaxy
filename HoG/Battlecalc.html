@@ -12,20 +12,21 @@
 	<script src="battlecalc_files/battlecalc.js"></script>
 </head>
 <body>
-Last update: 12.05.2018 (Zulu time)
+Last update: 18.05.2018 (Zulu time)
 	<form id="battlecalc">
 		<div>
 			<h2>Your Fleet</h2>
 			<div class="tablelike" id="shiplist"></div>
 		</div>
 		<div>
-			<h2>Bonuses</h2>
 			<div><button class="button " href="javascript:void(0);" onclick="javascript:save_fleet(0);" title="Save Fleet">Save Fleet 1</button>
 			<button class="button " href="javascript:void(0);" onclick="javascript:load_fleet(0);" title="Load Fleet">Load Fleet 1</button></div>
 			<div><button class="button " href="javascript:void(0);" onclick="javascript:save_fleet(1);" title="Save Fleet">Save Fleet 2</button>
 			<button class="button " href="javascript:void(0);" onclick="javascript:load_fleet(1);" title="Load Fleet">Load Fleet 2</button></div>
 			<div><button class="button " href="javascript:void(0);" onclick="javascript:save_fleet(2);" title="Save Fleet">Save Fleet 3</button>
 			<button class="button " href="javascript:void(0);" onclick="javascript:load_fleet(2);" title="Load Fleet">Load Fleet 3</button></div>
+			<h2>Miscellaneous</h2>
+			<div class="tablelike" id="misclist"></div>
 			<h3> Your Bonus</h3>
 			<div class="tablelike" id="stufflist"></div>
 			<h3> Enemy Bonus</h3>
