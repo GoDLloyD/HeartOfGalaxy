@@ -329,7 +329,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	var shiplist = document.getElementById("shiplist");
 	var available_ships = ships.slice();
-	game.ships.map(function(ship) {
+	ships.map(function(ship) {
+		if(!game.ships.includes(ship)) {
+			delete available_ships[ship.id];
+			return;
+		}
 		var n;
 		if(saveData.ships && saveData.ships[ship.id]) n = saveData.ships[ship.id];
 		else if(ship.type === "Colonial Ship" || ship.type === "Cargoship") return;
