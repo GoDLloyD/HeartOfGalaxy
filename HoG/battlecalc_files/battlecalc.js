@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		if(fleet.civis==0) {
 			["ammunition", "u-ammunition", "t-ammunition"].map(function(name) {
 				var resource = resourcesName[name];
-				bonus.damage += calcBonus[name](fleet.storage[resource.id]);
+				bonus.power += calcBonus[name](fleet.storage[resource.id]);
 			});
 			bonus.power *= (1 + .1 * Math.log(1 + fleet.ships[14]) / Math.log(2));
 			["armor"].map(function(name) {
