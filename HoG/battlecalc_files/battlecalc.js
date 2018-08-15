@@ -406,7 +406,6 @@ document.addEventListener("DOMContentLoaded", function() {
 			governmentList[game.chosenGovern].unbonus();
 		game.chosenGovern = govSelect.options[i].value;
 		governmentList[game.chosenGovern].bonus();
-		update();
 	};
 	
 	stufflist.appendChild(div(govSelectLabel, govSelect));
