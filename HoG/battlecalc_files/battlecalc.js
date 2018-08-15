@@ -128,16 +128,18 @@ document.addEventListener("DOMContentLoaded", function() {
 			delete v.Speed; delete v.Duration; delete v.Count;
 			return v;
 		}).reduce(function(obj, v) {
-			for(var k in v) obj[k] += v[k];
+			for(var k in v) 
+				if(obj[k]==0)
+					obj[k] += v[k];
 			return obj;
 		}, {
-			Power: 0,
-			Armor: 0,
-			HP: 0,
+			Power: friend.power(),
+			Armor: friend.armor(),
+			HP: friend.hp(),
 			Toughness: 0,
 			"Piercing Power": 0,
 			"Adjusted Toughness": 0,
-			Weight: 0,
+			Weight: friend.weight(),
 			"Killing Power": 0,
 			"Military Value": friend.value(),
 		});
@@ -368,6 +370,48 @@ document.addEventListener("DOMContentLoaded", function() {
 	
 	var stufflist = document.getElementById("stufflist");
 
+	["influence"].map(function(name) {
+		var label = span(txt(name.capitalize()));
+		var input = el("input");
+		input.type = "text";
+		input.label = label;
+		input.name = name;
+		game.influence = function() {
+			return getNumberFromSeperatedString(input.value);
+		};
+		input.onfocus = function() {
+			parseSeperatedInput(input);
+		};
+		input.onblur = function() {
+			addSeperatorsToInput(input)
+		};
+		if(saveData.bonuses && saveData.bonuses[name]) input.value = saveData.bonuses[name];
+		input.showValue = span();
+		return div(label, input, input.showValue);
+	}).map(appendTo(stufflist));
+	
+	var govSelectLabel = span(txt("Government"));
+	
+	var govSelect = el("select");
+	for (var government in governmentList) {
+		var option = el("option");
+		option.value = government;
+		option.innerText = government;
+		govSelect.appendChild(option);
+	}
+	
+	govSelect.onchange = function() {
+		var i = govSelect.selectedIndex;
+		if(game.chosenGovern)
+			governmentList[game.chosenGovern].unbonus();
+		game.chosenGovern = govSelect.options[i].value;
+		governmentList[game.chosenGovern].bonus();
+		update();
+	};
+	
+	stufflist.appendChild(div(govSelectLabel, govSelect));
+	
+	
 	["ammunition", "u-ammunition", "t-ammunition", "dark matter", "armor", "shield capsule", "engine"].map(function(name) {
 		var resource = resourcesName[name];
 		var label = span(txt(name.capitalize()));
