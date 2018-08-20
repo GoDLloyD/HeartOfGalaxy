@@ -7,22 +7,22 @@ Heart of Galaxy:
 <a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/Battlecalc_experimental.html">experimental version</a>
 
 Heart of Galaxy:
-<a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/Shipcalc.html">Ship Calculator</a>
+<a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/Shipcalc.html">Ship Calculator</a> / 
 <a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/Shipcalc_alt.html">Ship Calculator (Alternative)</a>
 
 Heart of Galaxy:
-<a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/Buildingcalc.html">Building Calculator</a>
+<a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/Buildingcalc.html">Building Calculator</a> / 
 <a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/Buildingcalc_alt.html">Building Calculator (Alternative)</a>
 
 Heart of Galaxy:
 <a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/Researchcalc.html">Research Calculator</a>
 
 Heart of Galaxy:
-<a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/InfoTool.html">Info Tool</a>
+<a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/InfoTool.html">Info Tool</a> / 
 <a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/InfoTool_alt.html">Info Tool (Alternative)</a>
 
 Heart of Galaxy:
-<a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/IngameViewer.html">Ingame Viewer</a>
+<a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/IngameViewer.html">Ingame Viewer</a> / 
 <a href="https://godlloyd.github.io/HeartOfGalaxy/HoG/IngameViewer_alt.html">Ingame Viewer (Alternative)</a>
 
 
