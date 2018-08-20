@@ -136,19 +136,19 @@ document.addEventListener("DOMContentLoaded", function() {
 					var da_planets = planets;
 					var resource = resources[resourceId];
 					var b = resource.id
-					for(var e=52,g=Array(game.buildings.length),h=0;h<game.buildings.length;h++)
+					for(var e=52,g=Array(buildings.length),h=0;h<buildings.length;h++)
 						g[h]=0;
 					for(var l=0;l<game.planets.length;l++)
 						if(galaxyChooser.value == "all" || nebulas[galaxyChooser.value].planets.includes(game.planets[l]))
-							for(h=0;h<game.buildings.length;h++)
-								0!=game.buildings[h].resourcesProd[b]&&(g[h]+=planets[game.planets[l]].structure[h].number);
+							for(h=0;h<buildings.length;h++)
+								0!=buildings[h].resourcesProd[b]&&(g[h]+=planets[game.planets[l]].structure[h].number);
 					var m=0;
-					for(h=0;h<game.buildings.length;h++)
+					for(h=0;h<buildings.length;h++)
 						if(0<g[h]){
 							e+=20;
 							for(l=0;l<game.planets.length;l++)
 								if(galaxyChooser.value == "all" || nebulas[galaxyChooser.value].planets.includes(game.planets[l]))
-									m+=game.buildings[h].production(planets[game.planets[l]])[b];
+									m+=buildings[h].production(planets[game.planets[l]])[b];
 						}
 					document.getElementById("resource_" + resource.id).value = Math.floor(m*100)/100;
 				});
