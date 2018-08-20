@@ -9,7 +9,7 @@ html, body {
 
 #shipcalc > div {
 	float: left;
-	min-width: 33%;
+	min-width: 30%;
 	text-align: center;
 }
 
