@@ -1,0 +1,44 @@
+@CHARSET "UTF-8";
+
+.accordion {
+}
+.accordion_open {
+}
+.accordiontitle {
+	cursor: pointer;
+}
+.accordiontitle:hover {
+	text-decoration: underline;
+}
+.accordiontitlebody, .accordiontitlebody > * {
+	display: inline;
+}
+.accordionstatusclose, .accordionstatusopen {
+	font-family: monospace;
+	user-select: none; /* CSS3 */
+	-moz-user-select: none; /* Firefox */
+	-webkit-user-select: none; /* SafariAChrome‚È‚Ç */
+	-ms-user-select: none; /* IE10‚©‚ç‚ç‚µ‚¢ */
+}
+.accordioncontainer {
+	padding-left: 32px;
+}
+.accordion > .accordiontitle > .accordionstatusclose {
+	display: inline;
+}
+.accordion > .accordiontitle > .accordionstatusopen {
+	display: none;
+}
+.accordion > .accordioncontainer {
+	display: none;
+}
+.accordion_open > .accordiontitle > .accordionstatusclose {
+	display: none;
+}
+.accordion_open > .accordiontitle > .accordionstatusopen {
+	display: inline;
+}
+.accordion_open > .accordioncontainer {
+	display: block;
+}
+
