@@ -282,6 +282,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			while(generatedFleetSub == null && attempts < 100)
 			{
 				generatedFleetSub = generateFleetSub(option.fleet.civis, 1E16*Math.pow(1.5,parseInt(feelin_lucky_input.value)), "Tournament Fleet");
+				attempts++;
 			}
 			var generatedFleet;
 			if(generatedFleetSub == null)
