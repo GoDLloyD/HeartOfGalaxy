@@ -268,6 +268,38 @@ document.addEventListener("DOMContentLoaded", function() {
 		};
 		return row;
 	}
+	function feelin_lucky(enemypicker) {
+		var label = span(txt("Battlepoints"));
+		var feelin_lucky_input = el("input");
+		var feelin_lucky_button = el("input");
+		feelin_lucky_button.type = "button";
+		feelin_lucky_button.value = "I'm Feelin' Lucky!";
+		var row = div(label, span(feelin_lucky_input), feelin_lucky_button);
+		feelin_lucky_button.onclick = function() {
+			var option = enemypicker.options[enemypicker.selectedIndex]
+			var generatedFleetSub = null;
+			var attempts = 0;
+			while(generatedFleetSub == null && attempts < 100)
+			{
+				generatedFleetSub = generateFleetSub(option.fleet.civis, 1E16*Math.pow(1.5,parseInt(feelin_lucky_input.value)), "Tournament Fleet");
+			}
+			var generatedFleet;
+			if(generatedFleetSub == null)
+			{
+				generatedFleet = new Fleet(option.fleet.civis," Tournament Fleet"),civis[option.fleet.civis].ships[0]&&(generatedFleet.ships[civis[option.fleet.civis].ships[0].id]=1);
+			} else {
+				generatedFleet = generatedFleetSub.f;
+			}
+			
+			for(var shipId = 0; shipId < option.fleet.ships.length; shipId++)
+			{
+				option.fleet.ships[shipId] = generatedFleet.ships[shipId];
+			}
+			enemypicker.onchange();
+			update();
+		};
+		return row;
+	}
 	function generateOptions() {
 		var showShipsLeftOrShipsLostRadioName = "showShipsLeftOrShipsLost";
 		["Show ships left", "Show ships lost", "Show % ships left", "Show % ships lost"].map(function(name) {
@@ -523,6 +555,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	};
 	freeBattleFleet.exp=0;
 	planets[planetsName.teleras].fleetPush(freeBattleFleet);
+	var feelinlucky = document.getElementById("feelinlucky");
 	var enemylist = document.getElementById("enemylist");
 	var enemy_available_ships;
 	var enemy_available_tournament_ships;
@@ -571,6 +604,11 @@ document.addEventListener("DOMContentLoaded", function() {
 				enemylist.insertBefore(shipselector(enemy_available_ships), enemylist.firstChild);
 			}
 		}
+		if(o.fleet.name=="Tournament Fleet" && !feelinlucky.lastChild)
+			feelinlucky.appendChild(feelin_lucky(enemypicker));
+		if(o.fleet.name!="Tournament Fleet")
+			while(feelinlucky.lastChild)
+				feelinlucky.removeChild(feelinlucky.lastChild);
 		enemy_available_tournament_ships = ships.slice();
 		civis[0].ships.map(function(ship){
 			delete enemy_available_tournament_ships[ship.id]
@@ -588,6 +626,13 @@ document.addEventListener("DOMContentLoaded", function() {
 		});
 	};
 	enemypicker.onchange();
+	
+	if(saveData.battlepoints) {
+		arr(enemylist.getElementsByTagName("input")).map(function(input) {
+			if(input.type === "button") return;
+			input.value = saveData.battlepoints;
+		});
+	}
 	
 	if(saveData.enemies) {
 		arr(enemylist.getElementsByTagName("input")).map(function(input) {
@@ -638,6 +683,9 @@ document.addEventListener("DOMContentLoaded", function() {
 			else enemypicker.value = saveData.enemySelected;
 			enemypicker.onchange();
 		}
+		saveData.battlepoints && arr(feelinlucky.getElementsByTagName("input")).map(function(input) {
+			input.value = saveData.battlepoints || "";
+		});
 		saveData.enemies && arr(enemylist.getElementsByTagName("input")).map(function(input) {
 			if(!input.ship) return;
 			input.value = saveData.enemies[input.ship.id] || "";
@@ -689,6 +737,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			bonuses: {},
 			options: {},
 			enemies: {},
+			battlepoints: 0,
 		};
 
 		var warfleet = new Fleet(0, "Simulation");
@@ -696,6 +745,10 @@ document.addEventListener("DOMContentLoaded", function() {
 		arr(shiplist.getElementsByTagName("input")).map(function(input) {
 			var val = inputval(input);
 			if(val > 0) warfleet.ships[input.ship.id] = saveData.ships[input.ship.id] = val;
+		});
+		arr(feelinlucky.getElementsByTagName("input")).map(function(input) {
+			var val = inputval(input);
+			if(val > 0) saveData.battlepoints = val;
 		});
 		// apply artifacts
 		arr(stufflist.getElementsByTagName("input")).map(function(input) {

@@ -1,4 +1,6 @@
 Changelog
+* Removed Experimental Battlecalc
+* Battlecalc: Added Tournament generation
 * Adjustment to major changes
 * - Added cfg.js reference
 * - Added alternative link to each tool
