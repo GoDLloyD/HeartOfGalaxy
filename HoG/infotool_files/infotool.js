@@ -524,7 +524,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			var researchBonusCell = td();
 			var bonusDiv = div();
 			
-			research.level = 10000;
+			research.level = research.max;
 			researchBonusCell.innerHTML = research.description();
 			if(research.id == "astronomy") {
 				var astronomyBonus = [];
