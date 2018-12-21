@@ -907,6 +907,10 @@ document.addEventListener("DOMContentLoaded", function() {
 		var playerShipsBeforeFight = warfleet.ships.slice();
 		var enemyShipsBeforeFight = enemy.ships.slice();
 		
+		//hotfix 21.12.2018
+		enemy.planet = 5;
+		warfleet.planet = 4;
+		//hotfix end
 		enemy.battle(warfleet, !0);
 		var battle = enemy.battle(warfleet);
 		battlereport.innerHTML = battle.r;
