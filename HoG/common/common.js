@@ -13,19 +13,53 @@ var bitly = "bit.ly/";
 var login = "hogbattlecalc";
 var api_key = "f97b613759ba67da6f9036d391a7f6158f4f23ec";
 
+function get_short_url(long_url, login, api_key, func)
+{
+    $.getJSON(
+        "http://api.bitly.com/v3/shorten?callback=?", 
+        { 
+            "format": "json",
+            "apiKey": api_key,
+            "login": login,
+            "longUrl": long_url
+        },
+        function(response)
+        {
+            func(response.data.url);
+        }
+    );
+}
+
 function getShortUrl(long_url) {
 	var shortUrl = "";
-	// get_short_url(long_url, login, api_key, function(short_url) {
-		// shortUrl = short_url;
-	// });
+	get_short_url(long_url, login, api_key, function(short_url) {
+		shortUrl = short_url;
+	});
 	return shortUrl;
+}
+
+function get_long_url(short_url, login, api_key, func)
+{
+    $.getJSON(
+        "http://api.bitly.com/v3/expand?callback=?", 
+        { 
+            "format": "json",
+            "apiKey": api_key,
+            "login": login,
+            "shortUrl": short_url
+        },
+        function(response)
+        {
+            func(response.data.url);
+        }
+    );
 }
 
 function getLongUrl(short_url) {
 	var longUrl = "";
-	// get_long_url(short_url, login, api_key, function(long_url) {
-		// longUrl = long_url;
-	// });
+	get_long_url(short_url, login, api_key, function(long_url) {
+		longUrl = long_url;
+	});
 	return longUrl;
 }
 
