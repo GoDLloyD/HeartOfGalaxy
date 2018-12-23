@@ -360,7 +360,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 		else
 		{
-			saveData = /*history.state || */deserialize(window.location.hash.substring(1)) || JSON.parse(localStorage.getItem("battlecalc-persist")) || {};
+			saveData = /*history.state || */deserialize(window.location.href.split("#")[2]) || JSON.parse(localStorage.getItem("battlecalc-persist")) || {};
 		}
 	} catch(e) {
 		console.log(e);
@@ -730,13 +730,14 @@ document.addEventListener("DOMContentLoaded", function() {
 	
 	var exporter = document.getElementById("exporter");
 	exporter.onclick = function() {
+		var thisElement = this;
 		var basePath = location.protocol+'//'+location.host+location.pathname;
 		get_short_url(basePath+"#"+exporterSaveData, function(url){
 			exporter.href = basePath+"#"+url;
 			window.history.replaceState(saveData, document.title, window.location.hash ? exporter.href : window.location.pathname);
+			selectElementContents(thisElement);
+			if(document.execCommand) document.execCommand("copy");
 		});
-		selectElementContents(this);
-		if(document.execCommand) document.execCommand("copy");
 	};
 
 	var nextrun = document.getElementById("nextrun");
@@ -1024,7 +1025,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		var basePath = location.protocol+'//'+location.host+location.pathname;
 		exporterSaveData = serialize(saveData)
-		exporter.href = exporter.firstChild.alt = basePath+"#"+exporterSaveData;
+		exporter.href = exporter.firstChild.alt;
 		window.history.replaceState(saveData, document.title, window.location.hash ? exporter.href : window.location.pathname);
 		localStorage.setItem("battlecalc-persist", JSON.stringify(saveData));
 
