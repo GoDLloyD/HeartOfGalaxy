@@ -9,58 +9,45 @@ function tr() { return el("TR", arr(arguments)); }
 function td() { return el("TD", arr(arguments)); }
 function th() { return el("TH", arr(arguments)); }
 
-var bitly = "bit.ly/";
+var access_token = "f97b613759ba67da6f9036d391a7f6158f4f23ec";
 var login = "hogbattlecalc";
 var api_key = "R_ba190662a1ba482b9ee7acfd2bd1ed4b";
+var groupd_guid = "Personal";
 
-function get_short_url(long_url, login, api_key, func)
+$.ajaxSetup({
+    async: false
+});
+
+function get_short_url(long_url, callback)
 {
-    $.getJSON(
-        "https://api.bitly.com/v3/shorten?callback=?", 
-        { 
-            "format": "json",
-            "apiKey": api_key,
-            "login": login,
-            "longUrl": long_url
-        },
-        function(response)
-        {
-            func(response.data.url);
-        }
-    );
+   var url = 'https://api-ssl.bitly.com/v3/shorten?access_token=' + access_token + '&longUrl=' + encodeURIComponent(long_url);
+
+	$.getJSON(
+		url,
+		{},
+		function(response)
+		{
+			if(callback)
+				callback(response.data.hash);
+				console.log(response)
+		}
+	);
 }
 
-function getShortUrl(long_url) {
-	var shortUrl = "";
-	get_short_url(long_url, login, api_key, function(short_url) {
-		shortUrl = short_url;
-	});
-	return shortUrl;
-}
-
-function get_long_url(short_url, login, api_key, func)
+function get_long_url(short_url, callback)
 {
-    $.getJSON(
-        "https://api.bitly.com/v3/expand?callback=?", 
-        { 
-            "format": "json",
-            "apiKey": api_key,
-            "login": login,
-            "shortUrl": short_url
-        },
-        function(response)
-        {
-            func(response.data.url);
-        }
-    );
-}
+   var url = 'https://api-ssl.bitly.com/v3/expand?access_token=' + access_token + '&hash=' + encodeURIComponent(short_url);
 
-function getLongUrl(short_url) {
-	var longUrl = "";
-	get_long_url(short_url, login, api_key, function(long_url) {
-		longUrl = long_url;
-	});
-	return longUrl;
+	$.getJSON(
+		url,
+		{},
+		function(response)
+		{
+			if(callback)
+				callback(response.data.expand[0].long_url);
+				console.log(response)
+		}
+	);
 }
 
 function serialize(obj) {

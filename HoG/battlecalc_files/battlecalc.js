@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	'use strict';
 
 	var lastChangedInput;
+	var exporterSaveData;
 	
 	$("body").keydown(function(e){
 		var yKey = 89;
@@ -353,18 +354,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	var saveData;
 	try {
-		var currentUrl = window.location.hash;
-		if(currentUrl.substring(2))
+		if(!window.location.href.includes("#nobitly") && window.location.href.includes("#"))
 		{
-			saveData = /*history.state || */deserialize(currentUrl.substring(2)) || JSON.parse(localStorage.getItem("battlecalc-persist")) || {};
-		}
-		else if(currentUrl.substring(1))
-		{
-			saveData = /*history.state || */deserialize(getLongUrl(bitly+currentUrl.substring(1)).substring(1)) || JSON.parse(localStorage.getItem("battlecalc-persist")) || {};
+			get_long_url(window.location.hash.substring(1), function(url){ saveData = /*history.state || */deserialize(url.split("#")[1])} || JSON.parse(localStorage.getItem("battlecalc-persist")) || {});
 		}
 		else
 		{
-			saveData = JSON.parse(localStorage.getItem("battlecalc-persist")) || {};
+			saveData = /*history.state || */deserialize(window.location.hash.substring(1)) || JSON.parse(localStorage.getItem("battlecalc-persist")) || {};
 		}
 	} catch(e) {
 		console.log(e);
@@ -731,9 +727,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		update();
 	};
-
+	
 	var exporter = document.getElementById("exporter");
 	exporter.onclick = function() {
+		var basePath = location.protocol+'//'+location.host+location.pathname;
+		get_short_url(basePath+"#"+exporterSaveData, function(url){
+			exporter.href = basePath+"#"+url;
+			window.history.replaceState(saveData, document.title, window.location.hash ? exporter.href : window.location.pathname);
+		});
 		selectElementContents(this);
 		if(document.execCommand) document.execCommand("copy");
 	};
@@ -1022,8 +1023,8 @@ document.addEventListener("DOMContentLoaded", function() {
 		}, {}));
 
 		var basePath = location.protocol+'//'+location.host+location.pathname;
-		exporter.href = exporter.firstChild.alt = basePath+"#"+serialize(saveData);//getShortUrl(basePath+"#"+serialize(saveData)).replace(bitly, "");
-		var shortUrl = getShortUrl("https://godlloyd.github.io/HeartOfGalaxy/HoG/Battlecalc.html"+"#"+serialize(saveData));
+		exporterSaveData = serialize(saveData)
+		exporter.href = exporter.firstChild.alt = basePath+"#"+exporterSaveData;
 		window.history.replaceState(saveData, document.title, window.location.hash ? exporter.href : window.location.pathname);
 		localStorage.setItem("battlecalc-persist", JSON.stringify(saveData));
 
