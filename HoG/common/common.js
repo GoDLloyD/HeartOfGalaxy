@@ -11,12 +11,12 @@ function th() { return el("TH", arr(arguments)); }
 
 var bitly = "bit.ly/";
 var login = "hogbattlecalc";
-var api_key = "f97b613759ba67da6f9036d391a7f6158f4f23ec";
+var api_key = "R_ba190662a1ba482b9ee7acfd2bd1ed4b";
 
 function get_short_url(long_url, login, api_key, func)
 {
     $.getJSON(
-        "http://api.bitly.com/v3/shorten?callback=?", 
+        "https://api.bitly.com/v3/shorten?callback=?", 
         { 
             "format": "json",
             "apiKey": api_key,
@@ -41,7 +41,7 @@ function getShortUrl(long_url) {
 function get_long_url(short_url, login, api_key, func)
 {
     $.getJSON(
-        "http://api.bitly.com/v3/expand?callback=?", 
+        "https://api.bitly.com/v3/expand?callback=?", 
         { 
             "format": "json",
             "apiKey": api_key,

@@ -356,12 +356,15 @@ document.addEventListener("DOMContentLoaded", function() {
 		var currentUrl = window.location.hash;
 		if(currentUrl.substring(2))
 		{
-			currentUrl.replace("#nobitly", "");
-			saveData = /*history.state || */deserialize(currentUrl.substring(1)) || JSON.parse(localStorage.getItem("battlecalc-persist")) || {};
+			saveData = /*history.state || */deserialize(currentUrl.substring(2)) || JSON.parse(localStorage.getItem("battlecalc-persist")) || {};
+		}
+		else if(currentUrl.substring(1))
+		{
+			saveData = /*history.state || */deserialize(getLongUrl(bitly+currentUrl.substring(1)).substring(1)) || JSON.parse(localStorage.getItem("battlecalc-persist")) || {};
 		}
 		else
 		{
-			saveData = /*history.state || */deserialize(getLongUrl(bitly+currentUrl.substring(1)).substring(1)) || JSON.parse(localStorage.getItem("battlecalc-persist")) || {};
+			saveData = JSON.parse(localStorage.getItem("battlecalc-persist")) || {};
 		}
 	} catch(e) {
 		console.log(e);
@@ -1020,10 +1023,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		var basePath = location.protocol+'//'+location.host+location.pathname;
 		exporter.href = exporter.firstChild.alt = basePath+"#"+serialize(saveData);//getShortUrl(basePath+"#"+serialize(saveData)).replace(bitly, "");
+		var shortUrl = getShortUrl("https://godlloyd.github.io/HeartOfGalaxy/HoG/Battlecalc.html"+"#"+serialize(saveData));
 		window.history.replaceState(saveData, document.title, window.location.hash ? exporter.href : window.location.pathname);
 		localStorage.setItem("battlecalc-persist", JSON.stringify(saveData));
 
-		nextrun.href = basePath+"#"+serialize({
+		nextrun.href = basePath+"#nobitly"+"#"+serialize({
 			ships: warfleet.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
 			bonuses: ["ammunition", "u-ammunition", "t-ammunition", "dark matter", "armor", "shield capsule", "engine", "exp", "enemy_exp"].reduce(function(obj, name) {
 				var resource = resourcesName[name];
@@ -1049,7 +1053,6 @@ document.addEventListener("DOMContentLoaded", function() {
 			enemySelected: enemypicker.selectedIndex + (enemy.combatWeight() ? 0 : 1),
 			enemies: enemy.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
 		});
-		nextrun.href = nextrun.href+"#nobitly";
 		
 		arr(document.getElementsByTagName("input")).map(function(input) {
 			if(input.type == "text")
