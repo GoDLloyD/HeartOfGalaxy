@@ -355,6 +355,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	try {
 		var currentUrl = window.location.hash;
 		if(currentUrl.substring(2))
+			currentUrl.replace("#nobitly", "");
 			saveData = /*history.state || */deserialize(currentUrl.substring(1)) || JSON.parse(localStorage.getItem("battlecalc-persist")) || {};
 		else
 			saveData = /*history.state || */deserialize(getLongUrl(bitly+currentUrl.substring(1)).substring(1)) || JSON.parse(localStorage.getItem("battlecalc-persist")) || {};
@@ -1014,7 +1015,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		}, {}));
 
 		var basePath = location.protocol+'//'+location.host+location.pathname;
-		exporter.href = exporter.firstChild.alt = basePath+"#"+getShortUrl(basePath+"#"+serialize(saveData)).replace(bitly, "");
+		exporter.href = exporter.firstChild.alt = basePath+"#"+serialize(saveData);//getShortUrl(basePath+"#"+serialize(saveData)).replace(bitly, "");
 		window.history.replaceState(saveData, document.title, window.location.hash ? exporter.href : window.location.pathname);
 		localStorage.setItem("battlecalc-persist", JSON.stringify(saveData));
 
