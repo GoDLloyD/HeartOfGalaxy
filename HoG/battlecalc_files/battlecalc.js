@@ -303,11 +303,10 @@ document.addEventListener("DOMContentLoaded", function() {
 	}
 	function generateOptions() {
 		var showShipsLeftOrShipsLostRadioName = "showShipsLeftOrShipsLost";
-		["Show_ships_left", "Show_ships_lost", "Show_%_ships_left", "Show_%_ships_lost"].map(function(name) {
+		["Show_ships_left", "Show_ships_lost", "Show_percentage_ships_left", "Show_percentage_ships_lost"].map(function(name) {
 			var label = span(txt(name.replace("_", " ")));
 			var input = el("input");
 			input.type = "radio";
-			input.label = label;
 			input.name = showShipsLeftOrShipsLostRadioName;
 			input.value = name;
 			if(name == "Show_ships_left") input.defaultChecked = true;
@@ -318,7 +317,6 @@ document.addEventListener("DOMContentLoaded", function() {
 			var label = span(txt(name.replace("_", " ")));
 			var input = el("input");
 			input.type = "checkbox";
-			input.label = label;
 			input.name = name;
 			input.value = name;
 			if(saveData.options && saveData.options[name] && saveData.options[name] == input.value) input.defaultChecked = true;
