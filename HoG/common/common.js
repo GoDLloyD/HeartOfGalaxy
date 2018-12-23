@@ -9,6 +9,26 @@ function tr() { return el("TR", arr(arguments)); }
 function td() { return el("TD", arr(arguments)); }
 function th() { return el("TH", arr(arguments)); }
 
+var bitly = "bit.ly/";
+var login = "hogbattlecalc";
+var api_key = "f97b613759ba67da6f9036d391a7f6158f4f23ec";
+
+function getShortUrl(long_url) {
+	var shortUrl = "";
+	get_short_url(long_url, login, api_key, function(short_url) {
+		shortUrl = short_url;
+	});
+	return shortUrl;
+}
+
+function getLongUrl(short_url) {
+	var longUrl = "";
+	get_long_url(short_url, login, api_key, function(long_url) {
+		longUrl = long_url;
+	});
+	return longUrl;
+}
+
 function serialize(obj) {
 	return Object.keys(obj).map(function(k) {
 		var v;

@@ -303,19 +303,19 @@ document.addEventListener("DOMContentLoaded", function() {
 	}
 	function generateOptions() {
 		var showShipsLeftOrShipsLostRadioName = "showShipsLeftOrShipsLost";
-		["Show ships left", "Show ships lost", "Show % ships left", "Show % ships lost"].map(function(name) {
-			var label = span(txt(name));
+		["Show_ships_left", "Show_ships_lost", "Show_%_ships_left", "Show_%_ships_lost"].map(function(name) {
+			var label = span(txt(name.replace("_", " ")));
 			var input = el("input");
 			input.type = "radio";
 			input.label = label;
 			input.name = showShipsLeftOrShipsLostRadioName;
 			input.value = name;
-			if(name == "Show ships left") input.defaultChecked = true;
+			if(name == "Show_ships_left") input.defaultChecked = true;
 			if(saveData.options && saveData.options[showShipsLeftOrShipsLostRadioName] && saveData.options[showShipsLeftOrShipsLostRadioName] == input.value) input.defaultChecked = true;
 			return div(label, input);
 		}).map(appendTo(optionslist));
-		["Show HP left in battle report"].map(function(name) {
-			var label = span(txt(name));
+		["Show_HP_left_in_battle_report"].map(function(name) {
+			var label = span(txt(name.replace("_", " ")));
 			var input = el("input");
 			input.type = "checkbox";
 			input.label = label;
@@ -355,7 +355,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
 	var saveData;
 	try {
-		saveData = /*history.state || */deserialize(window.location.hash.substring(1)) || JSON.parse(localStorage.getItem("battlecalc-persist")) || {};
+		var currentUrl = window.location.hash;
+		if(currentUrl.substring(2))
+			saveData = /*history.state || */deserialize(currentUrl.substring(1)) || JSON.parse(localStorage.getItem("battlecalc-persist")) || {};
+		else
+			saveData = /*history.state || */deserialize(getLongUrl(bitly+currentUrl.substring(1)).substring(1)) || JSON.parse(localStorage.getItem("battlecalc-persist")) || {};
 	} catch(e) {
 		console.log(e);
 		saveData = {};
@@ -930,22 +934,22 @@ document.addEventListener("DOMContentLoaded", function() {
 		
 		arr(shiplist.getElementsByTagName("input")).map(function(input) {
 			if(input.type === "button") return;
-			if(saveData.options["showShipsLeftOrShipsLost"] == "Show ships left") {
+			if(saveData.options["showShipsLeftOrShipsLost"] == "Show_ships_left") {
 				var shipsLeft = warfleet.ships[input.ship.id]
 				var shipsLeftText = shipsLeft >= 1000 ? beauty(shipsLeft) : shipsLeft;
 				input.showShipsLeftOrShipsLost.innerText = shipsLeftText;
 			}
-			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show ships lost") {
+			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show_ships_lost") {
 				var shipsLost = playerShipsBeforeFight[input.ship.id] - warfleet.ships[input.ship.id];
 				var shipsLostText = shipsLost >= 1000 ? beauty(shipsLost) : shipsLost;
 				input.showShipsLeftOrShipsLost.innerText = "-" + shipsLostText;
 			}
-			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show % ships left") {
+			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show_%_ships_left") {
 				var shipsLeft = warfleet.ships[input.ship.id]
 				var percentLeft = Math.floor((((shipsLeft / playerShipsBeforeFight[input.ship.id]) || 0) * 100) * 100) / 100;
 				input.showShipsLeftOrShipsLost.innerText = percentLeft + "%";
 			}
-			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show % ships lost") {
+			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show_%_ships_lost") {
 				var shipsLost = playerShipsBeforeFight[input.ship.id] - warfleet.ships[input.ship.id];
 				var percentLost = Math.floor(((shipsLost / playerShipsBeforeFight[input.ship.id] || 0) * 100) * 100) / 100;
 				input.showShipsLeftOrShipsLost.innerText = "-" + percentLost + "%";
@@ -954,22 +958,22 @@ document.addEventListener("DOMContentLoaded", function() {
 		shiplist.dataset.weightRemaining = warfleet.combatWeight();
 		arr(enemylist.getElementsByTagName("input")).map(function(input) {
 			if(input.type === "button") return;
-			if(saveData.options["showShipsLeftOrShipsLost"] == "Show ships left") {
+			if(saveData.options["showShipsLeftOrShipsLost"] == "Show_ships_left") {
 				var shipsLeft = enemy.ships[input.ship.id]
 				var shipsLeftText = shipsLeft >= 1000 ? beauty(shipsLeft) : shipsLeft;
 				input.showShipsLeftOrShipsLost.innerText = shipsLeftText;
 			}
-			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show ships lost") {
+			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show_ships_lost") {
 				var shipsLost = enemyShipsBeforeFight[input.ship.id] - enemy.ships[input.ship.id];
 				var shipsLostText = shipsLost >= 1000 ? beauty(shipsLost) : shipsLost;
 				input.showShipsLeftOrShipsLost.innerText = "-" + shipsLostText;
 			}
-			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show % ships left") {
+			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show_%_ships_left") {
 				var shipsLeft = enemy.ships[input.ship.id]
 				var percentLeft = Math.floor((((shipsLeft / enemyShipsBeforeFight[input.ship.id]) || 0) * 100) * 100) / 100;
 				input.showShipsLeftOrShipsLost.innerText = percentLeft + "%";
 			}
-			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show % ships lost") {
+			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show_%_ships_lost") {
 				var shipsLost = enemyShipsBeforeFight[input.ship.id] - enemy.ships[input.ship.id];
 				var percentLost = Math.floor(((shipsLost / enemyShipsBeforeFight[input.ship.id] || 0) * 100) * 100) / 100;
 				input.showShipsLeftOrShipsLost.innerText = "-" + percentLost + "%";
@@ -1012,7 +1016,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		}, {}));
 
 		var basePath = location.protocol+'//'+location.host+location.pathname;
-		exporter.href = exporter.firstChild.alt = basePath+"#"+serialize(saveData);
+		exporter.href = exporter.firstChild.alt = basePath+"#"+getShortUrl(basePath+"#"+serialize(saveData)).replace(bitly, "");
 		window.history.replaceState(saveData, document.title, window.location.hash ? exporter.href : window.location.pathname);
 		localStorage.setItem("battlecalc-persist", JSON.stringify(saveData));
 
@@ -1042,6 +1046,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			enemySelected: enemypicker.selectedIndex + (enemy.combatWeight() ? 0 : 1),
 			enemies: enemy.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
 		});
+		nextrun.href = nextrun.href+"#nobitly";
 		
 		arr(document.getElementsByTagName("input")).map(function(input) {
 			if(input.type == "text")
