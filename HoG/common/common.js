@@ -15,17 +15,17 @@ var api_key = "f97b613759ba67da6f9036d391a7f6158f4f23ec";
 
 function getShortUrl(long_url) {
 	var shortUrl = "";
-	get_short_url(long_url, login, api_key, function(short_url) {
-		shortUrl = short_url;
-	});
+	// get_short_url(long_url, login, api_key, function(short_url) {
+		// shortUrl = short_url;
+	// });
 	return shortUrl;
 }
 
 function getLongUrl(short_url) {
 	var longUrl = "";
-	get_long_url(short_url, login, api_key, function(long_url) {
-		longUrl = long_url;
-	});
+	// get_long_url(short_url, login, api_key, function(long_url) {
+		// longUrl = long_url;
+	// });
 	return longUrl;
 }
 
