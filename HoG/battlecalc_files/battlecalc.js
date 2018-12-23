@@ -355,10 +355,14 @@ document.addEventListener("DOMContentLoaded", function() {
 	try {
 		var currentUrl = window.location.hash;
 		if(currentUrl.substring(2))
+		{
 			currentUrl.replace("#nobitly", "");
 			saveData = /*history.state || */deserialize(currentUrl.substring(1)) || JSON.parse(localStorage.getItem("battlecalc-persist")) || {};
+		}
 		else
+		{
 			saveData = /*history.state || */deserialize(getLongUrl(bitly+currentUrl.substring(1)).substring(1)) || JSON.parse(localStorage.getItem("battlecalc-persist")) || {};
+		}
 	} catch(e) {
 		console.log(e);
 		saveData = {};
