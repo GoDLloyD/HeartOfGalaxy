@@ -83,7 +83,7 @@ var userScript = function() {
 				enemySelected: varEnemySelected,
 				enemies: varEnemies,
 			};
-			var url = "https://godlloyd.github.io/HeartOfGalaxy/HoG/Battlecalc.html#"+serialize(calcData);
+			var url = "https://godlloyd.github.io/HeartOfGalaxy/HoG/Battlecalc.html" + "#nobitly" + "#"+serialize(calcData);
 			var attackButton = document.getElementById("attack_button");
 			if(!attackButton) return;
 			var calcButton = document.createElement(attackButton.tagName);

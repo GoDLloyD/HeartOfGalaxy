@@ -75,7 +75,7 @@ var userScript = function() {
 				enemySelected: "free_battle_" + enemyFleet.civis,
 				enemies: enemyFleet.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
 			};
-			var url = "https://godlloyd.github.io/HeartOfGalaxy/HoG/Battlecalc.html#"+serialize(calcData);
+			var url = "https://godlloyd.github.io/HeartOfGalaxy/HoG/Battlecalc.html" + "#nobitly" + "#"+serialize(calcData);
 			var attackButton = document.getElementById("fight_button");
 			if(!attackButton) return;
 			var calcButton = document.createElement(attackButton.tagName);
