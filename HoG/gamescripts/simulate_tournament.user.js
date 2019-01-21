@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         HoG Tools - Tournament Simulation
 // @namespace    https://github.com/GoDLloyD/HeartOfGalaxy/HoG/gamescripts
-// @version      1.5
+// @version      1.6
 // @description  Adds a link to the battle calculator to the Tournament
 // @author       GoDLloyD
 // @match        https://game288398.konggames.com/gamez/0028/8398/live/*
@@ -75,7 +75,7 @@ var userScript = function() {
 				enemySelected: "free_battle_" + enemyFleet.civis,
 				enemies: enemyFleet.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
 			};
-			var url = "https://godlloyd.github.io/HeartOfGalaxy/HoG/Battlecalc.html" + "#nobitly" + "#"+serialize(calcData);
+			var url = "https://godlloyd.github.io/HeartOfGalaxy/HoG/Battlecalc.html#nobitly#" + serialize(calcData);
 			var attackButton = document.getElementById("fight_button");
 			if(!attackButton) return;
 			var calcButton = document.createElement(attackButton.tagName);
