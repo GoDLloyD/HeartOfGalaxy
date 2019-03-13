@@ -201,11 +201,18 @@ document.addEventListener("DOMContentLoaded", function() {
 		var queueTable = document.createElement("TABLE");
 		queueTable.setAttribute("id", "queueTable");
 		document.getElementById("result").appendChild(queueTable);
-		
-		var headRow = tr();
+				
+		var headRow = queueTable.insertRow();
 		headRow.setAttribute("id", "headRow");
 		document.getElementById("queueTable").appendChild(headRow);
-
+		
+		var queuesRow = queueTable.insertRow();
+		queuesRow.setAttribute("id", "queuesRow");
+		document.getElementById("queueTable").appendChild(queuesRow);
+		
+		var queuesRow = queueTable.insertRow();
+		queuesRow.setAttribute("id", "resourceRow");
+		document.getElementById("queueTable").appendChild(resourceRow);
 		
 		var headerCell = th();
 		headerCell.setAttribute("width", cellWidth);
@@ -235,15 +242,12 @@ document.addEventListener("DOMContentLoaded", function() {
 				document.getElementById("headRow").appendChild(headerCell);
 			}
 		});
-		
-		var queuesRow = tr();
-		queuesRow.setAttribute("id", "queuesRow");
-		document.getElementById("queueTable").appendChild(queuesRow);
-		
+				
 		var headerCell = td();
 		var headerTextNode = label(txt("Queues"));
 		headerCell.appendChild(headerTextNode);
-		document.getElementById("queuesRow").appendChild(headerCell);
+		document.getElementById("queuesRow").appendChild(headerCell);		
+
 		
 		game.planets.map(function(planetIndex) {
 			var planet = planets[planetIndex];
@@ -254,7 +258,7 @@ document.addEventListener("DOMContentLoaded", function() {
 						var queueTextNode = div(label(txt(buildings[planet.queue[queueIndex].b].displayName + ": " + planet.queue[queueIndex].n)));
 						queueCell.appendChild(queueTextNode);
 					}
-					document.getElementById("queuesRow").appendChild(queueCell);
+					document.getElementById("queuesRow").appendChild(queueCell);					
 					break;
 				}
 			} else {
@@ -266,8 +270,107 @@ document.addEventListener("DOMContentLoaded", function() {
 				document.getElementById("queuesRow").appendChild(queueCell);
 			}
 		});
-	
+
+		var headerCell = td();
+		var headerTextNode = label(txt("Resources"));
+		headerCell.appendChild(headerTextNode);
+		document.getElementById("resourceRow").appendChild(headerCell);
+		
+		var totals = Array(48).fill(0);
+
+		game.planets.map(function(planetIndex) {
+			var planet = planets[planetIndex];
+			if(document.getElementById("hidePlanetsCheckbox").checked) {
+				for(var queueIndex in planet.queue) {
+					var resourceCell = td();
+					var resourceInQueue = planet.totalResourcesInQueue();
+					resourceInQueue.forEach( function (value, i){
+						if (value != 0){
+							totals[i] += value;
+							var resourceTextNode = div(label(txt(resources[i].name.charAt(0).toUpperCase() + resources[i].name.slice(1) + ": " + value)));
+							resourceCell.appendChild(resourceTextNode);
+						}
+					});
+					document.getElementById("resourceRow").appendChild(resourceCell);					
+					break;
+				}
+			} else {
+					var resourceCell = td();
+					var resourceInQueue = planet.totalResourcesInQueue();
+					resourceInQueue.forEach( function (value, i){							
+						if (value != 0){
+							totals[i] += value;
+							var resourceTextNode = div(label(txt(resources[i].name.charAt(0).toUpperCase() + resources[i].name.slice(1) + ": " + value)));
+							resourceCell.appendChild(resourceTextNode);
+						}
+					});
+					document.getElementById("resourceRow").appendChild(resourceCell);	
+			}			
+		});
+		queueResourceTotals(totals);	
 		queueTable.setAttribute("width", tableWidth);
+	}
+	
+	function queueResourceTotals(totals)
+	{
+		var spacer = document.createElement("div");
+		spacer.style = "clear";
+		document.getElementById("result").appendChild(spacer);
+		
+		var cellWidth = 200;
+		var tableWidth = 0;
+		
+		var resourceTable = document.createElement("TABLE");
+		resourceTable.setAttribute("id", "resourceTable");
+		document.getElementById("result").appendChild(resourceTable);
+		
+		var headRow2 = resourceTable.insertRow();
+		headRow2.setAttribute("id", "headRow2");
+		document.getElementById("resourceTable").appendChild(headRow2);
+		
+		var resNumRow = resourceTable.insertRow();
+		resNumRow.setAttribute("id", "resNumRow");
+		document.getElementById("resourceTable").appendChild(resNumRow);
+		
+		var headerCell = th();
+		headerCell.setAttribute("width", cellWidth);
+		tableWidth += cellWidth;
+		var headerTextNode = label(txt("Queue Resource Total"));
+		headerCell.appendChild(headerTextNode);
+		document.getElementById("headRow2").appendChild(headerCell);
+		
+		var headerCell = th();
+		headerCell.setAttribute("width", cellWidth);
+		tableWidth += cellWidth;
+		var headerTextNode = label(txt("Empire Resource Total"));
+		headerCell.appendChild(headerTextNode);
+		document.getElementById("headRow2").appendChild(headerCell);
+		
+		var queueResCell = td();	
+		
+		totals.forEach( function (value, i){
+			if (value != 0){
+				var resourceTextNode = div(label(txt(resources[i].name.charAt(0).toUpperCase() + resources[i].name.slice(1) + ": " + value)));
+				queueResCell.appendChild(resourceTextNode);
+			}
+		});
+		document.getElementById("resNumRow").appendChild(queueResCell);
+		
+		var totalResCell = td();
+		for(var resourceIndex=0;resourceIndex<resNum;resourceIndex++) {
+			if (totals[resourceIndex] > 0){
+			var totalResources = 0;			
+			for(var l=0;l<game.planets.length;l++)
+					totalResources += planets[game.planets[l]].resources[resourceIndex];
+			var resourceLabel = div(label(txt(resources[resourceIndex].name.charAt(0).toUpperCase() + resources[resourceIndex].name.slice(1) + ": " + totalResources)));
+			if (totalResources < totals[resourceIndex])
+				resourceLabel.style = "color:red";
+			if (totalResources != 0)
+				totalResCell.appendChild(resourceLabel);
+			}
+		}
+		document.getElementById("resNumRow").appendChild(totalResCell);
+		resourceTable.setAttribute("width", tableWidth);		
 	}
 	
 	var isSaveImported = false;
