@@ -270,6 +270,29 @@ function parseSeperatedInput(input) {
 	input.selectionEnd = caretPosition;
 }
 
+function addSpoiler(spoilerValue, content) {
+	var input = el("input");
+	input.type = "button";
+	input.value = "Show " + spoilerValue;
+	content.style = "display: none";
+	input.onclick = function() {
+		if(input.value == "Show " + spoilerValue) {
+			content.style = "display: grid";
+			input.value = "Hide " + spoilerValue;
+		}
+		else {
+			content.style = "display: none";
+			input.value = "Show " + spoilerValue;
+		}
+	};
+	return input;
+}
+
+function addLabeledSpoiler(spoilerLabel, content) {
+	var label = span(txt(spoilerLabel));
+	return div(label, addSpoiler(spoilerLabel, content));
+}
+
 function aprilFoolize() {
 	ships[72].name = "Doom Snail";
 }

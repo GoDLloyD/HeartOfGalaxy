@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	function shipSummaryData(ship, friend, foe) {
 		var shipStats = {
 			Power: ship.power,
+			Weapon: ship.weapon.capitalize(),
 			Damage: 0,
 			Piercing: (ship.piercing || 0),
 			Shield: ship.shield,
@@ -495,6 +496,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		input.research = research;
 		return div(label, input);
 	}).map(appendTo(stufflist));
+	var artifactsContentDiv = div();
 	["quris_value", "quris_honor", "quris_glory", "thoroid", "scepter"].map(function(name) {
 		var artifact = artifacts[artifactsName[name]];
 		var label = span(txt(artifact.name));
@@ -504,9 +506,27 @@ document.addEventListener("DOMContentLoaded", function() {
 		input.name = name;
 		input.value = artifact.description;
 		if(saveData.bonuses && saveData.bonuses[name]) input.checked = saveData.bonuses[name]>0;
-		input.artifact = artifact;
+			input.artifact = artifact;
 		return div(label, input);
-	}).map(appendTo(stufflist));
+	}).map(appendTo(artifactsContentDiv));
+	stufflist.appendChild(addLabeledSpoiler("Artifacts", artifactsContentDiv));
+	stufflist.appendChild(artifactsContentDiv);
+	var charactersContentDiv = div();
+	characters.map(function(character) {
+		if(!character.description)
+			return div();
+		var label = span(txt(character.name));
+		var input = el("input");
+		input.type = "checkbox";
+		input.label = label;
+		input.name = character.name;
+		input.value = character.unlocked;
+		if(saveData.bonuses && saveData.bonuses[name]) input.checked = saveData.bonuses[name]>0;
+			input.character = character;
+		return div(label, input);
+	}).map(appendTo(charactersContentDiv));
+	stufflist.appendChild(addLabeledSpoiler("Characters", charactersContentDiv));
+	stufflist.appendChild(charactersContentDiv);
 
 	var enemystufflist = document.getElementById("enemystufflist");
 	["enemy_exp"].map(function(name) {
@@ -774,6 +794,17 @@ document.addEventListener("DOMContentLoaded", function() {
 			
 			if(val > 0) saveData.bonuses[input.name] = val;
 		});
+		// apply characters
+		arr(stufflist.getElementsByTagName("input")).map(function(input) {
+			var val = inputval(input);
+			if(input.character) {
+				var newLevel = val;
+				while(input.character.unlocked > newLevel) { input.character.unlocked--; }
+				while(input.character.unlocked < newLevel) { input.character.unlocked++; }
+			}
+			
+			if(val > 0) saveData.bonuses[input.name] = val;
+		});
 		// apply researches
 		arr(stufflist.getElementsByTagName("input")).map(function(input) {
 			var val = inputval(input);
@@ -869,6 +900,8 @@ document.addEventListener("DOMContentLoaded", function() {
 				splitString = artifactDescription.split(new RegExp("<[^>]*>"));
 				var artifactTitle = splitString.join("");
 				input.label.title = artifactTitle;
+			} else if(input.character) {
+				input.label.title = input.character.description;
 			} else if(input.resource) {
 				if(warfleet.maxStorage < warfleet.usedStorage)
 					input.setCustomValidity("Not enough Storage!");
