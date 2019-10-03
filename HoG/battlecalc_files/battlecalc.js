@@ -506,7 +506,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		input.name = name;
 		input.value = artifact.description;
 		if(saveData.bonuses && saveData.bonuses[name]) input.checked = saveData.bonuses[name]>0;
-			input.artifact = artifact;
+		input.artifact = artifact;
 		return div(label, input);
 	}).map(appendTo(artifactsContentDiv));
 	stufflist.appendChild(addLabeledSpoiler("Artifacts", artifactsContentDiv));
@@ -520,9 +520,24 @@ document.addEventListener("DOMContentLoaded", function() {
 		input.type = "checkbox";
 		input.label = label;
 		input.name = character.name;
-		input.value = character.unlocked;
-		if(saveData.bonuses && saveData.bonuses[name]) input.checked = saveData.bonuses[name]>0;
-			input.character = character;
+		input.value = character.name;
+		if(character.name == "Lieutenant Seris") {
+			input.label.innerHTML += " (DEFENCE)";
+			input.onclick = function() {
+				if(!character.unlocked) {
+					ships[shipsName["Auxilia Beta"]].power/=3,ships[shipsName["Auxilia Beta"]].hp*=10;
+				} else {
+					ships[shipsName["Auxilia Beta"]].power*=3,ships[shipsName["Auxilia Beta"]].hp/=10;
+				}
+			};
+		}
+		if(saveData.bonuses && saveData.bonuses[character.name]) {
+			input.checked = saveData.bonuses[character.name]>0;
+			if(character.name == "Lieutenant Seris") {
+				ships[shipsName["Auxilia Beta"]].power/=3,ships[shipsName["Auxilia Beta"]].hp*=10;
+			}
+		}
+		input.character = character;
 		return div(label, input);
 	}).map(appendTo(charactersContentDiv));
 	stufflist.appendChild(addLabeledSpoiler("Characters", charactersContentDiv));
