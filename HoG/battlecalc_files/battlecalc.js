@@ -497,15 +497,16 @@ document.addEventListener("DOMContentLoaded", function() {
 		return div(label, input);
 	}).map(appendTo(stufflist));
 	var artifactsContentDiv = div();
-	["quris_value", "quris_honor", "quris_glory", "thoroid", "scepter"].map(function(name) {
+	["quris_value", "quris_honor", "quris_glory", "thoroid", "scepter", "crown"].map(function(name) {
+	//artifacts.map(function(artifact) {
 		var artifact = artifacts[artifactsName[name]];
 		var label = span(txt(artifact.name));
 		var input = el("input");
 		input.type = "checkbox";
 		input.label = label;
-		input.name = name;
-		input.value = artifact.description;
-		if(saveData.bonuses && saveData.bonuses[name]) input.checked = saveData.bonuses[name]>0;
+		input.name = artifact.name;
+		input.value = artifact.name;
+		if(saveData.bonuses && saveData.bonuses[artifact.name]) input.checked = saveData.bonuses[artifact.name]>0;
 		input.artifact = artifact;
 		return div(label, input);
 	}).map(appendTo(artifactsContentDiv));
