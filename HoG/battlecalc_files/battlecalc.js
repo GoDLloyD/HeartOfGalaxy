@@ -439,12 +439,12 @@ document.addEventListener("DOMContentLoaded", function() {
 		if(!planet.x || !planet.y || planet.info["orbit"] == 0)
 			return;
 		for(var pushedPlanetIndex = 0; pushedPlanetIndex < civis[0].planets.length; pushedPlanetIndex++) {
-			if(civis[0].planets[pushedPlanetIndex] == planet.id)
-				return;
-			if(civis[0].planets[pushedPlanetIndex].name == planet.name) {
-				civis[0].planets[pushedPlanetIndex] = planet;
+			if(planets[civis[0].planets[pushedPlanetIndex]].name == planet.name) {
+				civis[0].planets[pushedPlanetIndex] = planet.id;
 				return;
 			}
+			if(civis[0].planets[pushedPlanetIndex].id == planet.id)
+				return;
 		}
 		civis[0].planets.push(planet.id);
 	});
