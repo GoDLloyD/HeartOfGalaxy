@@ -299,6 +299,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		add_new_cannon.type = "button";
 		add_new_cannon.value = "Add Cannon";
 		var reqText = span(txt("(100 e/r)"));
+		reqText.id = "pcselector";
 		reqText.title = "Planetary Cannons require 100 explosives per round per Cannon in battle.";
 		var row = div(span(pick_new_cannon), add_new_cannon, reqText);
 		add_new_cannon.onclick = function() {
@@ -454,6 +455,11 @@ document.addEventListener("DOMContentLoaded", function() {
 		shiplist.appendChild(cannoninput(k, n));
 		delete available_planets[k];
 	});
+	for (var civisId = 1; civisId < civis.length; civisId++) {
+		for (var planetId = 0; planetId < civis[civisId].planets.length; planetId++) {
+			delete civis[civisId].planets[planetId];
+		}
+	}
 	shiplist.insertBefore(cannonselector(available_planets), shiplist.firstChild.nextSibling);
 	//Planetary Cannons End
 
@@ -862,12 +868,10 @@ document.addEventListener("DOMContentLoaded", function() {
 		arr(shiplist.getElementsByTagName("input")).map(function(input) {
 			var val = inputval(input);
 			if(input.ship != null) {
-				if(val > 0) warfleet.ships[input.ship.id] = saveData.ships[input.ship.id] = val;
+				warfleet.ships[input.ship.id] = saveData.ships[input.ship.id] = val;
 			} else if (input.planetId != null) {
-				if(val > 0) {
-					planets[input.planetId].structure[buildingsName.cannon].number = saveData.cannons[input.planetId] = val;
-					planets[input.planetId].resourcesAdd(resourcesName.explosives.id,100*planets[input.planetId].structure[buildingsName.cannon].number*1000);
-				}
+				planets[input.planetId].structure[buildingsName.cannon].number = saveData.cannons[input.planetId] = val;
+				planets[input.planetId].resourcesAdd(resourcesName.explosives.id,100*planets[input.planetId].structure[buildingsName.cannon].number*1000);
 			}
 		});
 		arr(feelinlucky.getElementsByTagName("input")).map(function(input) {

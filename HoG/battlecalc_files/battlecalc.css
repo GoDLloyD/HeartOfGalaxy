@@ -40,6 +40,10 @@ h3 {
 	text-align: right;
 }
 
+#pcselector {
+	background: yellow;
+}
+
 .tablelike[data-weight-remaining] input + span {
 	background: green;
 }
