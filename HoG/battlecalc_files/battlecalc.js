@@ -234,6 +234,22 @@ document.addEventListener("DOMContentLoaded", function() {
 		input.showShipsLeftOrShipsLost = span();
 		return div(label, input, input.showShipsLeftOrShipsLost);
 	}
+	function cannoninput(planetId, n) {
+		var label = span(txt(planets[planetId].name));
+		var input = el("input");
+		input.type = "text";
+		input.label = label;
+		input.planetId = planetId;
+		input.onfocus = function() {
+			parseSeperatedInput(input);
+		};
+		input.onblur = function() {
+			addSeperatorsToInput(input)
+		};
+		if(typeof n !== "undefined") input.value = n;
+		input.showShipsLeftOrShipsLost = span();
+		return div(label, input, input.showShipsLeftOrShipsLost);
+	}
 	function shipselector(available_ships) {
 		var pick_new_ship = el("select");
 		available_ships.map(function(ship, k) {
@@ -267,6 +283,33 @@ document.addEventListener("DOMContentLoaded", function() {
 				input.value = "";
 			});
 			update();
+		};
+		return row;
+	}
+	function cannonselector(available_planets) {
+		var pick_new_cannon = el("select");
+		available_planets.map(function(planetId, k) {
+			var option = el("option");
+			option.value = k;
+			option.innerText = planets[planetId].name;
+			option.planetId = planetId;
+			return option;
+		}).map(appendTo(pick_new_cannon));
+		var add_new_cannon = el("input");
+		add_new_cannon.type = "button";
+		add_new_cannon.value = "Add Cannon";
+		var reqText = span(txt("(100 e/r)"));
+		reqText.title = "Planetary Cannons require 100 explosives per round per Cannon in battle.";
+		var row = div(span(pick_new_cannon), add_new_cannon, reqText);
+		add_new_cannon.onclick = function() {
+			var i = pick_new_cannon.selectedIndex;
+			if(i == -1) return;
+			var o = pick_new_cannon.options[i];
+			var parent = row.parentNode;
+			parent.removeChild(row);
+			parent.appendChild(cannoninput(o.planetId));
+			delete available_planets[o.value];
+			parent.insertBefore(cannonselector(available_planets), parent.firstChild.nextSibling);
 		};
 		return row;
 	}
@@ -383,12 +426,36 @@ document.addEventListener("DOMContentLoaded", function() {
 		delete available_ships[ship.id];
 	});
 	saveData.ships && Object.keys(saveData.ships).map(function(k) {
-		if(!available_ships[k]) return;
+		if(available_ships[k] == null) return;
 		var n = saveData.ships[k];
 		shiplist.appendChild(shipinput(ships[k], n));
 		delete available_ships[k];
 	});
 	shiplist.insertBefore(shipselector(available_ships), shiplist.firstChild);
+	
+	//Planetary Cannons Start
+	planets.map(function(planet) {
+		if(!planet.x || !planet.y || planet.info["orbit"] == 0)
+			return;
+		for(var pushedPlanetIndex = 0; pushedPlanetIndex < civis[0].planets.length; pushedPlanetIndex++) {
+			if(civis[0].planets[pushedPlanetIndex] == planet.id)
+				return;
+			if(civis[0].planets[pushedPlanetIndex].name == planet.name) {
+				civis[0].planets[pushedPlanetIndex] = planet;
+				return;
+			}
+		}
+		civis[0].planets.push(planet.id);
+	});
+	var available_planets = civis[0].planets.slice();
+	saveData.cannons && Object.keys(saveData.cannons).map(function(k) {
+		if(available_planets[k] == null) return;
+		var n = saveData.cannons[k];
+		shiplist.appendChild(cannoninput(k, n));
+		delete available_planets[k];
+	});
+	shiplist.insertBefore(cannonselector(available_planets), shiplist.firstChild.nextSibling);
+	//Planetary Cannons End
 
 	shiplist.statBlock = span();
 	shiplist.statBlock.className = "statblock";
@@ -783,6 +850,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	var update = document.getElementById("battlecalc").onchange = function() {
 		saveData = {
 			ships: {},
+			cannons: {},
 			bonuses: {},
 			options: {},
 			enemies: {},
@@ -793,7 +861,14 @@ document.addEventListener("DOMContentLoaded", function() {
 		
 		arr(shiplist.getElementsByTagName("input")).map(function(input) {
 			var val = inputval(input);
-			if(val > 0) warfleet.ships[input.ship.id] = saveData.ships[input.ship.id] = val;
+			if(input.ship != null) {
+				if(val > 0) warfleet.ships[input.ship.id] = saveData.ships[input.ship.id] = val;
+			} else if (input.planetId != null) {
+				if(val > 0) {
+					planets[input.planetId].structure[buildingsName.cannon].number = saveData.cannons[input.planetId] = val;
+					planets[input.planetId].resourcesAdd(resourcesName.explosives.id,100*planets[input.planetId].structure[buildingsName.cannon].number*1000);
+				}
+			}
 		});
 		arr(feelinlucky.getElementsByTagName("input")).map(function(input) {
 			var val = inputval(input);
@@ -864,7 +939,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		arr(optionslist.getElementsByTagName("input")).map(function(input) {
 			if(input.checked) saveData.options[input.name] = input.value;
 		});
-		
 		
 		var enemy = new Fleet(1, "Test Dummy");
 		saveData.enemySelected = enemypicker.value;
@@ -958,20 +1032,23 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		arr(shiplist.getElementsByTagName("input")).map(function(input) {
 			if(input.type === "button") return;
+			if(!input.ship) return;
 			input.label.title = shipSummary(input.ship, warfleet, enemy);
 		});
 		arr(enemylist.getElementsByTagName("input")).map(function(input) {
 			if(input.type === "button") return;
+			if(!input.ship) return;
 			input.label.title = shipSummary(input.ship, enemy, warfleet);
 		});
 
 		var playerShipsBeforeFight = warfleet.ships.slice();
 		var enemyShipsBeforeFight = enemy.ships.slice();
 		
-		//hotfix 21.12.2018
-		enemy.planet = 5;
-		warfleet.planet = 4;
-		//hotfix end
+		var selectionPlanetCivis = enemypicker.value.split("_");
+		enemy.planet = selectionPlanetCivis[selectionPlanetCivis.length-2];
+		enemy.civis = selectionPlanetCivis[selectionPlanetCivis.length-1];
+		warfleet.planet = enemy.planet;
+		warfleet.civis = 0;
 		enemy.battle(warfleet, !0);
 		var battle = enemy.battle(warfleet);
 		battlereport.innerHTML = battle.r;
@@ -991,6 +1068,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		
 		arr(shiplist.getElementsByTagName("input")).map(function(input) {
 			if(input.type === "button") return;
+			if(!input.ship) return;
 			if(saveData.options["showShipsLeftOrShipsLost"] == "Show_ships_left") {
 				var shipsLeft = warfleet.ships[input.ship.id]
 				var shipsLeftText = shipsLeft >= 1000 ? beauty(shipsLeft) : shipsLeft;
@@ -1015,6 +1093,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		shiplist.dataset.weightRemaining = warfleet.combatWeight();
 		arr(enemylist.getElementsByTagName("input")).map(function(input) {
 			if(input.type === "button") return;
+			if(!input.ship) return;
 			if(saveData.options["showShipsLeftOrShipsLost"] == "Show_ships_left") {
 				var shipsLeft = enemy.ships[input.ship.id]
 				var shipsLeftText = shipsLeft >= 1000 ? beauty(shipsLeft) : shipsLeft;
