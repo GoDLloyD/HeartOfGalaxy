@@ -512,6 +512,11 @@ document.addEventListener("DOMContentLoaded", function() {
 		option.innerText = government;
 		govSelect.appendChild(option);
 	}
+	if(saveData.bonuses["government"] != null) {
+		govSelect.selectedIndex = saveData.bonuses["government"];
+		game.chosenGovern = govSelect.options[saveData.bonuses["government"]].value;
+		governmentList[game.chosenGovern].bonus();
+	}
 	
 	govSelect.onchange = function() {
 		var i = govSelect.selectedIndex;
@@ -923,6 +928,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			if(val > 0) saveData.bonuses[input.name] = val;
 		});
 		// apply others
+		saveData.bonuses["government"] = govSelect.selectedIndex;
 		arr(stufflist.getElementsByTagName("input")).map(function(input) {
 			var val = inputval(input);
 			if(input.name == "exp") {
@@ -932,11 +938,6 @@ document.addEventListener("DOMContentLoaded", function() {
 				}
 				warfleet.exp = val;
 			}
-			
-			if(val > 0) saveData.bonuses[input.name] = val;
-		});
-		arr(stufflist.getElementsByTagName("input")).map(function(input) {
-			var val = inputval(input);
 			
 			if(val > 0) saveData.bonuses[input.name] = val;
 		});
@@ -1165,8 +1166,8 @@ document.addEventListener("DOMContentLoaded", function() {
 			ships: warfleet.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
 			bonuses: ["ammunition", "u-ammunition", "t-ammunition", "dark matter", "armor", "shield capsule", "engine", "exp", "enemy_exp"].reduce(function(obj, name) {
 				var resource = resourcesName[name];
-				if(name!="enemy_exp") {
-					if(name!="exp") {
+				if(name != "enemy_exp" && name != "government") {
+					if(name != "exp") {
 						var v = warfleet.storage[resource.id];
 						if(v > 0) 
 							saveData.bonuses[name] = v;
@@ -1180,8 +1181,9 @@ document.addEventListener("DOMContentLoaded", function() {
 							delete saveData.bonuses[name];
 					}
 				}
-				else
+				else if (name != "government") {
 					delete saveData.bonuses[name];
+				}
 				return saveData.bonuses;
 			}, {}),
 			enemySelected: enemypicker.selectedIndex + (enemy.combatWeight() ? 0 : 1),
