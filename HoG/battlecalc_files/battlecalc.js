@@ -563,7 +563,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		input.showValue = span();
 		return div(label, input, input.showValue);
 	}).map(appendTo(stufflist));
-	["artofwar", "karan_artofwar", "protohalean_science"].map(function(name) {
+	["artofwar", "karan_artofwar", "protohalean_science", "space_mining"].map(function(name) {
 		var research = researches[researchesName[name]];
 		var label = span(txt(research.name));
 		var input = el("input");
