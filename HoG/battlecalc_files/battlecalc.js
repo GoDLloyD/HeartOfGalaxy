@@ -451,6 +451,10 @@ document.addEventListener("DOMContentLoaded", function() {
 	var available_planets = civis[0].planets.slice();
 	saveData.cannons && Object.keys(saveData.cannons).map(function(k) {
 		if(available_planets[k] == null) return;
+		if(!saveData.cannons[k]) {
+			delete saveData.cannons[k];
+			return;
+		}
 		var n = saveData.cannons[k];
 		shiplist.appendChild(cannoninput(k, n));
 		delete available_planets[k];
@@ -576,15 +580,14 @@ document.addEventListener("DOMContentLoaded", function() {
 	}).map(appendTo(stufflist));
 	var artifactsContentDiv = div();
 	["quris_value", "quris_honor", "quris_glory", "thoroid", "scepter", "crown"].map(function(name) {
-	//artifacts.map(function(artifact) {
 		var artifact = artifacts[artifactsName[name]];
 		var label = span(txt(artifact.name));
 		var input = el("input");
 		input.type = "checkbox";
 		input.label = label;
-		input.name = artifact.name;
+		input.name = artifact.id;
 		input.value = artifact.name;
-		if(saveData.bonuses && saveData.bonuses[artifact.name]) input.checked = saveData.bonuses[artifact.name]>0;
+		if(saveData.bonuses && saveData.bonuses[name]) input.checked = saveData.bonuses[name]>0;
 		input.artifact = artifact;
 		return div(label, input);
 	}).map(appendTo(artifactsContentDiv));
@@ -598,7 +601,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		var input = el("input");
 		input.type = "checkbox";
 		input.label = label;
-		input.name = character.name;
+		input.name = character.id;
 		input.value = character.name;
 		if(character.name == "Lieutenant Seris") {
 			input.label.innerHTML += " (DEFENCE)";
@@ -610,8 +613,8 @@ document.addEventListener("DOMContentLoaded", function() {
 				}
 			};
 		}
-		if(saveData.bonuses && saveData.bonuses[character.name]) {
-			input.checked = saveData.bonuses[character.name]>0;
+		if(saveData.bonuses && saveData.bonuses[character.id]) {
+			input.checked = saveData.bonuses[character.id]>0;
 			if(character.name == "Lieutenant Seris") {
 				ships[shipsName["Auxilia Beta"]].power/=3,ships[shipsName["Auxilia Beta"]].hp*=10;
 			}
@@ -792,6 +795,16 @@ document.addEventListener("DOMContentLoaded", function() {
 			var n = saveData.ships[k] || "";
 			shiplist.appendChild(shipinput(ships[k], n));
 			delete available_ships[k];
+		});
+		saveData.cannons && arr(shiplist.getElementsByTagName("input")).map(function(input) {
+			if(!input.planetId) return;
+			input.value = saveData.cannons[input.planetId] || "";
+		});
+		saveData.cannons && Object.keys(saveData.cannons).map(function(k) {
+			if(!available_planets[k]) return;
+			var n = saveData.cannons[k] || "";
+			shiplist.appendChild(cannoninput(cannons[k], n));
+			delete available_planets[k];
 		});
 		saveData.bonuses && arr(stufflist.getElementsByTagName("input")).map(function(input) {
 			input.value = saveData.bonuses[input.name] || "";
@@ -1084,12 +1097,12 @@ document.addEventListener("DOMContentLoaded", function() {
 				var shipsLostText = shipsLost >= 1000 ? beauty(shipsLost) : shipsLost;
 				input.showShipsLeftOrShipsLost.innerText = "-" + shipsLostText;
 			}
-			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show_%_ships_left") {
+			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show_percentage_ships_left") {
 				var shipsLeft = warfleet.ships[input.ship.id]
 				var percentLeft = Math.floor((((shipsLeft / playerShipsBeforeFight[input.ship.id]) || 0) * 100) * 100) / 100;
 				input.showShipsLeftOrShipsLost.innerText = percentLeft + "%";
 			}
-			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show_%_ships_lost") {
+			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show_percentage_ships_lost") {
 				var shipsLost = playerShipsBeforeFight[input.ship.id] - warfleet.ships[input.ship.id];
 				var percentLost = Math.floor(((shipsLost / playerShipsBeforeFight[input.ship.id] || 0) * 100) * 100) / 100;
 				input.showShipsLeftOrShipsLost.innerText = "-" + percentLost + "%";
@@ -1109,12 +1122,12 @@ document.addEventListener("DOMContentLoaded", function() {
 				var shipsLostText = shipsLost >= 1000 ? beauty(shipsLost) : shipsLost;
 				input.showShipsLeftOrShipsLost.innerText = "-" + shipsLostText;
 			}
-			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show_%_ships_left") {
+			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show_percentage_ships_left") {
 				var shipsLeft = enemy.ships[input.ship.id]
 				var percentLeft = Math.floor((((shipsLeft / enemyShipsBeforeFight[input.ship.id]) || 0) * 100) * 100) / 100;
 				input.showShipsLeftOrShipsLost.innerText = percentLeft + "%";
 			}
-			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show_%_ships_lost") {
+			else if (saveData.options["showShipsLeftOrShipsLost"] == "Show_percentage_ships_lost") {
 				var shipsLost = enemyShipsBeforeFight[input.ship.id] - enemy.ships[input.ship.id];
 				var percentLost = Math.floor(((shipsLost / enemyShipsBeforeFight[input.ship.id] || 0) * 100) * 100) / 100;
 				input.showShipsLeftOrShipsLost.innerText = "-" + percentLost + "%";
@@ -1164,6 +1177,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		nextrun.href = basePath+"#nobitly"+"#"+serialize({
 			ships: warfleet.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
+			cannons: saveData.cannons,
 			bonuses: ["ammunition", "u-ammunition", "t-ammunition", "dark matter", "armor", "shield capsule", "engine", "exp", "enemy_exp"].reduce(function(obj, name) {
 				var resource = resourcesName[name];
 				if(name != "enemy_exp" && name != "government") {
@@ -1186,6 +1200,7 @@ document.addEventListener("DOMContentLoaded", function() {
 				}
 				return saveData.bonuses;
 			}, {}),
+			options: saveData.options,
 			enemySelected: enemypicker.selectedIndex + (enemy.combatWeight() ? 0 : 1),
 			enemies: enemy.ships.reduce(function(obj, v, k) { if(v > 0) obj[k] = v; return obj; }, {}),
 		});

@@ -1,4 +1,7 @@
 Changelog
+* Battlecalc/Ingame-Viewer: Added option in Ingame-Viewer to export/import savefile to Battlecalc 
+* Battlecalc: Fixed show ship percentage options
+* Battlecalc: Fixed options not sticking through refresh/next run
 * Battlecalc: Added Space Mining (for Andromeda Cargo)
 * Battlecalc: Added Planetary Cannons
 * Battlecalc: Added Kasparis' Crown

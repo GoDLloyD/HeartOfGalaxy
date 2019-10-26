@@ -81,8 +81,7 @@ function deserialize(str) {
 		obj[add[0]] = add[1];
 		return obj;
 	}, {});
-	if(data.ships || data.enemies) return data;
-	return null;
+	return data;
 }
 function beautyObj(obj) {
 	var a = [];
@@ -101,6 +100,71 @@ function importSave(errorMessageDiv) {
 	(g="hg"==d.substring(0,2)?decodeURIComponent(LZString.decompressFromUTF16(LZString.decompressFromBase64(d.substring(2)))):LZString.decompressFromUTF16(LZString.decompressFromBase64(d)))||(g="hg"==d.substring(0,2)?decodeURIComponent(LZString.decompressFromUTF16(atob(d.substring(2)))):LZString.decompressFromUTF16(atob(d)));
 	if(g)
 		try {
+			var h=g.split("@DIVIDER@");
+			console.log(h[2]);
+			if(3<=h.length) {
+				for(d=0;d<game.researches.length;d++) {
+					for(var l=game.researches[d].level,n=0;n<l;n++) {
+						game.researches[d].unbonus();
+						game.researches[d].level--;
+					}
+				}
+				governmentList[game.chosenGovern].unbonus();
+				firstTime=!1;
+				var m=JSON.parse(h[1]),u=JSON.parse(h[0]),v=JSON.parse(h[2]);
+				console.log("iMPORT");
+				clearTimeout(idleTimeout);
+				idleBon=staticBon;
+				for(d=0;d<m.length;d++) {
+					civisLoader(civis[d],m[d],civis[d].name);
+				}
+				governmentList[game.chosenGovern].bonus();
+				fleetSchedule.count=v.count;
+				n=0;
+				for(var w in v.fleets) n++;
+				fleetSchedule.load(v.schedule,v.fleets,n);
+				v.m&&market.load(v.m);
+				v.st&&settingsLoader(v.st);
+				v.qur&&(qurisTournament.points=0,v.qur.points&&(qurisTournament.points=v.qur.points||0),qurisTournament.lose=0,v.qur.lose&&(qurisTournament.lose=v.qur.lose||0));
+				if(v.art) {
+					for(var y in v.art) {
+						artifacts[artifactsName[y]].collect();
+					}
+				}
+				if(v.qst) {
+					for(var x in v.qst) {
+						quests[questNames[x]].done=!0;
+					}
+				}
+				if(v.plc) {
+					for(x in v.plc) {
+						places[placesNames[x]].done=!0;
+					}
+				}
+				if(v.tuts) {
+					for(x in v.tuts) {
+						tutorialsNames[x]&&(tutorials[tutorialsNames[x]].done=!0);
+					}
+				}
+				for(var d=0;d<characters.length;d++) {
+					var e=characters[d];
+					"quris2"==e.id&&quests[questNames.quris_7].done&&(e.unlocked=!0);
+					"wahrian"==e.id&&quests[questNames.seal_7].done&&(e.unlocked=!0);
+					"protohalean"==e.id&&quests[questNames.juini_5].done&&(e.unlocked=!0)
+				}
+				game=civis[gameSettings.civis];
+				for(d=0;d<u.length;d++) {
+					u[d]&&planetLoader(planets[d],u[d]);
+				}
+				qurisTournament.fleet=null;
+				generateQurisTournamentFleet();
+				var A=parseInt(Math.floor(game.days/365));
+				game;
+				characters;
+				isImportSuccesful = true;
+			} else errorMessageDiv.innerHTML="Import Save: <font color=\"red\">Corrupted data</font>";
+			
+			/*old import
 			var h=g.split("@DIVIDER@");
 			console.log(h[2]);
 			if(3<=h.length){
@@ -145,8 +209,8 @@ function importSave(errorMessageDiv) {
 					(planets[planetsName.nassaus].setCivis(7),civis[7].capital=planetsName.nassaus);
 				isImportSuccesful = true;
 			}
-			else errorMessageDiv.innerHTML="Import Save: <font color=\"red\">Corrupted data</font>";
-		} catch(qa){
+			else errorMessageDiv.innerHTML="Import Save: <font color=\"red\">Corrupted data</font>";*/
+		} catch(qa) {
 			console.log(qa.message),errorMessageDiv.innerHTML="Import Save: <font color=\"red\">Error</font>";
 		}
 	else errorMessageDiv.innerHTML="Import Save: <font color=\"red\">Invalid data</font>";

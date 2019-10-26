@@ -1,6 +1,15 @@
 document.addEventListener("DOMContentLoaded", function() {
 	'use strict';
 	
+	var saveData = {
+		ships: {},
+		cannons: {},
+		bonuses: {},
+		options: {},
+		enemies: {},
+		battlepoints: 0,
+	};
+	
 	function createSelectionList() {
 		if(document.getElementById("categoryselect"))
 			return;
@@ -24,6 +33,9 @@ document.addEventListener("DOMContentLoaded", function() {
 		var queueOption = el("option");
 		queueOption.value = "queue";
 		queueOption.innerText = "Queue Checker";
+		var queueOption = el("option");
+		queueOption.value = "battlecalc";
+		queueOption.innerText = "Export to Battlecalc";
 		
 		categoryChooser.appendChild(selectOption);
 		categoryChooser.appendChild(overviewOption);
@@ -51,6 +63,8 @@ document.addEventListener("DOMContentLoaded", function() {
 				checkboxSpan.setAttribute("id", "checkboxSpan");
 				selectionList.appendChild(checkboxSpan);
 				queueCheck();
+			} else if(val == "battlecalc") {
+				exportToBattlecalc();
 			}
 			var galaxySelect = document.getElementById("galaxyselect");
 			if(val != "overview" && galaxySelect)
@@ -192,6 +206,47 @@ document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById("result").innerHTML = "Total TP: " + Math.floor(game.totalTPspent()) 
 		+ "<br>TP: " + Math.floor(game.techPoints) 
 		+ "<br>TP after Time Travel: " + Math.floor(game.totalTPspent()+2*game.influence()*Math.log(1+game.totalRPspent()/(200*bi))/Math.log(5));
+	}
+	function exportToBattlecalc() {
+		for (var index = 0; index < civis[0].planets.length; index++) {
+			var planetId = civis[0].planets[index];
+			if(planets[planetId].structure[buildingsName.cannon].number > 0)
+				saveData.cannons[planetId] = planets[planetId].structure[buildingsName.cannon].number;
+		};
+		researches.map(function(research) {
+			if(!research.requirement()) return;
+			saveData.bonuses[research.id] = research.level;
+		});
+		artifacts.map(function(artifact) {
+			if(artifact.possessed)
+				saveData.bonuses[artifact.id] = 1;
+			else
+				saveData.bonuses[artifact.id] = 0;
+		});
+		characters.map(function(character) {
+			if(character.unlocked) saveData.bonuses[character.id] = 1;
+		});
+		var chosenGovern = 0;
+		for (var government in governmentList) {
+			if(government == game.chosenGovern) saveData.bonuses[name] = chosenGovern;
+			chosenGovern++;
+		}
+		var calcData = {
+			ships: saveData.ships,
+			cannons: saveData.cannons,
+			bonuses: saveData.bonuses,
+			options: saveData.options,
+			enemySelected: 0,
+			enemies: saveData.enemies,
+		};
+		//var url = "file:///C:/Users/Benny/Documents/GitHub/HeartOfGalaxy/HoG/Battlecalc.html#nobitly#" + serialize(calcData);
+		var url = "https://godlloyd.github.io/HeartOfGalaxy/HoG/Battlecalc.html#nobitly#" + serialize(calcData);
+		var exportButton = document.createElement("a");
+		exportButton.innerText = "Calculate Attack";
+		exportButton.href = url;
+		exportButton.target = "battlecalc";
+		exportButton.innerText = "Export to Battlecalc";
+		document.getElementById("result").appendChild(exportButton);
 	}
 	function queueCheck() {
 	
