@@ -208,6 +208,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		+ "<br>TP after Time Travel: " + Math.floor(game.totalTPspent()+2*game.influence()*Math.log(1+game.totalRPspent()/(200*bi))/Math.log(5));
 	}
 	function exportToBattlecalc() {
+		saveData.bonuses["influence"] = game.influence();
 		for (var index = 0; index < civis[0].planets.length; index++) {
 			var planetId = civis[0].planets[index];
 			if(planets[planetId].structure[buildingsName.cannon].number > 0)
