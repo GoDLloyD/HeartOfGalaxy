@@ -33,14 +33,15 @@ document.addEventListener("DOMContentLoaded", function() {
 		var queueOption = el("option");
 		queueOption.value = "queue";
 		queueOption.innerText = "Queue Checker";
-		var queueOption = el("option");
-		queueOption.value = "battlecalc";
-		queueOption.innerText = "Export to Battlecalc";
+		var battlecalcOption = el("option");
+		battlecalcOption.value = "battlecalc";
+		battlecalcOption.innerText = "Export to Battlecalc";
 		
 		categoryChooser.appendChild(selectOption);
 		categoryChooser.appendChild(overviewOption);
 		categoryChooser.appendChild(tpOption);
 		categoryChooser.appendChild(queueOption);
+		categoryChooser.appendChild(battlecalcOption);
 		
 		categoryChooser.onchange = function() {
 			var selectionList = document.getElementById("selectionList");
