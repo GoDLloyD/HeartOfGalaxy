@@ -516,7 +516,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		option.innerText = government;
 		govSelect.appendChild(option);
 	}
-	if(saveData.bonuses["government"] != null) {
+	if(saveData.bonuses && saveData.bonuses["government"]) {
 		govSelect.selectedIndex = saveData.bonuses["government"];
 		game.chosenGovern = govSelect.options[saveData.bonuses["government"]].value;
 		governmentList[game.chosenGovern].bonus();
